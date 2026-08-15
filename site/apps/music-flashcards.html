@@ -1,0 +1,346 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="ト音記号の音を見て、聴いて、答える音符よみフラッシュカードです。">
+  <title>音符よみフラッシュカード | ト音記号トレーニング</title>
+  <style>
+    :root { --ink:#172b4d; --muted:#62728b; --paper:#fffdf8; --cream:#f8f0df; --coral:#ed6a5a; --coral-dark:#c95044; --sky:#438fcb; --line:#1e3452; }
+    * { box-sizing:border-box; }
+    body { margin:0; min-width:320px; color:var(--ink); background:radial-gradient(circle at 8% 10%,rgba(237,106,90,.13) 0 5rem,transparent 5.1rem),radial-gradient(circle at 91% 86%,rgba(67,143,203,.14) 0 7rem,transparent 7.1rem),var(--cream); font-family:ui-rounded,"Hiragino Maru Gothic ProN","Hiragino Kaku Gothic ProN","Yu Gothic",sans-serif; }
+    button { font:inherit; } button:focus-visible { outline:3px solid #145b9a; outline-offset:3px; }
+    .app-shell { min-height:100svh; padding:clamp(24px,5vw,60px) 18px 26px; display:grid; place-items:center; gap:16px; }
+    .practice-card { width:min(100%,820px); overflow:hidden; background:rgba(255,253,248,.94); border:1px solid rgba(23,43,77,.12); border-radius:26px; box-shadow:0 18px 50px rgba(40,55,77,.14); }
+    .card-header { padding:clamp(25px,4vw,42px) clamp(22px,5vw,52px) 24px; display:flex; align-items:flex-start; justify-content:space-between; gap:18px; }
+    .eyebrow { margin:0 0 7px; color:var(--coral-dark); font-size:.8rem; font-weight:800; letter-spacing:.12em; }
+    h1 { margin:0; font-size:clamp(2rem,5vw,3.25rem); letter-spacing:-.05em; line-height:1.05; }.intro { margin:10px 0 0; color:var(--muted); font-size:.96rem; }
+    .reset-button { flex:0 0 auto; padding:9px 13px; border:1px solid #ccd5df; border-radius:999px; color:var(--ink); background:transparent; font-weight:700; cursor:pointer; }.reset-button:hover { background:#f1eee7; }
+    .score-strip { padding:14px clamp(22px,5vw,52px); display:grid; grid-template-columns:repeat(5,1fr); background:#ecf4fa; border-block:1px solid #d8e4ec; }.score-strip div { min-width:0; padding:1px clamp(8px,2vw,22px); border-left:1px solid #cbdce8; }.score-strip div:first-child { padding-left:0; border-left:0; }.score-strip span { display:block; margin-bottom:2px; color:#58718a; font-size:.72rem; font-weight:700; }.score-strip strong { font-size:clamp(1.05rem,2.5vw,1.35rem); line-height:1; }
+    .settings-panel { padding:13px clamp(18px,4vw,52px); display:flex; flex-wrap:wrap; justify-content:center; gap:10px 18px; border-bottom:1px solid #dbe5ec; background:#f7fbfe; }.setting-group { display:flex; align-items:center; gap:4px; min-width:0; margin:0; padding:0; border:0; }.setting-group legend { float:left; margin-right:4px; color:#58718a; font-size:.72rem; font-weight:800; }.setting-group label { display:inline-flex; align-items:center; min-height:34px; gap:4px; padding:5px 9px; border:1px solid #cbdce8; border-radius:999px; color:#34526e; background:#fff; font-size:.75rem; font-weight:700; cursor:pointer; }.setting-group input { accent-color:var(--coral); }.setting-group label:has(input:checked) { border-color:#79aed7; color:#15588d; background:#eaf5fd; }
+    .question-area { padding:26px clamp(22px,6vw,68px) 20px; text-align:center; }.question-label { margin:0 0 2px; color:var(--muted); font-size:.88rem; font-weight:700; }
+    .staff-wrap { --note-y:172px; --note-x:53%; position:relative; width:min(100%,580px); height:234px; margin:0 auto 4px; }.staff-line { position:absolute; left:9%; right:5%; height:2px; background:var(--line); }.line-1 { top:43px; }.line-2 { top:75px; }.line-3 { top:107px; }.line-4 { top:139px; }.line-5 { top:171px; }.clef { position:absolute; z-index:2; top:21px; left:10%; color:var(--line); font-family:"Noto Music",serif; font-size:143px; line-height:1; transform:scaleX(.76); }.ledger-line { position:absolute; z-index:1; top:var(--ledger-y); left:calc(var(--note-x) - 27px); width:54px; height:2px; border-radius:2px; background:var(--line); }.note { position:absolute; z-index:3; top:var(--note-y); left:var(--note-x); width:34px; height:22px; transform:translate(-50%,-50%); }.note-head { position:absolute; inset:0; width:34px; height:22px; border-radius:50%; background:var(--ink); transform:rotate(-12deg); transform-origin:center; }.note-stem { position:absolute; width:3px; height:88px; border-radius:2px; background:var(--ink); }.note--up .note-stem { right:1px; bottom:10px; }.note--down .note-stem { left:1px; top:10px; }
+    .listen-button { padding:10px 15px; border:1px solid #b8cde0; border-radius:999px; background:#fff; color:#1d5f93; font-weight:800; cursor:pointer; }.listen-button:hover { background:#edf7ff; }.listen-button > span { margin-right:4px; font-size:1.15rem; }.listen-button kbd,.next-button kbd { margin-left:7px; padding:2px 5px; border:1px solid currentColor; border-radius:4px; font-family:inherit; font-size:.68rem; opacity:.65; }
+    .answer-section { padding:22px clamp(18px,4vw,52px) 26px; background:#fff9ed; border-top:1px solid #eee2cf; }.answer-prompt { margin:0 0 13px; color:var(--ink); text-align:center; font-size:.9rem; font-weight:800; }.answer-prompt span { color:var(--muted); font-size:.75rem; font-weight:500; }.answer-grid { display:grid; grid-template-columns:repeat(8,minmax(0,1fr)); gap:8px; max-width:700px; margin:0 auto; }.answer-button { position:relative; min-height:60px; padding:12px 5px 8px; border:1px solid #d6dbe0; border-radius:12px; color:var(--ink); background:#fff; font-size:1.1rem; font-weight:900; cursor:pointer; transition:transform .16s ease,border-color .16s ease,background .16s ease; }.answer-button:hover:not(:disabled) { transform:translateY(-3px); border-color:var(--sky); background:#f3f9fd; }.answer-button:disabled { cursor:default; }.answer-button.is-selected { border-color:var(--coral); background:#fff0ed; }.answer-button.is-correct { color:#176849; border-color:#3ca878; background:#e9f8ef; }.answer-button.is-wrong { color:#a34038; border-color:var(--coral); background:#fff0ed; }.answer-button small { display:block; min-height:13px; margin-top:1px; color:#607084; font-size:.64rem; font-weight:700; }.key-hint { position:absolute; top:5px; left:7px; color:#9ba7b3; font-size:.6rem; font-weight:700; }
+    .completion { margin:16px clamp(22px,5vw,52px) 0; padding:15px 18px; border:1px solid #b9dcc8; border-radius:14px; color:#176849; background:#edf9f1; text-align:center; }.completion[hidden] { display:none; }.completion strong { display:block; margin-bottom:4px; }
+    .feedback-row { min-height:92px; padding:16px clamp(22px,5vw,52px); display:flex; align-items:center; justify-content:space-between; gap:18px; }.feedback-copy { display:grid; gap:5px; }.feedback-row p { margin:0; color:var(--muted); font-size:.88rem; }.explanation { color:#52677d !important; }.feedback { font-size:1rem !important; font-weight:800; }.feedback--correct { color:#176849 !important; }.feedback--wrong { color:#a34038 !important; }.next-button { flex:0 0 auto; padding:11px 15px; border:0; border-radius:10px; background:var(--coral); color:#fff; font-weight:900; cursor:pointer; box-shadow:0 3px 0 var(--coral-dark); }.next-button:hover:not(:disabled) { background:#df594b; }.next-button:disabled { background:#c5ccd1; box-shadow:0 3px 0 #aeb6bc; cursor:not-allowed; }.footer-note { margin:0; color:#68758a; font-size:.78rem; text-align:center; }
+    .staff-wrap.is-pop { animation:staff-pop .45s ease-out; }.staff-wrap.is-shake { animation:staff-shake .38s ease-in-out; }
+    @keyframes staff-pop { 50% { filter:drop-shadow(0 0 12px rgba(64,174,122,.75)); scale:1.045; } }
+    @keyframes staff-shake { 20%,60% { translate:-7px 0; } 40%,80% { translate:7px 0; } }
+    @media (max-width:600px) { .practice-card { border-radius:20px; }.card-header { padding-bottom:20px; }.intro { max-width:255px; }.score-strip { padding-inline:14px; grid-template-columns:repeat(5,minmax(0,1fr)); }.score-strip div { padding-inline:5px; }.score-strip span { font-size:.58rem; }.score-strip strong { font-size:.95rem; }.settings-panel { align-items:stretch; justify-content:flex-start; gap:8px; }.setting-group { flex:1 1 100%; justify-content:space-between; }.setting-group legend { width:55px; }.setting-group label { flex:1; justify-content:center; }.staff-wrap { transform:scale(.94); transform-origin:center top; margin-bottom:-13px; }.answer-grid { grid-template-columns:repeat(4,minmax(0,1fr)); gap:9px; }.answer-button { min-height:55px; }.answer-prompt span { display:block; margin-top:3px; }.feedback-row { min-height:120px; align-items:flex-start; flex-direction:column; gap:12px; }.next-button { align-self:flex-end; } }
+    @media (max-width:390px) { .card-header { gap:10px; }.reset-button { padding:8px 10px; font-size:.79rem; }.score-strip strong { font-size:.84rem; }.question-area { padding-inline:10px; }.staff-wrap { transform:scale(.86); margin-bottom:-34px; }.answer-section { padding-inline:13px; } }
+    @media (prefers-reduced-motion:reduce) { *,*::before,*::after { scroll-behavior:auto !important; transition-duration:.01ms !important; animation-duration:.01ms !important; }.staff-wrap.is-pop,.staff-wrap.is-shake { animation:none; } }
+  </style>
+</head>
+<body>
+  <main class="app-shell">
+    <section class="practice-card" aria-labelledby="page-title">
+      <header class="card-header"><div><p class="eyebrow">音符よみ トレーニング</p><h1 id="page-title">この音は何？</h1><p class="intro">ト音記号のドから高いドまで。見て、聴いて、答えよう。</p></div><button class="reset-button" id="reset-button" type="button">最初から</button></header>
+      <section class="score-strip" aria-label="学習の記録"><div><span>正解</span><strong id="score-correct">0 / 0</strong></div><div><span>正答率</span><strong id="score-rate">0%</strong></div><div><span>連続正解</span><strong id="score-streak">0</strong></div><div><span>自己ベスト</span><strong id="score-best">0</strong></div><div><span>進捗</span><strong id="score-progress">0/10</strong></div></section>
+      <section class="settings-panel" aria-label="出題設定">
+        <fieldset class="setting-group"><legend>正解後</legend><label><input type="radio" name="advance" value="auto" checked>自動</label><label><input type="radio" name="advance" value="manual">手動</label></fieldset>
+        <fieldset class="setting-group"><legend>問題数</legend><label><input type="radio" name="question-count" value="10" checked>10問</label><label><input type="radio" name="question-count" value="20">20問</label><label><input type="radio" name="question-count" value="infinity">無制限</label></fieldset>
+        <fieldset class="setting-group"><legend>表記</legend><label><input type="radio" name="notation" value="solfege" checked>ドレミ</label><label><input type="radio" name="notation" value="letter">CDE</label></fieldset>
+      </section>
+      <div class="question-area"><p class="question-label">五線譜の音を読んでみよう</p><div class="staff-wrap" id="staff" role="img" aria-label="ト音記号の五線譜に表示された音符"><span class="clef" aria-hidden="true">𝄞</span><span class="staff-line line-1" aria-hidden="true"></span><span class="staff-line line-2" aria-hidden="true"></span><span class="staff-line line-3" aria-hidden="true"></span><span class="staff-line line-4" aria-hidden="true"></span><span class="staff-line line-5" aria-hidden="true"></span><span class="note" id="note" aria-hidden="true"><span class="note-head"></span><span class="note-stem"></span></span></div><button class="listen-button" id="listen-button" type="button" aria-label="表示中の音を聴く。スペースキーでも再生できます"><span aria-hidden="true">♪</span> 音を聴く <kbd>Space</kbd></button></div>
+      <div class="answer-section"><p class="answer-prompt">答えを選んでください <span>（キー 1〜8 でも回答できます）</span></p><div class="answer-grid" id="answer-grid" role="group" aria-label="音名を選ぶ"></div></div>
+      <section class="completion" id="completion" hidden aria-live="polite"><strong>セッション完了！</strong><span id="completion-result"></span></section>
+      <div class="feedback-row" id="feedback" aria-live="polite" aria-atomic="true"><div class="feedback-copy"><p id="feedback-text">ヒント：ドは五線の下の加線と、第3間にもあります。</p><p class="explanation" id="explanation-text"></p></div><button class="next-button" id="next-button" type="button" disabled>次へ <span aria-hidden="true">→</span><kbd>Enter</kbd></button></div>
+    </section>
+    <p class="footer-note">まちがえた音は、次の問題で少し出やすくなります。</p>
+  </main>
+  <script>
+    "use strict";
+
+    // 問題追加はここ：五線上の位置（staffY）・周波数・加線・説明を指定して音を増やせます。
+    const NOTES = [
+      { id: "C4", solfege: "ド", octaveLabel: "低", frequency: 261.63, staffY: 204, ledgerLines: [204], stemDirection: "up", explanation: "五線の下の加線にある音です。" },
+      { id: "D4", solfege: "レ", octaveLabel: "", frequency: 293.66, staffY: 188, stemDirection: "up", explanation: "五線のすぐ下にある音です。" },
+      { id: "E4", solfege: "ミ", octaveLabel: "", frequency: 329.63, staffY: 172, stemDirection: "up", explanation: "第1線（いちばん下の線）にある音です。" },
+      { id: "F4", solfege: "ファ", octaveLabel: "", frequency: 349.23, staffY: 156, stemDirection: "up", explanation: "第1間（下から1つ目の間）にある音です。" },
+      { id: "G4", solfege: "ソ", octaveLabel: "", frequency: 392, staffY: 140, stemDirection: "up", explanation: "第2線にある音です。" },
+      { id: "A4", solfege: "ラ", octaveLabel: "", frequency: 440, staffY: 124, stemDirection: "up", explanation: "第2間にある音です。" },
+      { id: "B4", solfege: "シ", octaveLabel: "", frequency: 493.88, staffY: 108, stemDirection: "up", explanation: "第3線にある音です。" },
+      { id: "C5", solfege: "ド", octaveLabel: "高", frequency: 523.25, staffY: 92, stemDirection: "down", explanation: "第3間にある高い音です。" }
+    ];
+
+    const HIGH_SCORE_KEY = "music-flashcards-best-streak";
+    const staff = document.querySelector("#staff");
+    const noteElement = document.querySelector("#note");
+    const answerGrid = document.querySelector("#answer-grid");
+    const feedbackText = document.querySelector("#feedback-text");
+    const explanationText = document.querySelector("#explanation-text");
+    const nextButton = document.querySelector("#next-button");
+    const completion = document.querySelector("#completion");
+    const completionResult = document.querySelector("#completion-result");
+    const scoreCorrect = document.querySelector("#score-correct");
+    const scoreRate = document.querySelector("#score-rate");
+    const scoreStreak = document.querySelector("#score-streak");
+    const scoreBest = document.querySelector("#score-best");
+    const scoreProgress = document.querySelector("#score-progress");
+
+    let currentNote = NOTES[0];
+    let selectedId = null;
+    let isCorrect = null;
+    let correctCount = 0;
+    let attemptCount = 0;
+    let streak = 0;
+    let bestStreak = safeBestStreak();
+    let weights = {};
+    let autoAdvanceTimer = null;
+    let audioContext = null;
+    let advanceMode = "auto";
+    let questionLimit = 10;
+    let notation = "solfege";
+    let sessionComplete = false;
+
+    function safeBestStreak() {
+      try { return Number.parseInt(window.localStorage.getItem(HIGH_SCORE_KEY) || "0", 10) || 0; } catch { return 0; }
+    }
+
+    function saveBestStreak(value) {
+      try { window.localStorage.setItem(HIGH_SCORE_KEY, String(value)); } catch { /* localStorage can be unavailable. */ }
+    }
+
+    function clearAutoAdvance() {
+      if (autoAdvanceTimer !== null) { window.clearTimeout(autoAdvanceTimer); autoAdvanceTimer = null; }
+    }
+
+    function displayName(item) {
+      if (notation === "letter") return item.id;
+      if (item.octaveLabel === "低") return "低いド";
+      if (item.octaveLabel === "高") return "高いド";
+      return item.solfege;
+    }
+
+    function pickNextNote(previousId) {
+      const candidates = NOTES.filter((item) => item.id !== previousId);
+      const total = candidates.reduce((sum, item) => sum + 1 + (weights[item.id] || 0) * 0.65, 0);
+      let cursor = Math.random() * total;
+      for (const item of candidates) {
+        cursor -= 1 + (weights[item.id] || 0) * 0.65;
+        if (cursor <= 0) return item;
+      }
+      return candidates[candidates.length - 1];
+    }
+
+    function renderStats() {
+      const rate = attemptCount ? Math.round((correctCount / attemptCount) * 100) : 0;
+      scoreCorrect.textContent = `${correctCount} / ${attemptCount}`;
+      scoreRate.textContent = `${rate}%`;
+      scoreStreak.textContent = String(streak);
+      scoreBest.textContent = String(bestStreak);
+      scoreProgress.textContent = questionLimit === Infinity ? `${attemptCount}/∞` : `${attemptCount}/${questionLimit}`;
+    }
+
+    function renderQuestion() {
+      staff.style.setProperty("--note-y", `${currentNote.staffY}px`);
+      staff.style.setProperty("--note-x", `${38 + Math.round(Math.random() * 28)}%`);
+      noteElement.className = `note note--${currentNote.stemDirection}`;
+      staff.querySelectorAll(".ledger-line").forEach((line) => line.remove());
+      (currentNote.ledgerLines || []).forEach((y) => {
+        const ledger = document.createElement("span");
+        ledger.className = "ledger-line";
+        ledger.style.setProperty("--ledger-y", `${y}px`);
+        ledger.setAttribute("aria-hidden", "true");
+        staff.insertBefore(ledger, noteElement);
+      });
+    }
+
+    function renderAnswers() {
+      answerGrid.replaceChildren();
+      NOTES.forEach((item, index) => {
+        const button = document.createElement("button");
+        const selected = selectedId === item.id;
+        const isAnswer = selectedId !== null && item.id === currentNote.id;
+        button.type = "button";
+        button.className = `answer-button${selected ? " is-selected" : ""}${isAnswer ? " is-correct" : ""}${selected && isCorrect === false ? " is-wrong" : ""}`;
+        button.disabled = selectedId !== null || sessionComplete;
+        button.setAttribute("aria-label", `${displayName(item)}、キー ${index + 1}`);
+
+        const keyHint = document.createElement("span");
+        keyHint.className = "key-hint";
+        keyHint.textContent = String(index + 1);
+        const name = document.createElement("span");
+        name.textContent = notation === "letter" ? item.id : item.solfege;
+        button.append(keyHint, name);
+
+        if (notation === "solfege" && item.octaveLabel) {
+          const octave = document.createElement("small");
+          octave.textContent = item.octaveLabel;
+          button.append(octave);
+        }
+        button.addEventListener("click", () => answer(item));
+        answerGrid.appendChild(button);
+      });
+    }
+
+    function renderFeedback() {
+      completion.hidden = !sessionComplete;
+
+      if (isCorrect === null) {
+        feedbackText.className = "";
+        feedbackText.textContent = "ヒント：ドは五線の下の加線と、第3間にもあります。";
+        explanationText.textContent = "";
+      } else if (isCorrect) {
+        feedbackText.className = "feedback feedback--correct";
+        feedbackText.textContent = `正解！ 正しい音は${displayName(currentNote)}です。`;
+        explanationText.textContent = currentNote.explanation;
+      } else {
+        feedbackText.className = "feedback feedback--wrong";
+        feedbackText.textContent = `おしい！ 正しい音は${displayName(currentNote)}です。`;
+        explanationText.textContent = currentNote.explanation;
+      }
+
+      if (sessionComplete) {
+        const rate = attemptCount ? Math.round((correctCount / attemptCount) * 100) : 0;
+        completionResult.textContent = `${questionLimit}問中 ${correctCount}問正解（正答率 ${rate}%）`;
+        nextButton.disabled = false;
+        nextButton.textContent = "もう一度";
+        nextButton.setAttribute("aria-label", "同じ問題数でもう一度始める");
+      } else {
+        nextButton.disabled = selectedId === null;
+        nextButton.innerHTML = "次へ <span aria-hidden=\"true\">→</span><kbd>Enter</kbd>";
+        nextButton.setAttribute("aria-label", "次の問題へ。Enterキーでも進めます");
+      }
+    }
+
+    function render() { renderQuestion(); renderAnswers(); renderFeedback(); renderStats(); }
+
+    function nextQuestion() {
+      clearAutoAdvance();
+      if (sessionComplete) {
+        resetSession();
+        return;
+      }
+      currentNote = pickNextNote(currentNote.id);
+      selectedId = null;
+      isCorrect = null;
+      render();
+    }
+
+    function playVisualEffect(className) {
+      staff.classList.remove("is-pop", "is-shake");
+      void staff.offsetWidth;
+      staff.classList.add(className);
+      window.setTimeout(() => staff.classList.remove(className), 500);
+    }
+
+    function getAudioContext() {
+      const AudioContextConstructor = window.AudioContext || window.webkitAudioContext;
+      if (!AudioContextConstructor) return null;
+      try {
+        audioContext = audioContext || new AudioContextConstructor();
+        return audioContext;
+      } catch {
+        return null;
+      }
+    }
+
+    function playTone(frequency, start, duration, volume) {
+      const context = getAudioContext();
+      if (!context) return;
+      const oscillator = context.createOscillator();
+      const gain = context.createGain();
+      oscillator.type = "sine";
+      oscillator.frequency.setValueAtTime(frequency, start);
+      gain.gain.setValueAtTime(0.0001, start);
+      gain.gain.exponentialRampToValueAtTime(volume, start + 0.015);
+      gain.gain.exponentialRampToValueAtTime(0.0001, start + duration);
+      oscillator.connect(gain).connect(context.destination);
+      oscillator.start(start);
+      oscillator.stop(start + duration + 0.02);
+    }
+
+    function playFeedbackSound(correct) {
+      const context = getAudioContext();
+      if (!context) return;
+      if (context.state === "suspended") void context.resume();
+      const start = context.currentTime;
+      if (correct) {
+        playTone(659.25, start, 0.16, 0.11);
+        playTone(783.99, start + 0.14, 0.20, 0.12);
+      } else {
+        playTone(196, start, 0.22, 0.08);
+      }
+    }
+
+    function answer(item) {
+      if (selectedId !== null || sessionComplete) return;
+      selectedId = item.id;
+      isCorrect = item.id === currentNote.id;
+      attemptCount += 1;
+      if (isCorrect) { correctCount += 1; streak += 1; } else { streak = 0; weights[currentNote.id] = (weights[currentNote.id] || 0) + 1; }
+      if (streak > bestStreak) { bestStreak = streak; saveBestStreak(bestStreak); }
+      sessionComplete = questionLimit !== Infinity && attemptCount >= questionLimit;
+      renderAnswers(); renderFeedback(); renderStats();
+      playFeedbackSound(isCorrect);
+      playVisualEffect(isCorrect ? "is-pop" : "is-shake");
+      if (isCorrect && advanceMode === "auto" && !sessionComplete) {
+        clearAutoAdvance();
+        autoAdvanceTimer = window.setTimeout(() => { autoAdvanceTimer = null; nextQuestion(); }, 1100);
+      }
+    }
+
+    function resetSession() {
+      clearAutoAdvance();
+      currentNote = NOTES[0]; selectedId = null; isCorrect = null; correctCount = 0; attemptCount = 0; streak = 0; weights = {}; sessionComplete = false;
+      render();
+    }
+
+    function playNote() {
+      const context = getAudioContext();
+      if (!context) return;
+      const oscillator = context.createOscillator();
+      const gain = context.createGain();
+      const start = context.currentTime;
+      oscillator.type = "sine";
+      oscillator.frequency.setValueAtTime(currentNote.frequency, start);
+      gain.gain.setValueAtTime(0.0001, start);
+      gain.gain.exponentialRampToValueAtTime(0.18, start + 0.025);
+      gain.gain.exponentialRampToValueAtTime(0.0001, start + 0.72);
+      oscillator.connect(gain).connect(context.destination);
+      oscillator.start(start); oscillator.stop(start + 0.75);
+      if (context.state === "suspended") void context.resume();
+    }
+
+    document.querySelector("#listen-button").addEventListener("click", playNote);
+    document.querySelector("#reset-button").addEventListener("click", resetSession);
+    nextButton.addEventListener("click", nextQuestion);
+
+    document.querySelectorAll('input[name="advance"]').forEach((input) => {
+      input.addEventListener("change", (event) => {
+        advanceMode = event.target.value;
+        if (advanceMode === "manual") clearAutoAdvance();
+      });
+    });
+
+    document.querySelectorAll('input[name="question-count"]').forEach((input) => {
+      input.addEventListener("change", (event) => {
+        questionLimit = event.target.value === "infinity" ? Infinity : Number(event.target.value);
+        resetSession();
+      });
+    });
+
+    document.querySelectorAll('input[name="notation"]').forEach((input) => {
+      input.addEventListener("change", (event) => {
+        notation = event.target.value;
+        renderAnswers();
+        renderFeedback();
+      });
+    });
+
+    window.addEventListener("keydown", (event) => {
+      if (event.key >= "1" && event.key <= "8" && selectedId === null && !sessionComplete) { event.preventDefault(); answer(NOTES[Number(event.key) - 1]); return; }
+      if (event.code === "Space" && !(event.target instanceof HTMLButtonElement) && !(event.target instanceof HTMLInputElement)) { event.preventDefault(); playNote(); return; }
+      if (event.key === "Enter" && selectedId !== null) {
+        const target = event.target;
+        if (target instanceof HTMLButtonElement && !target.disabled) return;
+        event.preventDefault(); nextQuestion();
+      }
+    });
+    window.addEventListener("beforeunload", () => { clearAutoAdvance(); if (audioContext) audioContext.close(); });
+    render();
+  </script>
+</body>
+</html>

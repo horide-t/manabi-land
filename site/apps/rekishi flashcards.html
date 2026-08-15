@@ -1,0 +1,2298 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="小学生・中学生向けの重要語句を、ふりがな付きカードで学べる歴史フラッシュカード。">
+  <title>歴史カード｜流れでわかる、日本の歴史</title>
+  <!-- 単体HTML版：スタイル・問題データ・処理をすべてこのファイル内に収録 -->
+  <style id="embedded-styles">
+
+:root {
+  --ink: #25312f;
+  --muted: #69736f;
+  --paper: #f7f4ec;
+  --panel: #fffdf8;
+  --line: #dedbd0;
+  --green: #1f6b5c;
+  --green-dark: #145347;
+  --green-soft: #e7f2ed;
+  --red: #b84b42;
+  --yellow: #d19a25;
+  --shadow: 0 22px 55px rgba(45, 54, 48, 0.1);
+}
+
+* { box-sizing: border-box; }
+
+[hidden] { display: none !important; }
+
+.visually-hidden {
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  position: absolute;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  margin: 0;
+  background:
+    radial-gradient(circle at 82% 4%, rgba(209, 154, 37, 0.09), transparent 26rem),
+    var(--paper);
+  color: var(--ink);
+  font-family: "Hiragino Sans", "Yu Gothic", "Noto Sans JP", sans-serif;
+}
+
+button, select, input { font: inherit; }
+button { color: inherit; }
+button:focus-visible, select:focus-visible, input:focus-visible, a:focus-visible {
+  outline: 3px solid rgba(31, 107, 92, 0.28);
+  outline-offset: 3px;
+}
+
+.app-shell { min-height: 100vh; }
+
+.topbar {
+  height: 78px;
+  padding: 0 clamp(20px, 4vw, 62px);
+  background: rgba(255, 253, 248, 0.92);
+  border-bottom: 1px solid var(--line);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: sticky;
+  top: 0;
+  z-index: 30;
+  backdrop-filter: blur(14px);
+}
+
+.brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  color: inherit;
+  text-decoration: none;
+}
+
+.brand-mark {
+  width: 42px;
+  height: 42px;
+  border-radius: 50% 50% 45% 55%;
+  display: grid;
+  place-items: center;
+  background: var(--green);
+  color: white;
+  font-family: "Yu Mincho", "Hiragino Mincho ProN", serif;
+  font-size: 22px;
+  box-shadow: inset 0 0 0 2px rgba(255,255,255,.2);
+  transform: rotate(-3deg);
+}
+
+.brand strong { display: block; font-family: "Yu Mincho", "Hiragino Mincho ProN", serif; font-size: 20px; letter-spacing: .08em; }
+.brand small { display: block; color: var(--muted); font-size: 10px; letter-spacing: .08em; margin-top: 1px; }
+.top-actions { display: flex; align-items: center; gap: 16px; }
+
+.switch-label {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+}
+.switch-label input { position: absolute; opacity: 0; pointer-events: none; }
+.switch-label span {
+  width: 40px;
+  height: 22px;
+  background: #c8ceca;
+  border-radius: 999px;
+  position: relative;
+  transition: .2s ease;
+}
+.switch-label span::after {
+  content: "";
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  background: white;
+  box-shadow: 0 1px 3px rgba(0,0,0,.24);
+  transition: .2s ease;
+}
+.switch-label input:checked + span { background: var(--green); }
+.switch-label input:checked + span::after { transform: translateX(18px); }
+
+.workspace {
+  min-height: calc(100vh - 78px);
+  display: grid;
+  grid-template-columns: 286px minmax(0, 1fr);
+}
+
+.filters {
+  padding: 36px 26px 30px;
+  background: #f0eee7;
+  border-right: 1px solid var(--line);
+}
+
+.filter-heading, .section-title-row { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+.filter-heading h2 { margin: 3px 0 0; font-family: "Yu Mincho", "Hiragino Mincho ProN", serif; font-size: 23px; }
+.eyebrow { margin: 0; color: var(--green); font-size: 10px; font-weight: 800; letter-spacing: .19em; }
+.close-filter { display: none; border: 0; background: none; font-size: 28px; cursor: pointer; }
+
+.filter-section { padding: 25px 0; border-bottom: 1px solid #d9d6cd; }
+.filter-section h3 { margin: 0 0 13px; font-size: 13px; letter-spacing: .05em; }
+.section-title-row h3 { margin-bottom: 0; }
+.text-button { border: 0; background: none; color: var(--green); padding: 0; font-size: 11px; font-weight: 700; cursor: pointer; }
+
+.era-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 7px; margin-top: 14px; }
+.era-chip {
+  min-height: 36px;
+  padding: 7px 8px;
+  border: 1px solid #d7d4ca;
+  border-radius: 7px;
+  background: rgba(255,255,255,.55);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  font-weight: 700;
+  text-align: left;
+  cursor: pointer;
+  transition: .18s ease;
+}
+.era-chip:hover { border-color: #8ca99f; transform: translateY(-1px); }
+.era-chip .check { color: #a1a7a3; font-size: 10px; }
+.era-chip.active { background: var(--green-soft); border-color: #8cbaab; color: var(--green-dark); }
+.era-chip.active .check { color: var(--green); }
+
+select {
+  width: 100%;
+  height: 42px;
+  border: 1px solid #d3d0c6;
+  border-radius: 7px;
+  background: #fffdf8;
+  color: var(--ink);
+  padding: 0 11px;
+}
+
+.segmented { display: grid; grid-template-columns: 1fr 1fr; background: #dfddd5; border-radius: 8px; padding: 3px; }
+.segmented-three { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.segmented button { padding: 8px 5px; border: 0; border-radius: 6px; background: transparent; font-size: 10px; font-weight: 700; cursor: pointer; }
+.segmented button.active { background: var(--panel); color: var(--green); box-shadow: 0 1px 5px rgba(0,0,0,.08); }
+.level-filter { padding-top: 22px; }
+
+.option-list { display: grid; gap: 12px; }
+.option-list label { display: flex; align-items: center; gap: 9px; font-size: 12px; font-weight: 700; cursor: pointer; }
+.option-list input { width: 16px; height: 16px; accent-color: var(--green); }
+
+.focus-review > p { margin: 9px 0 13px; color: var(--muted); font-size: 9px; line-height: 1.55; }
+.focus-total { padding: 3px 7px; border-radius: 999px; background: #fff3d9; color: #8b6515; font-size: 9px; font-weight: 800; }
+.focus-review-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px; }
+.focus-review-grid button { min-width: 0; min-height: 53px; padding: 7px 3px; border: 1px solid #d4d0c5; border-radius: 8px; background: rgba(255,255,255,.58); cursor: pointer; }
+.focus-review-grid button:hover { border-color: #bf9b45; background: #fff8e7; }
+.focus-review-grid button.active { border-color: var(--yellow); background: #fff3d9; color: #7b5910; box-shadow: inset 0 0 0 1px rgba(209,154,37,.2); }
+.focus-review-grid span { display: block; font-size: 8px; font-weight: 800; white-space: nowrap; }
+.focus-review-grid strong { display: block; margin-top: 4px; font: 700 17px Georgia, serif; }
+
+.shuffle-button {
+  width: 100%;
+  min-height: 47px;
+  margin-top: 22px;
+  border: 0;
+  border-radius: 8px;
+  background: var(--green);
+  color: white;
+  font-size: 12px;
+  font-weight: 800;
+  cursor: pointer;
+  box-shadow: 0 8px 20px rgba(31,107,92,.18);
+}
+.shuffle-button:hover { background: var(--green-dark); }
+.shuffle-button span { margin-left: 6px; padding: 2px 6px; border-radius: 999px; background: rgba(255,255,255,.14); font-size: 10px; }
+.saved-note { display: flex; align-items: center; gap: 7px; margin-top: 13px; color: var(--muted); font-size: 9px; line-height: 1.5; }
+.saved-note span { color: var(--green); font-size: 7px; }
+
+.study-area { width: min(980px, calc(100% - 64px)); margin: 0 auto; padding: 48px 0 74px; }
+.view-tabs { margin: -18px 0 34px; padding: 4px; border: 1px solid var(--line); border-radius: 10px; background: rgba(255,253,248,.75); display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 3px; }
+.view-tabs button { min-height: 38px; padding: 7px 5px; border: 0; border-radius: 7px; background: transparent; color: var(--muted); font-size: 11px; font-weight: 800; cursor: pointer; }
+.view-tabs button:hover { background: var(--green-soft); color: var(--green-dark); }
+.view-tabs button.active { background: var(--green); color: white; box-shadow: 0 4px 10px rgba(31,107,92,.16); }
+.study-header { display: flex; justify-content: space-between; align-items: end; gap: 26px; margin-bottom: 29px; }
+.study-header h1 { margin: 8px 0 5px; font: 700 clamp(26px, 3vw, 38px)/1.25 "Yu Mincho", "Hiragino Mincho ProN", serif; letter-spacing: .04em; }
+.study-header > div > p:last-child { color: var(--muted); margin: 0; font-size: 12px; }
+.session-score { display: flex; gap: 15px; padding-bottom: 4px; }
+.session-score span { color: var(--muted); font-size: 10px; white-space: nowrap; }
+.session-score b { color: var(--ink); font-size: 15px; margin-left: 3px; }
+.dot { width: 7px; height: 7px; display: inline-block; border-radius: 50%; margin-right: 4px; }
+.dot.red { background: var(--red); }
+.dot.yellow { background: var(--yellow); }
+.dot.green { background: var(--green); }
+
+.progress-row { display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 14px; margin-bottom: 12px; }
+.progress-copy { color: var(--muted); font-size: 11px; min-width: 50px; }
+.progress-copy span { color: var(--ink); font-size: 17px; font-weight: 800; }
+.progress-track { height: 4px; border-radius: 999px; background: #dddbd3; overflow: hidden; }
+.progress-track span { display: block; height: 100%; background: var(--green); border-radius: inherit; transition: width .3s ease; }
+.icon-button { width: 31px; height: 31px; border: 1px solid var(--line); border-radius: 50%; background: var(--panel); cursor: pointer; }
+
+.flashcard {
+  min-height: 450px;
+  padding: clamp(25px, 4.8vw, 54px) clamp(25px, 6vw, 70px) 28px;
+  border: 1px solid rgba(213, 208, 194, .9);
+  border-radius: 16px;
+  background:
+    linear-gradient(90deg, rgba(31,107,92,.035) 1px, transparent 1px) 0 0 / 48px 100%,
+    var(--panel);
+  box-shadow: var(--shadow);
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  overflow: hidden;
+}
+.flashcard::after { content: ""; position: absolute; right: -32px; bottom: -47px; width: 150px; height: 150px; border: 1px solid rgba(31,107,92,.1); border-radius: 50%; box-shadow: 0 0 0 18px rgba(31,107,92,.025), 0 0 0 36px rgba(31,107,92,.018); }
+.card-meta { display: flex; align-items: center; gap: 10px; color: var(--muted); font-size: 10px; font-weight: 700; letter-spacing: .08em; position: relative; z-index: 1; }
+.era-tag { color: var(--green-dark); background: var(--green-soft); padding: 5px 10px; border-radius: 4px; }
+.schedule-tag { color: #8b6a20; background: #fff3d9; padding: 5px 8px; border-radius: 4px; letter-spacing: 0; }
+.year { margin-left: auto; font-family: Georgia, serif; font-size: 12px; }
+.card-question { flex: 1; display: grid; place-content: center; text-align: center; position: relative; z-index: 1; }
+.question-label { color: var(--green); margin: 0 0 20px; font-size: 11px; font-weight: 800; letter-spacing: .08em; }
+.clue-text { max-width: 730px; margin: 0 auto; font: 700 clamp(20px, 2.6vw, 30px)/1.8 "Yu Mincho", "Hiragino Mincho ProN", serif; letter-spacing: .035em; }
+.term-front { margin: 0; font: 700 clamp(34px, 5vw, 56px)/1.4 "Yu Mincho", "Hiragino Mincho ProN", serif; }
+ruby rt { font: 500 .35em/1.2 "Hiragino Sans", "Yu Gothic", sans-serif; color: var(--green); letter-spacing: .08em; }
+ruby.hide-reading rt { display: none; }
+
+.reveal-button {
+  align-self: center;
+  min-width: 230px;
+  padding: 13px 22px;
+  border: 1px solid #99b7ae;
+  border-radius: 8px;
+  background: white;
+  color: var(--green-dark);
+  font-size: 12px;
+  font-weight: 800;
+  cursor: pointer;
+  position: relative;
+  z-index: 2;
+}
+.reveal-button:hover { background: var(--green-soft); }
+kbd { margin-left: 14px; padding: 2px 7px; border: 1px solid #d5d3cb; border-radius: 4px; background: #f5f3ed; color: var(--muted); font: 9px/1.5 monospace; box-shadow: 0 1px 0 #c7c4bb; }
+
+.answer-panel { width: 100%; padding: 24px 20px 9px; border-top: 1px solid #e4e0d6; text-align: center; position: relative; z-index: 2; animation: answer-in .25s ease; }
+@keyframes answer-in { from { opacity: 0; transform: translateY(8px); } }
+.answer-label { color: var(--yellow); margin: 0 0 6px; font-size: 9px; font-weight: 900; letter-spacing: .2em; }
+.answer-panel h2 { margin: 0; color: var(--green-dark); font: 700 clamp(30px, 4vw, 47px)/1.5 "Yu Mincho", "Hiragino Mincho ProN", serif; }
+.answer-clue { max-width: 720px; margin: 0 auto; font: 700 clamp(18px, 2vw, 24px)/1.75 "Yu Mincho", "Hiragino Mincho ProN", serif; }
+.answer-explanation { max-width: 650px; margin: 10px auto 0; color: var(--muted); font-size: 11px; line-height: 1.7; }
+.teacher-note { max-width: 680px; margin: 12px auto 0; padding: 9px 12px; border-radius: 6px; background: #fff3d9; color: #745817; font-size: 10px; line-height: 1.6; }
+
+.choice-mode { min-height: 540px; }
+.choice-mode .card-question { flex: 0 1 auto; padding: 28px 0 22px; }
+.choice-mode .clue-text { font-size: clamp(18px, 2.2vw, 25px); line-height: 1.65; }
+.choice-grid { width: min(100%, 760px); margin: 0 auto; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 11px; position: relative; z-index: 2; }
+.choice-button { min-height: 64px; padding: 11px 14px; border: 1px solid #d6d3c9; border-radius: 9px; background: #fff; color: var(--ink); display: grid; grid-template-columns: 28px 1fr 24px; align-items: center; gap: 10px; text-align: left; cursor: pointer; transition: .18s ease; }
+.choice-button:hover:not(:disabled) { border-color: #70a393; background: var(--green-soft); transform: translateY(-1px); }
+.choice-button strong { font: 700 clamp(14px, 1.7vw, 18px)/1.5 "Yu Mincho", "Hiragino Mincho ProN", serif; }
+.choice-key { width: 27px; height: 27px; border-radius: 7px; background: #eeece5; display: grid; place-items: center; color: var(--muted); font-size: 11px; font-weight: 800; }
+.choice-mark { font-size: 19px; font-weight: 900; text-align: center; }
+.choice-button.correct { border-color: #67a88f; background: #e5f4ed; color: var(--green-dark); }
+.choice-button.correct .choice-key { background: var(--green); color: #fff; }
+.choice-button.wrong { border-color: #d79a94; background: #fae9e7; color: #8e332d; }
+.choice-button.wrong .choice-key { background: var(--red); color: #fff; }
+.choice-button.selected { border-color: var(--green); background: var(--green-soft); box-shadow: inset 0 0 0 1px var(--green); }
+.choice-button.selected .choice-key { background: var(--green); color: #fff; }
+.choice-button.dimmed { opacity: .52; }
+.choice-button:disabled { cursor: default; }
+.choice-feedback { margin: 0 0 5px; font-size: 13px; font-weight: 900; }
+.choice-feedback.correct { color: var(--green); }
+.choice-feedback.wrong { color: var(--red); }
+.choice-mode .answer-panel { margin-top: 22px; }
+
+.card-navigation { margin-top: 19px; display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 18px; }
+.nav-button { border: 0; background: transparent; color: var(--muted); font-size: 11px; font-weight: 700; cursor: pointer; }
+.nav-button:last-child { text-align: right; }
+.rating-group { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+.rating { min-width: 105px; padding: 10px 12px; border: 1px solid; border-radius: 7px; background: var(--panel); font-size: 10px; font-weight: 800; cursor: pointer; transition: .18s ease; }
+.rating span { display: inline-grid; place-items: center; width: 17px; height: 17px; margin-right: 4px; border: 1px solid currentColor; border-radius: 4px; font-size: 8px; opacity: .7; }
+.rating.again { color: var(--red); border-color: #e1b2ad; }
+.rating.unsure { color: #9b7117; border-color: #e7d198; }
+.rating.mastered { color: var(--green); border-color: #9fc7ba; }
+.rating:not(:disabled):hover { color: white; transform: translateY(-2px); }
+.rating.again:not(:disabled):hover { background: var(--red); }
+.rating.unsure:not(:disabled):hover { background: var(--yellow); }
+.rating.mastered:not(:disabled):hover { background: var(--green); }
+.rating:disabled { cursor: not-allowed; opacity: .38; filter: grayscale(.5); }
+.keyboard-help { margin: 10px 0 0; color: #939993; text-align: center; font-size: 9px; }
+
+.tool-view { min-height: 540px; }
+.view-heading { margin-bottom: 25px; display: flex; align-items: end; justify-content: space-between; gap: 22px; }
+.view-heading h1 { margin: 7px 0 5px; font: 700 clamp(27px, 3vw, 38px)/1.3 "Yu Mincho", "Hiragino Mincho ProN", serif; }
+.view-heading p:last-child { max-width: 660px; margin: 0; color: var(--muted); font-size: 12px; line-height: 1.7; }
+.view-heading > select { width: 160px; flex: 0 0 auto; }
+.count-badge { flex: 0 0 auto; padding: 7px 12px; border-radius: 999px; background: var(--green-soft); color: var(--green-dark); font-size: 11px; font-weight: 800; }
+.primary-action, .secondary-action, .weak-action { min-height: 42px; padding: 10px 18px; border-radius: 8px; font-size: 11px; font-weight: 800; cursor: pointer; }
+.primary-action { border: 0; background: var(--green); color: white; }
+.primary-action:hover:not(:disabled) { background: var(--green-dark); }
+.secondary-action { border: 1px solid #b9c7c1; background: var(--panel); color: var(--green-dark); }
+.weak-action { border: 1px solid #d8b45a; background: #fff3d9; color: #745817; }
+.weak-action:hover { background: #f9e4ad; }
+.primary-action:disabled, .secondary-action:disabled { opacity: .4; cursor: not-allowed; }
+.notice { margin: 0 0 18px; padding: 11px 14px; border-radius: 7px; background: var(--green-soft); color: var(--green-dark); font-size: 11px; line-height: 1.6; }
+.notice.error { background: #fae9e7; color: #8e332d; }
+
+.settings-card { max-width: 660px; padding: 28px; border: 1px solid var(--line); border-radius: 14px; background: var(--panel); box-shadow: var(--shadow); display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+.settings-card label { display: grid; gap: 8px; color: var(--muted); font-size: 10px; font-weight: 800; }
+.settings-card .check-setting { display: flex; align-items: center; align-self: end; gap: 9px; min-height: 42px; color: var(--ink); font-size: 12px; }
+.settings-card .check-setting input { width: 17px; height: 17px; accent-color: var(--green); }
+.settings-card .primary-action { grid-column: 1 / -1; }
+.test-status { margin-bottom: 11px; display: flex; align-items: center; gap: 16px; color: var(--muted); font-size: 11px; }
+.test-status > strong { color: var(--ink); font-size: 18px; }
+.test-status > span { margin-left: auto; }
+.test-status > span b { color: var(--red); font-size: 16px; }
+.test-status button { border: 0; background: none; color: var(--muted); font-size: 10px; text-decoration: underline; cursor: pointer; }
+.test-question-card { min-height: 240px; margin: 16px 0; padding: 34px clamp(24px, 5vw, 55px); border: 1px solid var(--line); border-radius: 14px; background: var(--panel); box-shadow: var(--shadow); display: grid; place-content: center; text-align: center; }
+.test-question-card .era-tag { justify-self: center; }
+.test-question-card > p { margin: 18px 0 10px; color: var(--green); font-size: 10px; font-weight: 800; }
+.test-question-card h2 { max-width: 760px; margin: 0; font: 700 clamp(19px, 2.5vw, 27px)/1.75 "Yu Mincho", "Hiragino Mincho ProN", serif; }
+.test-choices { margin-top: 18px; }
+.next-test { display: block; min-width: 210px; margin: 22px auto 0; }
+.test-note { color: var(--muted); text-align: center; font-size: 9px; }
+.result-summary { padding: 36px; border: 1px solid var(--line); border-radius: 14px; background: var(--panel); text-align: center; box-shadow: var(--shadow); }
+.result-summary h1 { margin: 7px 0; color: var(--green); font: 700 52px Georgia, serif; }
+.result-summary > p:last-of-type { color: var(--muted); font-size: 12px; }
+.result-bar { max-width: 450px; height: 8px; margin: 20px auto 0; border-radius: 999px; background: #dedbd2; overflow: hidden; }
+.result-bar span { display: block; height: 100%; border-radius: inherit; background: var(--green); }
+.result-actions { margin: 18px 0 30px; display: flex; justify-content: center; gap: 10px; }
+.review-results { padding: 25px; border: 1px solid var(--line); border-radius: 12px; background: rgba(255,253,248,.65); }
+.review-results h2 { margin: 0 0 15px; font: 700 19px "Yu Mincho", serif; }
+.review-results article { padding: 15px 0; border-top: 1px solid var(--line); }
+.review-results article > div { display: flex; align-items: center; gap: 10px; }
+.review-results article p { margin: 8px 0; color: var(--muted); font-size: 11px; line-height: 1.65; }
+.review-results article small { color: var(--red); }
+.perfect-message { padding: 25px; color: var(--green); text-align: center; font-weight: 800; }
+
+.library-tools { margin-bottom: 16px; display: grid; grid-template-columns: 1fr 150px 150px; gap: 9px; }
+.search-box { height: 42px; padding: 0 12px; border: 1px solid #d3d0c6; border-radius: 7px; background: var(--panel); display: flex; align-items: center; gap: 9px; }
+.search-box span { color: var(--green); font-size: 18px; }
+.search-box input { width: 100%; border: 0; outline: 0; background: transparent; color: var(--ink); }
+.term-list { display: grid; gap: 8px; }
+.term-row { padding: 18px; border: 1px solid var(--line); border-radius: 10px; background: rgba(255,253,248,.75); display: grid; grid-template-columns: 34px 1fr auto; align-items: center; gap: 15px; }
+.favorite-button { width: 32px; height: 32px; border: 1px solid #d8d3c4; border-radius: 50%; background: var(--panel); color: #b4b0a5; cursor: pointer; }
+.favorite-button.active { border-color: #dfbc5a; background: #fff3d9; color: var(--yellow); }
+.term-main > div { display: flex; align-items: center; gap: 8px; }
+.category-label { color: var(--muted); font-size: 9px; }
+.term-main h2 { margin: 8px 0 5px; font: 700 22px "Yu Mincho", serif; }
+.term-main p { margin: 0; color: var(--muted); font-size: 11px; line-height: 1.65; }
+.term-main small { display: block; margin-top: 7px; color: #8b6a20; font-size: 9px; }
+.study-this { padding: 8px 11px; border: 1px solid #a9bdb6; border-radius: 7px; background: var(--panel); color: var(--green-dark); font-size: 9px; font-weight: 800; cursor: pointer; }
+.empty-inline { padding: 42px; border: 1px dashed #c8c4b8; border-radius: 10px; color: var(--muted); text-align: center; font-size: 12px; }
+
+.stat-grid { margin-bottom: 22px; display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
+.stat-grid article { padding: 18px; border: 1px solid var(--line); border-radius: 10px; background: var(--panel); text-align: center; }
+.stat-grid span { display: block; color: var(--muted); font-size: 10px; }
+.stat-grid strong { margin: 5px 3px 0; color: var(--green-dark); font: 700 29px Georgia, serif; }
+.stat-grid small { color: var(--muted); font-size: 9px; }
+.progress-columns { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; align-items: start; }
+.report-card { padding: 22px; border: 1px solid var(--line); border-radius: 12px; background: rgba(255,253,248,.75); }
+.report-card h2 { margin: 0 0 13px; font: 700 19px "Yu Mincho", serif; }
+.progress-item { width: 100%; padding: 11px 0; border: 0; border-top: 1px solid #e5e1d7; background: none; display: grid; grid-template-columns: 85px 1fr 42px; align-items: center; gap: 9px; text-align: left; cursor: pointer; }
+.progress-item:hover .progress-name { color: var(--green); }
+.progress-name { font-size: 10px; font-weight: 800; }
+.mini-track { height: 6px; border-radius: 999px; background: #dfddd5; overflow: hidden; }
+.mini-track i { display: block; height: 100%; border-radius: inherit; background: var(--green); }
+.progress-item strong { text-align: right; font-size: 10px; }
+.progress-item small { grid-column: 2 / -1; color: var(--muted); font-size: 8px; }
+
+.timeline-quiz { margin-bottom: 26px; padding: 23px; border: 1px solid #bed0c9; border-radius: 12px; background: var(--green-soft); }
+.section-heading { display: flex; align-items: center; justify-content: space-between; gap: 14px; }
+.section-heading h2 { margin: 0 0 4px; font: 700 19px "Yu Mincho", serif; }
+.section-heading p { margin: 0; color: var(--muted); font-size: 10px; }
+.selected-order { min-height: 52px; margin: 18px 0 10px; padding: 10px; border: 1px dashed #9db7ae; border-radius: 8px; background: rgba(255,255,255,.45); display: flex; align-items: center; flex-wrap: wrap; gap: 7px; color: var(--muted); font-size: 10px; }
+.selected-order span { padding: 6px 9px; border-radius: 6px; background: var(--panel); color: var(--ink); font-weight: 700; }
+.selected-order b { margin-right: 6px; color: var(--green); }
+.timeline-options { display: grid; grid-template-columns: repeat(2, 1fr); gap: 7px; }
+.timeline-options button { min-height: 40px; border: 1px solid #a6beb5; border-radius: 7px; background: var(--panel); font-weight: 700; cursor: pointer; }
+.timeline-answer { padding: 14px; border-radius: 8px; background: var(--panel); text-align: center; }
+.timeline-answer.correct strong { color: var(--green); }
+.timeline-answer.wrong strong { color: var(--red); }
+.timeline-answer p { font-size: 10px; line-height: 1.7; }
+.timeline-answer button { border: 0; background: none; color: var(--green); font-size: 10px; font-weight: 800; text-decoration: underline; cursor: pointer; }
+.quiz-placeholder { margin: 18px 0 0; color: var(--muted); font-size: 10px; }
+.timeline-list { position: relative; }
+.timeline-list::before { content: ""; position: absolute; left: 90px; top: 0; bottom: 0; width: 1px; background: #b9cfc7; }
+.timeline-list article { min-height: 100px; display: grid; grid-template-columns: 74px 1fr; gap: 32px; position: relative; }
+.timeline-list article::before { content: ""; width: 9px; height: 9px; position: absolute; left: 86px; top: 8px; border: 3px solid var(--paper); border-radius: 50%; background: var(--green); }
+.timeline-list time { padding-top: 5px; color: var(--green-dark); font: 700 12px Georgia, serif; text-align: right; }
+.timeline-list article > div { padding: 0 0 24px; }
+.timeline-list article span { color: var(--muted); font-size: 8px; }
+.timeline-list article h2 { margin: 4px 0; font: 700 20px "Yu Mincho", serif; }
+.timeline-list article p { margin: 0; color: var(--muted); font-size: 10px; line-height: 1.6; }
+
+.data-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+.data-card { padding: 23px; border: 1px solid var(--line); border-radius: 12px; background: var(--panel); display: flex; flex-direction: column; align-items: start; }
+.data-icon { min-width: 40px; height: 40px; padding: 0 8px; border-radius: 9px; background: var(--green-soft); color: var(--green); display: grid; place-items: center; font-weight: 900; }
+.data-card h2 { margin: 16px 0 7px; font: 700 19px "Yu Mincho", serif; }
+.data-card p { flex: 1; margin: 0 0 18px; color: var(--muted); font-size: 10px; line-height: 1.7; }
+.button-row { display: flex; gap: 7px; }
+.file-button { min-height: 42px; padding: 11px 18px; border-radius: 8px; background: var(--green); color: white; font-size: 11px; font-weight: 800; cursor: pointer; }
+.file-button input { position: absolute; width: 1px; height: 1px; opacity: 0; }
+.format-help { margin-top: 18px; padding: 22px; border: 1px solid var(--line); border-radius: 10px; background: rgba(255,253,248,.65); }
+.format-help h2 { margin: 0 0 10px; font: 700 17px "Yu Mincho", serif; }
+.format-help code { display: block; padding: 10px; border-radius: 6px; background: #e9e7df; overflow-x: auto; color: var(--green-dark); font-size: 10px; }
+.format-help p { margin: 10px 0 0; color: var(--muted); font-size: 10px; line-height: 1.6; }
+
+.overall-card {
+  margin-top: 38px;
+  padding: 24px 28px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: rgba(255,253,248,.72);
+  display: grid;
+  grid-template-columns: 1fr auto auto;
+  align-items: center;
+  gap: 28px;
+}
+.overall-card h2 { margin: 5px 0; font: 700 18px "Yu Mincho", "Hiragino Mincho ProN", serif; }
+.overall-card > div:first-child > p:last-child { margin: 0; color: var(--muted); font-size: 10px; }
+.overall-meter { width: 72px; height: 72px; padding: 7px; border-radius: 50%; background: conic-gradient(var(--green) var(--progress), #e2dfd6 0); }
+.overall-meter > div { width: 100%; height: 100%; border-radius: 50%; background: var(--panel); display: grid; place-content: center; text-align: center; }
+.overall-meter strong { font: 700 22px Georgia, serif; }
+.overall-meter span { font-size: 8px; color: var(--muted); }
+.overall-card dl { display: flex; gap: 20px; margin: 0; }
+.overall-card dl div { text-align: center; }
+.overall-card dt { color: var(--muted); font-size: 9px; }
+.overall-card dd { margin: 3px 0 0; font: 700 18px Georgia, serif; }
+.reset-button { grid-column: 1 / -1; justify-self: end; border: 0; background: none; color: #8a8f8c; font-size: 9px; text-decoration: underline; cursor: pointer; }
+
+.empty-state { min-height: 450px; border: 1px dashed #c9c5b9; border-radius: 16px; display: grid; place-content: center; justify-items: center; text-align: center; padding: 30px; background: rgba(255,253,248,.5); }
+.empty-state > span { width: 60px; height: 60px; border: 1px solid #9db7ae; color: var(--green); border-radius: 50%; display: grid; place-items: center; font-size: 26px; }
+.empty-state h2 { margin: 18px 0 7px; font-family: "Yu Mincho", serif; }
+.empty-state p { max-width: 520px; color: var(--muted); font-size: 12px; line-height: 1.7; }
+.empty-state button { margin-top: 12px; padding: 10px 18px; border: 0; border-radius: 7px; background: var(--green); color: white; font-weight: 700; cursor: pointer; }
+
+.quiet-button { padding: 8px 12px; border: 1px solid var(--line); border-radius: 6px; background: var(--panel); font-size: 11px; font-weight: 700; cursor: pointer; }
+.mobile-filter { display: none; }
+.backdrop { display: none; }
+
+footer { padding: 16px 25px; border-top: 1px solid var(--line); background: #ece9e1; color: var(--muted); text-align: center; font-size: 10px; }
+footer code { padding: 2px 6px; border-radius: 4px; background: rgba(255,255,255,.65); color: var(--green-dark); }
+noscript { display: block; padding: 20px; background: #fff3d9; color: #745817; text-align: center; }
+
+@media (max-width: 980px) {
+  .workspace { grid-template-columns: 240px minmax(0, 1fr); }
+  .filters { padding-left: 18px; padding-right: 18px; }
+  .study-area { width: min(100% - 38px, 900px); }
+  .card-navigation { grid-template-columns: auto 1fr auto; }
+  .nav-button span { display: none; }
+  .overall-card { grid-template-columns: 1fr auto; }
+  .overall-card dl { grid-column: 1 / -1; justify-content: space-around; border-top: 1px solid var(--line); padding-top: 16px; }
+  .data-grid { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 760px) {
+  body.filters-visible { overflow: hidden; }
+  .topbar { height: 68px; padding: 0 16px; }
+  .brand-mark { width: 38px; height: 38px; }
+  .brand strong { font-size: 17px; }
+  .brand small { display: none; }
+  .mobile-filter { display: block; }
+  .workspace { display: block; min-height: calc(100vh - 68px); }
+  .filters {
+    width: min(88vw, 330px);
+    height: 100dvh;
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 60;
+    overflow-y: auto;
+    transform: translateX(-105%);
+    transition: transform .25s ease;
+    box-shadow: 14px 0 35px rgba(0,0,0,.16);
+  }
+  .filters.open { transform: translateX(0); }
+  .close-filter { display: block; }
+  .backdrop { display: block; position: fixed; inset: 0; z-index: 50; border: 0; background: rgba(24,33,30,.38); backdrop-filter: blur(2px); }
+  .study-area { width: calc(100% - 28px); padding: 32px 0 50px; }
+  .view-tabs { margin: -12px 0 25px; grid-template-columns: repeat(6, 92px); overflow-x: auto; }
+  .study-header { display: block; margin-bottom: 22px; }
+  .study-header h1 { font-size: 27px; }
+  .session-score { margin-top: 17px; justify-content: space-between; gap: 8px; }
+  .flashcard { min-height: 420px; border-radius: 13px; }
+  .clue-text { font-size: 20px; line-height: 1.7; }
+  .choice-mode { min-height: 520px; padding-left: 20px; padding-right: 20px; }
+  .choice-mode .card-question { padding: 22px 0 18px; }
+  .choice-grid { grid-template-columns: 1fr; gap: 8px; }
+  .choice-button { min-height: 54px; padding: 8px 10px; }
+  .card-navigation { grid-template-columns: 36px 1fr 36px; gap: 7px; }
+  .rating-group { gap: 5px; }
+  .rating { min-width: 0; padding: 9px 4px; font-size: 9px; }
+  .rating span { display: none; }
+  .keyboard-help { display: none; }
+  .overall-card { padding: 22px; gap: 18px; }
+  .view-heading { display: block; }
+  .view-heading > select, .count-badge { display: inline-flex; margin-top: 12px; }
+  .settings-card { grid-template-columns: 1fr; padding: 20px; }
+  .settings-card .primary-action { grid-column: auto; }
+  .result-actions { flex-wrap: wrap; }
+  .library-tools { grid-template-columns: 1fr 1fr; }
+  .search-box { grid-column: 1 / -1; }
+  .term-row { grid-template-columns: 34px 1fr; }
+  .study-this { grid-column: 2; justify-self: start; }
+  .stat-grid { grid-template-columns: 1fr 1fr; }
+  .progress-columns { grid-template-columns: 1fr; }
+  .timeline-options { grid-template-columns: 1fr; }
+  .timeline-list::before { left: 72px; }
+  .timeline-list article { grid-template-columns: 58px 1fr; gap: 27px; }
+  .timeline-list article::before { left: 68px; }
+}
+
+@media (max-width: 420px) {
+  .switch-label { font-size: 0; gap: 0; }
+  .study-header h1 { font-size: 24px; }
+  .session-score span { font-size: 9px; }
+  .flashcard { padding-left: 20px; padding-right: 20px; min-height: 405px; }
+  .card-meta { gap: 7px; }
+  .year { font-size: 10px; }
+  .reveal-button { min-width: 205px; }
+  .answer-panel { padding-left: 2px; padding-right: 2px; }
+  .overall-card { grid-template-columns: 1fr auto; }
+  .overall-card > div:first-child > p:last-child { display: none; }
+  .overall-card dl { gap: 8px; }
+  .test-status { flex-wrap: wrap; }
+  .test-status > span { margin-left: 0; }
+  .library-tools { grid-template-columns: 1fr; }
+  .search-box { grid-column: auto; }
+  .term-row { padding: 14px; }
+  .stat-grid { gap: 7px; }
+  .stat-grid article { padding: 14px 8px; }
+  .progress-item { grid-template-columns: 70px 1fr 38px; }
+  .section-heading { align-items: start; }
+  .selected-order { display: grid; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { scroll-behavior: auto !important; animation-duration: .01ms !important; transition-duration: .01ms !important; }
+}
+  </style>
+</head>
+<body>
+  <main class="app-shell">
+    <header class="topbar">
+      <a class="brand" href="#top" aria-label="歴史カード ホーム">
+        <span class="brand-mark" aria-hidden="true">歴</span>
+        <span>
+          <strong>歴史カード</strong>
+          <small>流れでわかる、日本の歴史</small>
+        </span>
+      </a>
+      <div class="top-actions">
+        <button class="quiet-button mobile-filter" id="openFilters" type="button">絞り込み</button>
+        <label class="switch-label">
+          <input id="furiganaToggle" type="checkbox" checked>
+          <span aria-hidden="true"></span>
+          ふりがな
+        </label>
+      </div>
+    </header>
+
+    <div class="workspace" id="top">
+      <aside class="filters" id="filterPanel" aria-label="出題設定">
+        <div class="filter-heading">
+          <div>
+            <p class="eyebrow">LEARNING SET</p>
+            <h2>出題を選ぶ</h2>
+          </div>
+          <button class="close-filter" id="closeFilters" type="button" aria-label="絞り込みを閉じる">×</button>
+        </div>
+
+        <section class="filter-section level-filter">
+          <h3>対象</h3>
+          <div class="segmented segmented-three" aria-label="学習する学年">
+            <button class="active" id="elementaryLevel" type="button">小学生</button>
+            <button id="middleLevel" type="button">中学生</button>
+            <button id="allLevels" type="button">小中学生</button>
+          </div>
+        </section>
+
+        <section class="filter-section">
+          <div class="section-title-row">
+            <h3>時代</h3>
+            <button class="text-button" id="toggleAllEras" type="button">すべて外す</button>
+          </div>
+          <div class="era-grid" id="eraGrid"></div>
+        </section>
+
+        <section class="filter-section">
+          <h3>分野</h3>
+          <label class="visually-hidden" for="categorySelect">分野を選択</label>
+          <select id="categorySelect"></select>
+        </section>
+
+        <section class="filter-section">
+          <h3>出題形式</h3>
+          <div class="segmented segmented-three">
+            <button class="active" id="clueDirection" type="button">説明 → 語句</button>
+            <button id="termDirection" type="button">語句 → 説明</button>
+            <button id="choiceDirection" type="button">4択</button>
+          </div>
+        </section>
+
+        <section class="filter-section option-list">
+          <label>
+            <input id="randomToggle" type="checkbox" checked>
+            <span>ランダムに出題</span>
+          </label>
+          <label>
+            <input id="reviewToggle" type="checkbox">
+            <span>今日の復習だけ</span>
+          </label>
+        </section>
+
+        <section class="filter-section focus-review" aria-labelledby="focusReviewTitle">
+          <div class="section-title-row">
+            <h3 id="focusReviewTitle">苦手復習</h3>
+            <span class="focus-total" id="weakTotalCount">0問</span>
+          </div>
+          <p>記録した問題を、好きなときに集中して学習できます。</p>
+          <div class="focus-review-grid" role="group" aria-label="苦手問題の種類">
+            <button type="button" data-focus-mode="unsure">
+              <span>あやしい</span><strong id="unsureReviewCount">0</strong>
+            </button>
+            <button type="button" data-focus-mode="wrong">
+              <span>まちがい</span><strong id="wrongReviewCount">0</strong>
+            </button>
+            <button type="button" data-focus-mode="weak">
+              <span>まとめて</span><strong id="weakReviewCount">0</strong>
+            </button>
+          </div>
+        </section>
+
+        <button class="shuffle-button" id="startLearning" type="button">
+          ↻ この条件で学習する <span id="selectedCount">235問</span>
+        </button>
+
+        <div class="saved-note">
+          <span aria-hidden="true">●</span>
+          今日の復習 <strong id="dueCount">0問</strong>・苦手 <strong id="savedWeakCount">0問</strong>
+        </div>
+      </aside>
+
+      <button class="backdrop" id="filterBackdrop" type="button" aria-label="絞り込みを閉じる" hidden></button>
+
+      <section class="study-area" aria-live="polite">
+        <nav class="view-tabs" id="viewTabs" aria-label="機能を選ぶ">
+          <button class="active" type="button" data-view="study">学習</button>
+          <button type="button" data-view="test">テスト</button>
+          <button type="button" data-view="list">語句一覧</button>
+          <button type="button" data-view="progress">学習状況</button>
+          <button type="button" data-view="timeline">年表</button>
+          <button type="button" data-view="data">データ</button>
+        </nav>
+
+        <div class="study-header" id="studyHeader">
+          <div>
+            <p class="eyebrow">TODAY'S SESSION</p>
+            <h1 id="studyTitle">歴史の流れをつかもう</h1>
+            <p id="activeFilters">すべての時代 ／ すべて</p>
+          </div>
+          <div class="session-score" aria-label="今回の学習結果">
+            <span><i class="dot red"></i>もう一度 <b id="againCount">0</b></span>
+            <span><i class="dot yellow"></i>あやしい <b id="unsureCount">0</b></span>
+            <span><i class="dot green"></i>覚えた <b id="masteredCountSession">0</b></span>
+          </div>
+        </div>
+
+        <div id="studyContent"></div>
+
+        <section class="overall-card" id="overallCard">
+          <div>
+            <p class="eyebrow">TOTAL PROGRESS</p>
+            <h2>全体の学習状況</h2>
+            <p id="overallMessage">少しずつ覚えた語句を増やしましょう。</p>
+          </div>
+          <div class="overall-meter" id="overallMeter">
+            <div><strong id="overallPercent">0</strong><span>%</span></div>
+          </div>
+          <dl>
+            <div><dt>収録語句</dt><dd id="totalCards">235</dd></div>
+            <div><dt>挑戦済み</dt><dd id="studiedCards">0</dd></div>
+            <div><dt>覚えた</dt><dd id="masteredCards">0</dd></div>
+          </dl>
+          <button class="reset-button" id="resetProgress" type="button">学習記録をリセット</button>
+        </section>
+      </section>
+    </div>
+
+    <footer>
+      このHTMLファイル1つで動作します。サーバーやインストールは必要ありません。
+    </footer>
+  </main>
+
+  <noscript>このフラッシュカードを使うには、ブラウザのJavaScriptを有効にしてください。</noscript>
+
+  <script id="embedded-elementary-questions">
+const card = (id, term, reading, era, category, clue, year, note) => ({ id, term, reading, era, category, clue, year, note });
+
+const ERA_ORDER = [
+  "縄文",
+  "弥生",
+  "古墳",
+  "飛鳥",
+  "奈良",
+  "平安",
+  "鎌倉",
+  "室町",
+  "安土桃山",
+  "江戸",
+  "幕末",
+  "明治",
+  "大正",
+  "昭和・戦前",
+  "昭和・戦後",
+];
+
+const HISTORY_CARDS = [
+  card("jomon-era", "縄文時代", "じょうもんじだい", "縄文", "時代", "狩り・漁・採集を中心に暮らし、縄目の文様がある土器を使った時代。"),
+  card("sannai-maruyama", "三内丸山遺跡", "さんないまるやまいせき", "縄文", "遺跡", "青森県にある、大型の建物跡や多数の住居跡が見つかった縄文時代の大規模集落跡。"),
+  card("jomon-pottery", "縄文土器", "じょうもんどき", "縄文", "文化", "表面に縄目などの文様があり、食べ物の煮炊きや保存に使われた厚手の土器。"),
+
+  card("yayoi-era", "弥生時代", "やよいじだい", "弥生", "時代", "米づくりが広まり、むらの間に貧富や身分の差が生まれていった時代。"),
+  card("toro", "登呂遺跡", "とろいせき", "弥生", "遺跡", "静岡県にある、水田や住居、高床倉庫などが復元された弥生時代の集落跡。"),
+  card("raised-storehouse", "高床倉庫", "たかゆかそうこ", "弥生", "暮らし", "湿気やねずみを防ぐため、床を地面より高くして米などを保存した建物。"),
+  card("yayoi-pottery", "弥生土器", "やよいどき", "弥生", "文化", "縄文土器より薄くて硬く、赤褐色で簡素な形が多い土器。"),
+  card("gouzoku-yayoi", "豪族", "ごうぞく", "弥生", "社会", "多くの土地や人々を支配し、地域で大きな力を持った一族。"),
+  card("yoshinogari", "吉野ヶ里遺跡", "よしのがりいせき", "弥生", "遺跡", "佐賀県にある、堀や物見やぐらを備えた大規模な環濠集落跡。"),
+  card("yamatai", "邪馬台国", "やまたいこく", "弥生", "政治", "3世紀ごろ、女王卑弥呼が治め、中国の魏と交流したとされる国。"),
+  card("himiko", "卑弥呼", "ひみこ", "弥生", "人物", "邪馬台国を治め、魏に使いを送って称号や銅鏡を受けた女王。"),
+
+  card("kofun-era", "古墳時代", "こふんじだい", "古墳", "時代", "各地の有力者が大きな古墳をつくり、大和政権が力を広げた時代。"),
+  card("daisen", "大仙古墳", "だいせんこふん", "古墳", "遺跡", "大阪府堺市にある、日本最大級の前方後円墳。仁徳天皇陵古墳とも呼ばれる。"),
+  card("okimi", "大王", "おおきみ", "古墳", "政治", "大和政権の中心となり、各地の豪族をまとめた支配者の呼び名。"),
+  card("yamato-court", "大和朝廷", "やまとちょうてい", "古墳", "政治", "奈良盆地を中心に有力豪族がつくり、大王を中心として全国へ勢力を広げた政権。"),
+  card("toraijin", "渡来人", "とらいじん", "古墳", "社会", "朝鮮半島や中国大陸から日本へ移り住み、漢字や技術、文化を伝えた人々。"),
+
+  card("asuka-era", "飛鳥時代", "あすかじだい", "飛鳥", "時代", "飛鳥地方に都が置かれ、仏教文化と天皇中心の国づくりが進んだ時代。"),
+  card("horyuji", "法隆寺", "ほうりゅうじ", "飛鳥", "文化", "聖徳太子ゆかりの寺で、現存する世界最古級の木造建築をもつ。"),
+  card("shotoku", "聖徳太子", "しょうとくたいし", "飛鳥", "人物", "推古天皇を助け、冠位十二階や十七条の憲法を定めたとされる人物。"),
+  card("soga", "蘇我氏", "そがし", "飛鳥", "政治", "仏教を受け入れ、飛鳥時代の政治で大きな力を持った豪族。"),
+  card("gouzoku-asuka", "豪族", "ごうぞく", "飛鳥", "社会", "古代に土地や民を支配し、朝廷の政治にも参加した有力な一族。"),
+  card("kan-i", "冠位十二階", "かんいじゅうにかい", "飛鳥", "政治", "家柄だけでなく能力や功績に応じて役人を十二の位に分けた制度。", "603年"),
+  card("constitution-17", "十七条の憲法", "じゅうしちじょうのけんぽう", "飛鳥", "政治", "役人の心構えを示し、和を大切にして天皇の命令に従うよう求めたきまり。", "604年"),
+  card("ono-imoko", "小野妹子", "おののいもこ", "飛鳥", "人物", "聖徳太子の時代、隋に派遣された遣隋使。"),
+  card("kenzuishi", "遣隋使", "けんずいし", "飛鳥", "外交", "隋の進んだ制度や文化を学ぶため、日本から送られた使節。"),
+  card("naka-no-oe", "中大兄皇子", "なかのおおえのおうじ", "飛鳥", "人物", "中臣鎌足と協力して蘇我氏を倒し、大化の改新を進めた。後の天智天皇。"),
+  card("nakatomi", "中臣鎌足", "なかとみのかまたり", "飛鳥", "人物", "中大兄皇子を助けて大化の改新を進め、後に藤原の姓を与えられた人物。"),
+  card("kentoushi", "遣唐使", "けんとうし", "飛鳥", "外交", "唐の政治制度や文化、仏教を学ぶために派遣された使節。"),
+  card("taika", "大化の改新", "たいかのかいしん", "飛鳥", "政治", "豪族中心の政治を改め、土地と人民を国家が支配する仕組みを目指した改革。", "645年"),
+  card("fujiwarakyo", "藤原京", "ふじわらきょう", "飛鳥", "政治", "現在の奈良県橿原市に築かれた、日本初の本格的な都城。", "694年"),
+  card("kizoku-asuka", "貴族", "きぞく", "飛鳥", "社会", "高い位や家柄を持ち、朝廷の政治を担った人々。"),
+  card("taiho", "大宝律令", "たいほうりつりょう", "飛鳥", "政治", "唐の制度を参考に、刑罰や政治の仕組みを整えた法律。", "701年"),
+
+  card("nara-era", "奈良時代", "ならじだい", "奈良", "時代", "平城京を都とし、律令国家の仕組みと仏教文化が栄えた時代。"),
+  card("heijokyo", "平城京", "へいじょうきょう", "奈良", "政治", "唐の長安を手本として現在の奈良市に造られた都。", "710年"),
+  card("shomu", "聖武天皇", "しょうむてんのう", "奈良", "人物", "仏教の力で国を守ろうとし、国分寺や東大寺の大仏を造らせた天皇。"),
+  card("kokubunji", "国分寺", "こくぶんじ", "奈良", "宗教", "国を仏教の力で守るため、聖武天皇が国ごとに建てさせた寺。"),
+  card("todaiji", "東大寺", "とうだいじ", "奈良", "文化", "奈良に建てられ、大仏を本尊とする国分寺の中心的な寺。"),
+  card("gyoki", "行基", "ぎょうき", "奈良", "人物", "橋や用水路を造って民衆を助け、東大寺の大仏造立にも協力した僧。"),
+  card("mokkan", "木簡", "もっかん", "奈良", "暮らし", "文字を書いて荷札や記録、役所の文書などに使った細長い木の札。"),
+  card("ganjin", "鑑真", "がんじん", "奈良", "人物", "何度もの失敗と失明を乗り越えて唐から来日し、正式な仏教の戒律を伝えた僧。"),
+
+  card("heian-era", "平安時代", "へいあんじだい", "平安", "時代", "平安京への遷都から鎌倉幕府成立までの、貴族文化と武士の成長の時代。"),
+  card("chotei", "朝廷", "ちょうてい", "平安", "政治", "天皇を中心に貴族や役人が政治を行う政府。"),
+  card("michinaga", "藤原道長", "ふじわらのみちなが", "平安", "人物", "娘たちを天皇の后にし、摂関政治の最盛期を築いた貴族。"),
+  card("murasaki", "紫式部", "むらさきしきぶ", "平安", "人物", "宮廷に仕え、貴族社会を描いた『源氏物語』を書いた女性。"),
+  card("seishonagon", "清少納言", "せいしょうなごん", "平安", "人物", "中宮定子に仕え、随筆『枕草子』を書いた女性。"),
+  card("yamatoe", "大和絵", "やまとえ", "平安", "文化", "日本の自然や物語、年中行事などを日本風に描いた絵画。"),
+  card("annual-events", "年中行事", "ねんちゅうぎょうじ", "平安", "文化", "毎年決まった時期に繰り返し行われる宮中や社会の儀式・催し。"),
+
+  card("kamakura-era", "鎌倉時代", "かまくらじだい", "鎌倉", "時代", "源頼朝が鎌倉に幕府を開き、武士による政治が本格化した時代。"),
+  card("bushi", "武士", "ぶし", "鎌倉", "社会", "武力で土地や社会の秩序を守り、やがて政治の中心となった人々。"),
+  card("kiyomori", "平清盛", "たいらのきよもり", "鎌倉", "人物", "平氏の力を伸ばし、武士として初めて太政大臣になった人物。"),
+  card("dajodaijin", "太政大臣", "だじょうだいじん", "鎌倉", "政治", "律令制の太政官における最高位の官職。平清盛が武士で初めて就いた。"),
+  card("heishi", "平氏", "へいし", "鎌倉", "政治", "平清盛を中心に栄えた武士の一族で、源氏との戦いに敗れた。"),
+  card("genji", "源氏", "げんじ", "鎌倉", "政治", "平氏を壇ノ浦で破り、源頼朝が鎌倉幕府を開いた武士の一族。"),
+  card("yoritomo", "源頼朝", "みなもとのよりとも", "鎌倉", "人物", "鎌倉幕府を開き、征夷大将軍となった武士。"),
+  card("heiji", "平治の乱", "へいじのらん", "鎌倉", "戦争", "平清盛と源義朝らが争い、平氏が勝って勢力を強めた戦い。", "1159年"),
+  card("yoshitsune", "源義経", "みなもとのよしつね", "鎌倉", "人物", "源頼朝の弟で、一ノ谷や壇ノ浦などの戦いで平氏を破る活躍をした武将。"),
+  card("dannoura", "壇ノ浦の戦い", "だんのうらのたたかい", "鎌倉", "戦争", "現在の山口県下関市付近で源氏が平氏を滅ぼした海戦。", "1185年"),
+  card("gokenin", "御家人", "ごけにん", "鎌倉", "社会", "将軍と主従関係を結び、御恩を受ける代わりに奉公した武士。"),
+  card("shugo", "守護", "しゅご", "鎌倉", "政治", "幕府が国ごとに置き、軍事や御家人の統率を担当させた役職。"),
+  card("jito", "地頭", "じとう", "鎌倉", "政治", "幕府が荘園や公領に置き、年貢の取り立てや土地の管理を担当させた役職。"),
+  card("shogun", "征夷大将軍", "せいいたいしょうぐん", "鎌倉", "政治", "武家政権の長を示す官職。源頼朝が任命され、幕府を率いた。"),
+  card("goon", "御恩", "ごおん", "鎌倉", "政治", "将軍が御家人の土地を認めたり、新しい土地を与えたりする保護。"),
+  card("hoko", "奉公", "ほうこう", "鎌倉", "政治", "御家人が将軍のために戦いや警備などの役目を果たすこと。"),
+  card("shikken", "執権", "しっけん", "鎌倉", "政治", "鎌倉幕府で将軍を補佐し、北条氏が代々実権を握った役職。"),
+  card("masako", "北条政子", "ほうじょうまさこ", "鎌倉", "人物", "源頼朝の妻。頼朝の死後、幕府を支え、承久の乱では御家人を団結させた。"),
+  card("jokyu", "承久の乱", "じょうきゅうのらん", "鎌倉", "戦争", "後鳥羽上皇が幕府を倒そうとして敗れ、幕府の力が全国に広がった戦い。", "1221年"),
+  card("tokimune", "北条時宗", "ほうじょうときむね", "鎌倉", "人物", "元の二度の襲来に対応した鎌倉幕府の執権。"),
+  card("genko", "元寇", "げんこう", "鎌倉", "戦争", "元が高麗軍などとともに二度日本へ攻めてきた出来事。文永の役と弘安の役の総称。"),
+  card("bunei", "文永の役", "ぶんえいのえき", "鎌倉", "戦争", "元軍が九州北部へ初めて襲来した戦い。", "1274年"),
+  card("koan", "弘安の役", "こうあんのえき", "鎌倉", "戦争", "元軍が再び大軍で襲来したが、暴風雨などで撤退した戦い。", "1281年"),
+
+  card("muromachi-era", "室町時代", "むろまちじだい", "室町", "時代", "足利氏が京都に幕府を置き、守護大名や戦国大名が力を伸ばした時代。"),
+  card("takauji", "足利尊氏", "あしかがたかうじ", "室町", "人物", "京都に室町幕府を開き、初代将軍となった武将。"),
+  card("yoshimitsu", "足利義満", "あしかがよしみつ", "室町", "人物", "南北朝を統一し、明との貿易を行い、金閣を建てた三代将軍。"),
+  card("kinkaku", "鹿苑寺金閣", "ろくおんじきんかく", "室町", "文化", "足利義満が建てた山荘をもとにした、金箔で飾られた建物。北山文化を代表する。"),
+  card("ginkaku", "慈照寺銀閣", "じしょうじぎんかく", "室町", "文化", "足利義政の山荘をもとにした建物。簡素で落ち着いた東山文化を代表する。"),
+  card("daimyo", "大名", "だいみょう", "室町", "社会", "多くの土地と家臣を持ち、一つの地域を支配した有力な武士。"),
+  card("yoshimasa", "足利義政", "あしかがよしまさ", "室町", "人物", "東山文化を育て、銀閣を建てた八代将軍。後継争いが応仁の乱の一因となった。"),
+  card("onin", "応仁の乱", "おうにんのらん", "室町", "戦争", "将軍の後継や守護大名の争いから京都を中心に約11年続き、戦国時代へつながった戦乱。", "1467年"),
+  card("shoin", "書院造", "しょいんづくり", "室町", "文化", "畳・床の間・障子などを備えた、現代の和室につながる住宅様式。"),
+  card("shinden", "寝殿造", "しんでんづくり", "室町", "文化", "平安時代の貴族の住宅様式。広い寝殿を中心に池や庭を配置した。"),
+  card("muromachi-culture", "室町文化", "むろまちぶんか", "室町", "文化", "公家と武家、禅宗の影響が混ざり、水墨画・能・茶の湯などが発達した文化。"),
+  card("suibokuga", "水墨画", "すいぼくが", "室町", "文化", "墨の濃淡を生かして風景などを表現する絵画。"),
+  card("chanoyu", "茶の湯", "ちゃのゆ", "室町", "文化", "茶をたてて客をもてなす作法と文化。後に千利休が大成した。"),
+  card("ikebana", "生け花", "いけばな", "室町", "文化", "草木や花を器に生け、その形や空間の美しさを表す芸術。"),
+  card("noh", "能", "のう", "室町", "文化", "面や美しい衣装を用い、舞・歌・音楽で物語を演じる芸能。観阿弥・世阿弥が大成した。"),
+  card("kyogen", "狂言", "きょうげん", "室町", "文化", "能の合間などに演じられる、話し言葉を中心とした庶民的でこっけいな劇。"),
+  card("sesshu", "雪舟", "せっしゅう", "室町", "人物", "明で絵を学び、日本独自の力強い水墨画を完成させた僧・画家。"),
+
+  card("azuchi-era", "安土桃山時代", "あづちももやまじだい", "安土桃山", "時代", "織田信長と豊臣秀吉が全国統一を進め、豪華な城郭文化が栄えた時代。"),
+  card("nobunaga", "織田信長", "おだのぶなが", "安土桃山", "人物", "鉄砲を活用し、楽市・楽座などを進めて天下統一を目指した戦国大名。"),
+  card("sengoku-daimyo", "戦国大名", "せんごくだいみょう", "安土桃山", "社会", "戦国時代に実力で領国を治め、独自の法律や城下町を整えた大名。"),
+  card("nagashino", "長篠の戦い", "ながしののたたかい", "安土桃山", "戦争", "織田信長・徳川家康の連合軍が鉄砲を効果的に使い、武田勝頼軍を破った戦い。", "1575年"),
+  card("katsuyori", "武田勝頼", "たけだかつより", "安土桃山", "人物", "武田信玄の後を継ぎ、長篠の戦いで織田・徳川連合軍に敗れた大名。"),
+  card("ieyasu-azuchi", "徳川家康", "とくがわいえやす", "安土桃山", "人物", "織田信長・豊臣秀吉と関わり、関ヶ原の戦いを経て江戸幕府を開いた武将。"),
+  card("hideyoshi", "豊臣秀吉", "とよとみひでよし", "安土桃山", "人物", "織田信長の後を継いで全国統一を完成し、検地と刀狩を行った武将。"),
+  card("xavier", "フランシスコ＝ザビエル", "ふらんしすこ・ざびえる", "安土桃山", "人物", "イエズス会の宣教師として来日し、日本にキリスト教を伝えた人物。", "1549年"),
+  card("christianity", "キリスト教", "きりすときょう", "安土桃山", "宗教", "人は神の前に平等であり、誰でも神の愛によって救われると説く宗教。"),
+  card("nanban", "南蛮貿易", "なんばんぼうえき", "安土桃山", "外交", "ポルトガル人やスペイン人などと行い、鉄砲・火薬・生糸などがもたらされた貿易。"),
+  card("yoshimoto", "今川義元", "いまがわよしもと", "安土桃山", "人物", "東海地方に大きな勢力を持ち、桶狭間の戦いで織田信長に敗れた戦国大名。"),
+  card("okehazama", "桶狭間の戦い", "おけはざまのたたかい", "安土桃山", "戦争", "少数の織田信長軍が今川義元の大軍を破り、信長躍進のきっかけとなった戦い。", "1560年"),
+  card("ikkoshu", "一向宗", "いっこうしゅう", "安土桃山", "宗教", "「南無阿弥陀仏」と唱えれば誰でも極楽浄土へ行けると説いた仏教の一宗派。浄土真宗を指す呼び名。"),
+  card("mitsuhide", "明智光秀", "あけちみつひで", "安土桃山", "人物", "本能寺の変で主君の織田信長を討った武将。"),
+  card("unification", "天下統一", "てんかとういつ", "安土桃山", "政治", "戦国大名が争う全国を、一人の支配者のもとにまとめること。豊臣秀吉が完成した。"),
+  card("hyakusho", "百姓", "ひゃくしょう", "安土桃山", "社会", "江戸時代の身分の一つで、主に農業や漁業、林業などで生産を担った人々。"),
+  card("kenchi", "検地", "けんち", "安土桃山", "政治", "田畑の面積や収穫量、耕作者を調べ、年貢を納める基準を定めた政策。"),
+  card("katanagari", "刀狩", "かたながり", "安土桃山", "政治", "豊臣秀吉が百姓から刀や鉄砲などの武器を取り上げ、兵農分離を進めた政策。", "1588年"),
+
+  card("edo-bakufu", "江戸幕府", "えどばくふ", "江戸", "政治", "徳川家康が江戸に開き、約260年間続いた武家政権。", "1603年"),
+  card("sekigahara", "関ヶ原の戦い", "せきがはらのたたかい", "江戸", "戦争", "徳川家康率いる東軍が石田三成らの西軍を破り、幕府成立への道を開いた戦い。", "1600年"),
+  card("shinpan", "親藩", "しんぱん", "江戸", "政治", "徳川将軍家と血縁関係にある大名。"),
+  card("fudai", "譜代", "ふだい", "江戸", "政治", "関ヶ原の戦い以前から徳川氏に仕えていた大名。幕府の重要な役職を担った。"),
+  card("tozama", "外様", "とざま", "江戸", "政治", "関ヶ原の戦いのころ以後に徳川氏に従った大名。江戸から遠い場所に多く配置された。"),
+  card("han", "藩", "はん", "江戸", "政治", "江戸時代に大名が治めた領地とその統治組織を、後世にまとめて呼ぶ名称。"),
+  card("buke-shohatto", "武家諸法度", "ぶけしょはっと", "江戸", "政治", "城の修理や大名の結婚などを規制し、幕府が大名を統制するために定めた法令。"),
+  card("iemitsu", "徳川家光", "とくがわいえみつ", "江戸", "人物", "参勤交代を制度化し、鎖国体制を完成させた江戸幕府の三代将軍。"),
+  card("sankin", "参勤交代", "さんきんこうたい", "江戸", "政治", "大名を一定期間ごとに江戸と領地に住まわせ、妻子を江戸に置かせた制度。", "1635年"),
+  card("status-system", "身分制", "みぶんせい", "江戸", "社会", "武士・百姓・町人などの身分によって、仕事や生活上の扱いが分けられた社会の仕組み。"),
+  card("shuinjo", "朱印状", "しゅいんじょう", "江戸", "外交", "将軍の朱印が押された許可状。海外渡航や貿易を許可された船を朱印船という。"),
+  card("amakusa-shiro", "天草四郎", "あまくさしろう", "江戸", "人物", "島原・天草一揆で一揆勢の中心人物とされたキリシタンの少年。"),
+  card("shimabara", "島原・天草一揆", "しまばら・あまくさいっき", "江戸", "戦争", "重い年貢とキリスト教弾圧に苦しんだ農民やキリシタンらが起こした大規模な一揆。", "1637年"),
+  card("efumi", "絵踏", "えふみ", "江戸", "宗教", "キリスト教徒を見つけるため、キリストやマリアの像を踏ませた行為。"),
+  card("fumie", "踏絵", "ふみえ", "江戸", "宗教", "絵踏で人々に踏ませた、キリストやマリアなどを刻んだ板や絵。"),
+  card("sakoku", "鎖国", "さこく", "江戸", "外交", "幕府が日本人の海外渡航を禁じ、外国との貿易や交流を限られた相手・場所に制限した体制。"),
+  card("korean-envoys", "朝鮮通信使", "ちょうせんつうしんし", "江戸", "外交", "国交回復後、朝鮮から将軍の代替わりなどに合わせて派遣された使節。"),
+  card("chonin-culture", "町人文化", "ちょうにんぶんか", "江戸", "文化", "経済力を持った都市の町人を担い手として、浮世絵や歌舞伎などが栄えた文化。"),
+  card("chikamatsu", "近松門左衛門", "ちかまつもんざえもん", "江戸", "人物", "人形浄瑠璃や歌舞伎の脚本を書き、『曽根崎心中』などで知られる作家。"),
+  card("hiroshige", "歌川広重", "うたがわひろしげ", "江戸", "人物", "『東海道五十三次』などの風景版画で知られる浮世絵師。"),
+  card("ukiyoe", "浮世絵", "うきよえ", "江戸", "文化", "町人の暮らし、役者、美人、名所などを描き、木版画で広まった絵画。"),
+  card("kabuki", "歌舞伎", "かぶき", "江戸", "文化", "華やかな衣装や化粧、独特の動きで物語を演じる庶民の演劇。"),
+  card("ningen-joruri", "人間浄瑠璃", "にんげんじょうるり", "江戸", "文化", "指定語句の表記。一般には、人形を三味線と語りに合わせて動かす芸能を「人形浄瑠璃」という。", undefined, "教科書などで使われる一般的な名称は「人形浄瑠璃（にんぎょうじょうるり）」です。"),
+  card("rangaku", "蘭学", "らんがく", "江戸", "学問", "オランダ語の書物を通して西洋の医学・天文学などを学んだ学問。"),
+  card("genpaku", "杉田玄白", "すぎたげんぱく", "江戸", "人物", "前野良沢らとオランダ語の解剖書を翻訳し、『解体新書』を出版した医師。"),
+  card("ryotaku", "前野良沢", "まえのりょうたく", "江戸", "人物", "オランダ語に通じ、杉田玄白らと解剖書の翻訳に取り組んだ医師。"),
+  card("kaitai", "解体新書", "かいたいしんしょ", "江戸", "学問", "杉田玄白・前野良沢らがオランダ語の解剖書を翻訳して出版した書物。", "1774年"),
+  card("tadataka", "伊能忠敬", "いのうただたか", "江戸", "人物", "全国を歩いて測量し、精密な日本地図作成の基礎を築いた人物。"),
+  card("kokugaku", "国学", "こくがく", "江戸", "学問", "『古事記』など日本の古典を研究し、日本古来の考え方を明らかにしようとした学問。"),
+  card("jugaku", "儒学", "じゅがく", "江戸", "学問", "孔子の教えをもとに、礼儀や上下関係、道徳を重んじた学問。幕府が奨励した。"),
+  card("norinaga", "本居宣長", "もとおりのりなが", "江戸", "人物", "『古事記伝』を著し、国学を大成した学者。"),
+  card("terakoya", "寺子屋", "てらこや", "江戸", "教育", "町人や百姓の子どもが読み・書き・そろばんなどを学んだ民間の教育施設。"),
+  card("kitchen", "天下の台所", "てんかのだいどころ", "江戸", "経済", "全国の米や特産物が集まる商業の中心地だった大坂の呼び名。"),
+
+  card("perry", "ペリー", "ぺりー", "幕末", "人物", "アメリカ東インド艦隊を率いて浦賀に来航し、日本に開国を求めた提督。", "1853年"),
+  card("black-ships", "黒船", "くろふね", "幕末", "外交", "幕末に来航した欧米の蒸気船、特にペリー艦隊の船を指す呼び名。"),
+  card("kanagawa-treaty", "日米和親条約", "にちべいわしんじょうやく", "幕末", "外交", "下田・函館を開き、アメリカ船への燃料や食料の供給などを約束した条約。", "1854年"),
+  card("harris-treaty", "日米修好通商条約", "にちべいしゅうこうつうしょうじょうやく", "幕末", "外交", "五港を開いて貿易を始めたが、治外法権を認め関税自主権がない不平等条約。", "1858年"),
+  card("oshio", "大塩平八郎", "おおしおへいはちろう", "幕末", "人物", "ききんで苦しむ人々を救おうとして、大坂で乱を起こした元役人。", "1837年"),
+  card("saigo", "西郷隆盛", "さいごうたかもり", "幕末", "人物", "薩摩藩出身。倒幕と明治維新を進め、後に西南戦争の中心となった人物。"),
+  card("okubo", "大久保利通", "おおくぼとしみち", "幕末", "人物", "薩摩藩出身。明治政府の中心として廃藩置県や殖産興業を進めた人物。"),
+  card("kido", "木戸孝允", "きどたかよし", "幕末", "人物", "長州藩出身。倒幕と明治政府の改革に参加し、五箇条の御誓文にも関わった人物。"),
+  card("yoshinobu", "徳川慶喜", "とくがわよしのぶ", "幕末", "人物", "大政奉還を行い、政権を朝廷へ返した江戸幕府最後の将軍。"),
+  card("taisei-hokan", "大政奉還", "たいせいほうかん", "幕末", "政治", "徳川慶喜が幕府の政権を朝廷に返した出来事。", "1867年"),
+  card("shibuzome", "渋染一揆", "しぶぞめいっき", "幕末", "社会", "岡山藩で差別された人々が、服装を制限する命令の撤回を求めて起こした抵抗運動。", "1856年"),
+  card("kaishu", "勝海舟", "かつかいしゅう", "幕末", "人物", "幕府の代表として西郷隆盛と交渉し、江戸城を戦わずに明け渡すことに貢献した人物。"),
+  card("ryoma", "坂本龍馬", "さかもとりょうま", "幕末", "人物", "薩長同盟の成立を仲立ちし、新しい政治の構想を示した土佐藩出身の人物。"),
+
+  card("meiji-era", "明治時代", "めいじじだい", "明治", "時代", "明治維新から始まり、近代国家の制度と産業を急速に整えた時代。"),
+  card("charter-oath", "五箇条の御誓文", "ごかじょうのごせいもん", "明治", "政治", "新政府の基本方針として、広く会議を開き世論を尊重することなどを示した文書。", "1868年"),
+  card("hanseki", "版籍奉還", "はんせきほうかん", "明治", "政治", "藩主が土地と人民を天皇に返し、中央集権化を進めた政策。", "1869年"),
+  card("haihan", "廃藩置県", "はいはんちけん", "明治", "政治", "藩を廃止して府・県を置き、中央政府が地方を直接治めるようにした改革。", "1871年"),
+  card("meiji-restoration", "明治維新", "めいじいしん", "明治", "政治", "江戸幕府を倒し、天皇中心の近代国家をつくるために行われた一連の改革。"),
+  card("emancipation", "解放令", "かいほうれい", "明治", "社会", "被差別身分の呼称や身分を廃止し、平民と同じとした法令。ただし差別は残った。", "1871年"),
+  card("conscription", "徴兵令", "ちょうへいれい", "明治", "政治", "満20歳になった男子に兵役の義務を負わせ、国民軍をつくる基礎となった法令。", "1873年"),
+  card("land-tax", "地租改正", "ちそかいせい", "明治", "経済", "土地の価格を基準に、土地所有者が現金で地租を納める制度へ改めた改革。", "1873年"),
+  card("industry", "殖産興業", "しょくさんこうぎょう", "明治", "経済", "政府が工場・交通・通信などを整え、近代産業を育てた政策。"),
+  card("rich-country", "富国強兵", "ふこくきょうへい", "明治", "政治", "産業を発展させて国を豊かにし、軍隊を強くする明治政府の方針。"),
+  card("iwakura", "岩倉使節団", "いわくらしせつだん", "明治", "外交", "不平等条約改正の予備交渉と欧米の制度・産業の調査のため派遣された大規模使節団。", "1871年"),
+  card("tomioka", "富岡製糸場", "とみおかせいしじょう", "明治", "経済", "フランスの技術を導入し、政府が群馬県につくった官営の器械製糸工場。", "1872年"),
+  card("civilization", "文明開化", "ぶんめいかいか", "明治", "文化", "洋服・鉄道・ガス灯・学校制度など、西洋風の制度や生活文化が広がった変化。"),
+  card("fukuzawa", "福沢諭吉", "ふくざわゆきち", "明治", "人物", "『学問のすゝめ』で学ぶことと個人の独立の大切さを説いた思想家・教育者。"),
+  card("normanton", "ノルマントン号事件", "のるまんとんごうじけん", "明治", "外交", "イギリス船の沈没で日本人乗客が死亡したのに船長が軽い処分となり、条約改正の世論が高まった事件。", "1886年"),
+  card("extraterritoriality", "治外法権", "ちがいほうけん", "明治", "外交", "外国人が滞在国の裁判ではなく、自国の領事による裁判を受ける権利。"),
+  card("tariff-autonomy", "関税自主権", "かんぜいじしゅけん", "明治", "外交", "輸入品にかける関税率を自国で決める権利。日本は不平等条約で制限された。"),
+  card("mutsu", "陸奥宗光", "むつむねみつ", "明治", "人物", "領事裁判権の撤廃に成功した外務大臣。", "1894年"),
+  card("komura", "小村寿太郎", "こむらじゅたろう", "明治", "人物", "ポーツマス条約を結び、後に関税自主権の完全回復を実現した外務大臣。", "1911年"),
+  card("satsuma-rebellion", "西南戦争", "せいなんせんそう", "明治", "戦争", "西郷隆盛を中心とする士族が九州で政府軍と戦い、敗れた国内最後の大規模な内戦。", "1877年"),
+  card("itagaki", "板垣退助", "いたがきたいすけ", "明治", "人物", "民選議院の設立を求め、自由民権運動を指導して自由党をつくった人物。"),
+  card("rights-movement", "自由民権運動", "じゆうみんけんうんどう", "明治", "政治", "国会の開設、憲法の制定、国民の政治参加などを求めた運動。"),
+  card("okuma", "大隈重信", "おおくましげのぶ", "明治", "人物", "立憲改進党を結成し、後に内閣総理大臣となった政治家。"),
+  card("liberal-party", "自由党", "じゆうとう", "明治", "政治", "板垣退助を党首として結成され、フランス流の自由主義を掲げた政党。", "1881年"),
+  card("progressive-party", "立憲改進党", "りっけんかいしんとう", "明治", "政治", "大隈重信を党首として結成され、イギリス流の議会政治を目指した政党。", "1882年"),
+  card("ito", "伊藤博文", "いとうひろぶみ", "明治", "人物", "大日本帝国憲法の制定を主導し、日本初の内閣総理大臣となった政治家。"),
+  card("meiji-constitution", "大日本帝国憲法", "だいにっぽんていこくけんぽう", "明治", "政治", "天皇が国の統治権を持つと定め、帝国議会などの仕組みを示した憲法。", "1889年"),
+  card("house-peers", "貴族院", "きぞくいん", "明治", "政治", "皇族・華族や天皇が任命した議員などで構成された帝国議会の一院。"),
+  card("house-reps", "衆議院", "しゅうぎいん", "明治", "政治", "選挙で選ばれた議員で構成された帝国議会の一院。現在の国会にも置かれている。"),
+  card("sino-japanese", "日清戦争", "にっしんせんそう", "明治", "戦争", "朝鮮をめぐって日本と清が戦い、日本が勝利した戦争。", "1894年"),
+  card("shimonoseki", "下関条約", "しものせきじょうやく", "明治", "外交", "日清戦争の講和条約。清は朝鮮の独立を認め、台湾などを日本へ譲った。", "1895年"),
+  card("russo-japanese", "日露戦争", "にちろせんそう", "明治", "戦争", "満州や朝鮮をめぐって日本とロシアが戦った戦争。", "1904年"),
+  card("togo", "東郷平八郎", "とうごうへいはちろう", "明治", "人物", "日本海海戦で連合艦隊を指揮し、ロシアのバルチック艦隊を破った海軍軍人。"),
+  card("akiko", "与謝野晶子", "よさのあきこ", "明治", "人物", "歌集『みだれ髪』で知られ、日露戦争中に「君死にたまふことなかれ」を発表した歌人。"),
+  card("portsmouth", "ポーツマス条約", "ぽーつますじょうやく", "明治", "外交", "日露戦争の講和条約。日本は韓国での優越権や南樺太などを得たが、賠償金は得られなかった。", "1905年"),
+  card("manchuria", "満州", "まんしゅう", "明治", "地理", "中国東北部を指す歴史的な地域名。日露戦争や満州事変の舞台となった。"),
+  card("colony", "植民地", "しょくみんち", "明治", "政治", "他国によって政治・経済を支配され、資源や市場などに利用された地域。"),
+  card("ww1", "第一次世界大戦", "だいいちじせかいたいせん", "大正", "戦争", "サラエボ事件をきっかけにヨーロッパで始まり、世界各地を巻き込んだ大戦。日本は連合国側で参戦した。", "1914年"),
+  card("yahata", "八幡製鉄所", "やはたせいてつじょ", "明治", "経済", "福岡県に建設され、日本の重工業発展を支えた官営製鉄所。", "1901年"),
+  card("ashio", "足尾銅山鉱毒事件", "あしおどうざんこうどくじけん", "明治", "社会", "足尾銅山の鉱毒が渡良瀬川流域の農地や住民に大きな被害を与えた日本初期の公害事件。"),
+  card("tanaka", "田中正造", "たなかしょうぞう", "明治", "人物", "足尾銅山鉱毒事件の被害救済と操業停止を求めて活動した衆議院議員。"),
+  card("kitasato", "北里柴三郎", "きたさとしばさぶろう", "明治", "人物", "破傷風菌の純粋培養や血清療法で功績を上げた細菌学者。"),
+  card("noguchi", "野口英世", "のぐちひでよ", "明治", "人物", "黄熱病などの研究に取り組み、アフリカで研究中に亡くなった医学者。"),
+  card("tsuda", "津田梅子", "つだうめこ", "明治", "人物", "岩倉使節団に同行して留学し、女子英学塾を創設して女性教育に尽くした人物。"),
+
+  card("taisho-era", "大正時代", "たいしょうじだい", "大正", "時代", "政党政治や社会運動が広がり、大正デモクラシーと呼ばれる風潮が強まった時代。"),
+  card("rice-riots", "米騒動", "こめそうどう", "大正", "社会", "米価の急騰に対し、富山県の女性たちの行動をきっかけに全国へ広がった民衆運動。", "1918年"),
+  card("raicho", "平塚らいてう", "ひらつからいちょう", "大正", "人物", "『青鞜』を創刊し、女性の解放や政治参加を求めた運動家。"),
+  card("suiheisha", "全国水平社", "ぜんこくすいへいしゃ", "大正", "社会", "被差別部落の人々が差別からの解放と人間の尊厳を求めて結成した団体。", "1922年"),
+  card("democracy", "民主主義", "みんしゅしゅぎ", "大正", "政治", "国民が主権を持ち、その意思に基づいて政治を行う考え方や仕組み。"),
+  card("universal-suffrage", "普通選挙", "ふつうせんきょ", "大正", "政治", "財産や納税額などで制限せず、一定年齢以上の国民に選挙権を認める制度。当時は男子のみだった。", "1925年"),
+  card("peace-law", "治安維持法", "ちあんいじほう", "大正", "政治", "国体の変革や私有財産制の否定を目的とする運動を取り締まるために制定された法律。", "1925年"),
+  card("kanto-quake", "関東大震災", "かんとうだいしんさい", "大正", "社会", "東京・横浜を中心に大きな被害を出し、流言による虐殺も起きた大地震。", "1923年"),
+
+  card("showa-era", "昭和時代", "しょうわじだい", "昭和・戦前", "時代", "戦争へ向かった前半と、敗戦後の復興・高度経済成長を経験した後半からなる時代。"),
+  card("manchurian-incident", "満州事変", "まんしゅうじへん", "昭和・戦前", "戦争", "日本の関東軍が南満州鉄道の線路を爆破し、それを口実に満州を占領した出来事。", "1931年"),
+  card("league", "国際連盟", "こくさいれんめい", "昭和・戦前", "外交", "第一次世界大戦後、国際平和を守るためにつくられた国際機関。日本は満州国をめぐり脱退した。"),
+  card("manchukuo", "満州国", "まんしゅうこく", "昭和・戦前", "政治", "日本の関東軍が満州に建国し、清朝最後の皇帝溥儀を元首とした国。実質的に日本が支配した。", "1932年"),
+  card("may15", "五・一五事件", "ご・いちごじけん", "昭和・戦前", "政治", "海軍の青年将校らが首相官邸を襲い、犬養毅首相を暗殺した事件。", "1932年"),
+  card("feb26", "二・二六事件", "に・にろくじけん", "昭和・戦前", "政治", "陸軍の青年将校らが部隊を率いて政府要人を襲い、東京の中心部を占拠した事件。", "1936年"),
+  card("sino-war", "日中戦争", "にっちゅうせんそう", "昭和・戦前", "戦争", "盧溝橋事件をきっかけに始まり、日本と中国の間で長期化した全面戦争。", "1937年"),
+  card("ww2", "第二次世界大戦", "だいにじせかいたいせん", "昭和・戦前", "戦争", "ドイツのポーランド侵攻をきっかけに始まり、世界各地で連合国と枢軸国が戦った大戦。", "1939年"),
+  card("pacific-war", "太平洋戦争", "たいへいようせんそう", "昭和・戦前", "戦争", "日本軍の真珠湾攻撃などで始まった、日本とアメリカ・イギリスなどとの戦争。", "1941年"),
+  card("rationing", "切符制・配給制", "きっぷせい・はいきゅうせい", "昭和・戦前", "暮らし", "戦争中の物資不足に対応し、切符や決められた量に基づいて生活必需品を配る制度。"),
+  card("evacuation", "集団疎開", "しゅうだんそかい", "昭和・戦前", "暮らし", "空襲を避けるため、都市の児童が学校単位で農村などへ移ったこと。"),
+  card("air-raids", "空襲", "くうしゅう", "昭和・戦前", "戦争", "航空機によって地上の都市・軍事施設などを爆撃する攻撃。日本各地の都市が大きな被害を受けた。"),
+  card("okinawa", "沖縄戦", "おきなわせん", "昭和・戦前", "戦争", "住民を巻き込み、日本国内で最大規模の地上戦となった沖縄での戦い。", "1945年"),
+  card("mass-suicide", "集団自決", "しゅうだんじけつ", "昭和・戦前", "戦争", "沖縄戦などで、軍の影響や捕虜になる恐怖の中、多数の住民が集団で命を絶った悲劇。"),
+  card("unconditional", "無条件降伏", "むじょうけんこうふく", "昭和・戦前", "外交", "条件を付けず、相手側の示す降伏条件を受け入れて戦いを終えること。"),
+  card("potsdam", "ポツダム宣言", "ぽつだむせんげん", "昭和・戦前", "外交", "アメリカ・イギリス・中国が日本に無条件降伏などを求め、日本が受諾した宣言。", "1945年"),
+  card("atomic-bomb", "原子爆弾", "げんしばくだん", "昭和・戦前", "戦争", "核分裂のエネルギーを使う兵器。1945年8月、広島と長崎に投下され、甚大な被害を与えた。"),
+  card("jewel-voice", "玉音放送", "ぎょくおんほうそう", "昭和・戦前", "政治", "昭和天皇がラジオを通じ、ポツダム宣言の受諾と戦争の終結を国民に伝えた放送。", "1945年8月15日"),
+
+  card("black-market", "闇市", "やみいち", "昭和・戦後", "暮らし", "敗戦直後の物不足の中、統制価格や配給制度によらず品物が売買された市場。"),
+  card("jp-constitution", "日本国憲法", "にほんこくけんぽう", "昭和・戦後", "政治", "国民主権・基本的人権の尊重・平和主義を三原則とする現在の日本の憲法。", "1947年施行"),
+  card("compulsory-education", "義務教育", "ぎむきょういく", "昭和・戦後", "教育", "国が子どもに受けさせることを保護者に義務づけた教育。戦後は小学校6年・中学校3年が基本。"),
+  card("un", "国際連合", "こくさいれんごう", "昭和・戦後", "外交", "第二次世界大戦後、国際平和と安全の維持、国際協力を目的に設立された国際機関。", "1945年"),
+  card("cold-war", "東西冷戦", "とうざいれいせん", "昭和・戦後", "外交", "アメリカを中心とする資本主義陣営とソ連を中心とする社会主義陣営が対立した状態。"),
+  card("sf-treaty", "サンフランシスコ講和条約", "さんふらんしすここうわじょうやく", "昭和・戦後", "外交", "日本と連合国との戦争状態を終わらせ、日本が主権を回復することを定めた条約。", "1951年調印・1952年発効"),
+  card("security-treaty", "日米安全保障条約", "にちべいあんぜんほしょうじょうやく", "昭和・戦後", "外交", "日本の安全保障のため、アメリカ軍が日本国内に駐留する根拠となった条約。", "1951年"),
+  card("korean-war", "朝鮮戦争", "ちょうせんせんそう", "昭和・戦後", "戦争", "朝鮮半島で北朝鮮と韓国が戦い、国際連合軍や中国人民志願軍なども参加した戦争。", "1950年"),
+  card("police-reserve", "警察予備隊", "けいさつよびたい", "昭和・戦後", "政治", "朝鮮戦争中、日本の治安維持を目的に設けられ、後の自衛隊につながった組織。", "1950年"),
+  card("high-growth", "高度経済成長", "こうどけいざいせいちょう", "昭和・戦後", "経済", "1950年代半ばから1970年代初めに、日本の工業生産や国民所得が急速に伸びた時期。"),
+  card("pollution", "公害", "こうがい", "昭和・戦後", "社会", "産業活動などによる大気汚染・水質汚濁・騒音が、人の健康や生活環境に与える被害。"),
+  card("expo70", "日本万国博覧会", "にほんばんこくはくらんかい", "昭和・戦後", "文化", "「人類の進歩と調和」をテーマに大阪府吹田市で開催された国際博覧会。", "1970年"),
+  card("sapporo-olympics", "冬季オリンピック札幌大会", "とうきおりんぴっくさっぽろたいかい", "昭和・戦後", "文化", "アジアで初めて開催された冬季オリンピック。", "1972年"),
+  card("china-peace", "日中平和友好条約", "にっちゅうへいわゆうこうじょうやく", "昭和・戦後", "外交", "日本と中国が平和友好関係を発展させることを確認した条約。", "1978年"),
+];
+
+window.ERA_ORDER = ERA_ORDER;
+window.HISTORY_CARDS = HISTORY_CARDS;
+  </script>
+  <script id="embedded-middle-questions">
+// 中学生向けの追加問題です。
+// 小学生向け questions.js と重複する語句は収録していません。
+const middleCard = (id, term, reading, era, category, clue, year, note) => ({
+  id: `middle-${id}`,
+  term,
+  reading,
+  era,
+  category,
+  clue,
+  year,
+  note,
+  level: "middle",
+});
+
+const MIDDLE_HISTORY_CARDS = [
+  middleCard("paleolithic", "旧石器時代", "きゅうせっきじだい", "縄文", "時代", "打製石器を使い、狩りや採集をしながら移動生活を送っていた時代。日本では岩宿遺跡の発見によって、その存在が明らかになった。"),
+  middleCard("four-civilizations", "四大文明", "よんだいぶんめい", "縄文", "世界史", "大河川の流域に成立した、エジプト・メソポタミア・インダス・中国の四つの古代文明をまとめた呼び方。"),
+  middleCard("iwajuku", "岩宿遺跡", "いわじゅくいせき", "縄文", "遺跡", "群馬県にある旧石器時代の遺跡。相沢忠洋が関東ローム層から打製石器を発見し、日本にも旧石器時代があったことが確認された。"),
+  middleCard("kaizuka", "貝塚", "かいづか", "縄文", "暮らし", "縄文人が貝殻や魚・動物の骨、壊れた道具などを捨てた場所。食生活や環境を知る重要な手がかりになる。"),
+  middleCard("pit-dwelling", "竪穴住居", "たてあなじゅうきょ", "縄文", "暮らし", "地面を掘り下げて床をつくり、柱を立てて屋根をかけた住居。縄文時代から古墳時代まで広く使われた。"),
+  middleCard("dogu", "土偶", "どぐう", "縄文", "文化", "縄文時代につくられた人形の土製品。多くは女性を表し、豊かな実りや生命の誕生を祈る祭りに用いたと考えられている。"),
+
+  middleCard("four-religions", "三大宗教", "さんだいしゅうきょう", "弥生", "世界史", "世界に広く信仰されている仏教・キリスト教・イスラム教をまとめた呼び方。成立した地域や時期、教えはそれぞれ異なる。"),
+  middleCard("first-emperor", "始皇帝", "しこうてい", "弥生", "世界史", "紀元前221年に中国を初めて統一して秦を建て、文字・貨幣・度量衡を統一した皇帝。万里の長城の基礎となる防壁もつないだ。"),
+  middleCard("wei", "魏", "ぎ", "弥生", "外交", "3世紀の中国で三国の一つとなった国。邪馬台国の卑弥呼が使いを送り、皇帝から「親魏倭王」の称号や金印などを授けられた。"),
+  middleCard("bronze", "青銅器", "せいどうき", "弥生", "文化", "銅とすずなどの合金で作った道具。弥生時代の日本では銅鐸・銅鏡・銅剣などが祭りの道具として使われた。"),
+  middleCard("ironware", "鉄器", "てっき", "弥生", "技術", "鉄で作られた道具。弥生時代に大陸から伝わり、丈夫な農具や工具、武器として使われた。"),
+
+  middleCard("public-land-people", "公地・公民", "こうち・こうみん", "飛鳥", "政治", "土地と人民は国家に属するという、大化の改新で示された政治方針。豪族による私的な支配を改め、天皇中心の国づくりを目指した。"),
+  middleCard("jinshin-war", "壬申の乱", "じんしんのらん", "飛鳥", "戦争", "天智天皇の死後、皇位継承をめぐって大海人皇子と大友皇子が争った戦い。勝った大海人皇子は天武天皇となった。", "672年"),
+
+  middleCard("ritsuryo-state", "律令国家", "りつりょうこっか", "奈良", "政治", "律と令を基本法として、天皇と中央政府が全国を支配した国家の仕組み。律は刑罰、令は行政などのきまりを定めた。"),
+  middleCard("handen", "班田収授法", "はんでんしゅうじゅのほう", "奈良", "政治", "戸籍にもとづき、原則として6歳以上の男女に口分田を与え、死亡すると国に返させた制度。"),
+  middleCard("konden", "墾田永年私財法", "こんでんえいねんしざいほう", "奈良", "政治", "新しく開墾した土地の永久私有を認めた法令。開墾が進む一方、貴族や寺院の私有地拡大にもつながった。", "743年"),
+  middleCard("shosoin", "正倉院", "しょうそういん", "奈良", "文化", "東大寺にある校倉造の宝庫。聖武天皇ゆかりの品をはじめ、シルクロードを通じた国際交流を示す工芸品が伝わる。"),
+  middleCard("fudoki", "風土記", "ふどき", "奈良", "文化", "奈良時代に国ごとに編さんされた地誌。地名の由来、産物、土地の様子、伝承などが記された。"),
+  middleCard("manyoshu", "万葉集", "まんようしゅう", "奈良", "文化", "現存する日本最古の歌集。天皇・貴族から防人・農民まで、さまざまな人の和歌約4500首を収める。"),
+  middleCard("so-tax", "租", "そ", "奈良", "社会", "律令制の税の一つ。口分田の収穫のおよそ3％にあたる稲を納めた。"),
+  middleCard("yo-tax", "庸", "よう", "奈良", "社会", "律令制で成年男子に課された税の一つ。都での労役の代わりに布などを納めた。"),
+  middleCard("cho-tax", "調", "ちょう", "奈良", "社会", "律令制で成年男子に課された税の一つ。絹や布、地方の特産物などを都へ納めた。"),
+  middleCard("zoyo", "雑徭", "ぞうよう", "奈良", "社会", "律令制で成年男子に課された労役。国司のもとで、土木工事などに年間一定日数従事した。"),
+  middleCard("sakimori", "防人", "さきもり", "奈良", "軍事", "大陸からの攻撃に備えて九州北部の警備についた兵士。主に東国の農民から集められ、負担が重かった。"),
+
+  middleCard("kanmu", "桓武天皇", "かんむてんのう", "平安", "人物", "律令政治の立て直しを進め、都を長岡京、次いで平安京へ移した天皇。坂上田村麻呂を征夷大将軍に任じた。"),
+  middleCard("saicho", "最澄", "さいちょう", "平安", "人物", "唐で仏教を学び、日本に天台宗を広めた僧。比叡山の延暦寺を中心に仏教の研究と僧の育成を進めた。"),
+  middleCard("kukai", "空海", "くうかい", "平安", "人物", "遣唐使とともに唐へ渡り、日本に真言宗を広めた僧。高野山に金剛峯寺を開いた。"),
+  middleCard("sekkan", "摂関政治", "せっかんせいじ", "平安", "政治", "藤原氏が天皇の外戚となり、幼い天皇の摂政や成人した天皇の関白として実権を握った政治。"),
+  middleCard("yorimichi", "藤原頼通", "ふじわらのよりみち", "平安", "人物", "藤原道長の子で、摂政・関白を長く務めた人物。宇治に平等院鳳凰堂を建てた。"),
+  middleCard("jodo-faith", "浄土信仰", "じょうどしんこう", "平安", "宗教", "阿弥陀如来にすがり、念仏によって死後に極楽浄土へ往生することを願う信仰。平安時代後期に広まった。"),
+  middleCard("pure-land", "極楽浄土", "ごくらくじょうど", "平安", "宗教", "阿弥陀如来がいるとされる、苦しみのない理想の世界。浄土信仰では死後にここへ生まれ変わることを願った。"),
+  middleCard("byodoin", "平等院鳳凰堂", "びょうどういんほうおうどう", "平安", "文化", "藤原頼通が京都の宇治に建てた阿弥陀堂。浄土信仰を背景に、極楽浄土を表そうとした建築。", "1053年"),
+  middleCard("masakado", "平将門", "たいらのまさかど", "平安", "人物", "関東で国府を襲い、自ら新皇と称して朝廷に反乱を起こした武士。武士の成長を示す出来事の一つとなった。", "935年"),
+  middleCard("sumitomo", "藤原純友", "ふじわらのすみとも", "平安", "人物", "瀬戸内海で海賊を率い、国府などを襲って朝廷に反乱を起こした人物。平将門の乱とほぼ同時期に起きた。", "939年"),
+  middleCard("shirakawa", "白河上皇", "しらかわじょうこう", "平安", "人物", "天皇の位を退いた後も上皇として政治を行い、院政を始めた人物。", "1086年"),
+  middleCard("insei", "院政", "いんせい", "平安", "政治", "天皇が退位して上皇となった後も、院を中心に政治の実権を握る仕組み。白河上皇が本格的に始めた。"),
+  middleCard("hiraizumi", "平泉", "ひらいずみ", "平安", "地理", "奥州藤原氏が約100年にわたり本拠地とした現在の岩手県の地。中尊寺金色堂などが造られた。"),
+
+  middleCard("crusades", "十字軍", "じゅうじぐん", "鎌倉", "世界史", "11世紀末から、ローマ教皇の呼びかけで西ヨーロッパのキリスト教徒が聖地エルサレムの奪回を目指して行った遠征。"),
+  middleCard("gotoba", "後鳥羽上皇", "ごとばじょうこう", "鎌倉", "人物", "鎌倉幕府から政治の実権を取り戻そうとして承久の乱を起こし、敗れて隠岐へ流された上皇。"),
+  middleCard("shikken-politics", "執権政治", "しっけんせいじ", "鎌倉", "政治", "将軍を補佐する執権に就いた北条氏が、鎌倉幕府の実権を握って行った政治。"),
+  middleCard("yasutoki", "北条泰時", "ほうじょうやすとき", "鎌倉", "人物", "鎌倉幕府の第3代執権。武家社会の慣習や道理をもとに御成敗式目を制定した。"),
+  middleCard("goseibai", "御成敗式目", "ごせいばいしきもく", "鎌倉", "政治", "北条泰時が定めた、御家人の裁判や土地争いの基準となる武家法。貞永式目ともいう。", "1232年"),
+  middleCard("tokuseirei", "永仁の徳政令", "えいにんのとくせいれい", "鎌倉", "政治", "元寇後に困窮した御家人を救うため、売却・質入れした土地を無償で取り戻させようとした幕府の法令。", "1297年"),
+  middleCard("khubilai", "フビライ・ハン", "ふびらい・はん", "鎌倉", "人物", "モンゴル帝国の第5代皇帝で、国号を元とした人物。日本に服属を求め、二度の軍事遠征を行った。"),
+  middleCard("shinkokin", "新古今和歌集", "しんこきんわかしゅう", "鎌倉", "文化", "後鳥羽上皇の命令で藤原定家らが編集した勅撰和歌集。鎌倉時代初めの貴族文化を代表する。"),
+  middleCard("hojoki", "方丈記", "ほうじょうき", "鎌倉", "文化", "鴨長明が、災害や社会の変動を通して世の無常を記した随筆。"),
+  middleCard("todaiji-rebuilding", "東大寺の再建", "とうだいじのさいけん", "鎌倉", "文化", "平氏の焼き打ちで被害を受けた東大寺を、僧の重源が民衆から寄付を集めて再建した事業。"),
+  middleCard("nio-statues", "金剛力士像", "こんごうりきしぞう", "鎌倉", "文化", "東大寺南大門に置かれた、運慶・快慶らが制作した力強く写実的な仏像。鎌倉文化を代表する彫刻。"),
+  middleCard("heike-story", "平家物語", "へいけものがたり", "鎌倉", "文化", "平氏の栄華と滅亡を描いた軍記物語。「祇園精舎」で始まり、琵琶法師によって語り伝えられた。"),
+  middleCard("tsurezure", "徒然草", "つれづれぐさ", "鎌倉", "文化", "兼好法師が、人間や社会への観察、人生についての考えを記した随筆。"),
+  middleCard("godaigo", "後醍醐天皇", "ごだいごてんのう", "鎌倉", "人物", "鎌倉幕府を倒し、天皇中心の建武の新政を始めた天皇。足利尊氏と対立した後、吉野に南朝を開いた。"),
+
+  middleCard("kanrei", "管領", "かんれい", "室町", "政治", "室町幕府で将軍を補佐し、政務を統括した役職。細川・斯波・畠山の有力守護大名から選ばれた。"),
+  middleCard("samurai-dokoro", "侍所", "さむらいどころ", "室町", "政治", "室町幕府で、京都の警備や刑事裁判、御家人の統率などを担当した機関。"),
+  middleCard("kamakura-fu", "鎌倉府", "かまくらふ", "室町", "政治", "室町幕府が関東を支配するため鎌倉に置いた機関。長を鎌倉公方、その補佐役を関東管領といった。"),
+  middleCard("ming-trade", "日明貿易", "にちみんぼうえき", "室町", "外交", "足利義満が明と始めた貿易。正式な貿易船と倭寇を区別する勘合を用いたため、勘合貿易ともいう。"),
+  middleCard("wako", "倭寇", "わこう", "室町", "外交", "朝鮮半島や中国沿岸で密貿易や略奪を行った集団。前期は日本人が多く、後期は中国人などが中心だった。"),
+  middleCard("bashaku", "馬借", "ばしゃく", "室町", "経済", "馬を使って物資を運んだ陸上の運送業者。交通の要地で活動し、土一揆に加わることもあった。"),
+  middleCard("toimaru", "問丸", "といまる", "室町", "経済", "港や河川沿いで、年貢や商品の輸送・保管・仲介を行った業者。"),
+  middleCard("yamashiro-ikki", "山城国一揆", "やましろのくにいっき", "室町", "社会", "山城南部の国人と農民が争っていた守護大名の軍を追い出し、約8年間自治を行った一揆。", "1485年"),
+  middleCard("ikko-ikki", "一向一揆", "いっこういっき", "室町", "社会", "浄土真宗の信仰で結びついた武士や農民らが起こした一揆。加賀では守護を倒し、長く自治を行った。"),
+  middleCard("gekokujo", "下剋上", "げこくじょう", "室町", "社会", "身分の低い者が実力によって上の者を倒し、地位や権力を奪う風潮。戦国時代に広がった。"),
+  middleCard("togudo", "東求堂同仁斎", "とうぐどうどうじんさい", "室町", "文化", "慈照寺境内に足利義政が建てた東求堂の一室。書院造につながる座敷の形式を備える。"),
+  middleCard("otogi", "御伽草子", "おとぎぞうし", "室町", "文化", "室町時代を中心につくられた短い物語の総称。「一寸法師」など、絵入りで庶民にも親しまれた。"),
+  middleCard("domain-law", "分国法", "ぶんこくほう", "室町", "政治", "戦国大名が領国を統一的に支配するため、家臣や領民に示した独自の法令。"),
+
+  middleCard("nanban-people", "南蛮人", "なんばんじん", "安土桃山", "外交", "16世紀ごろ日本で用いられた、主にポルトガル人やスペイン人を指す呼び名。"),
+  middleCard("firearms", "鉄砲", "てっぽう", "安土桃山", "技術", "1543年に種子島へ漂着した中国船のポルトガル人から伝わった火縄銃。戦い方や築城に大きな影響を与えた。", "1543年"),
+  middleCard("luther", "ルター", "るたー", "安土桃山", "世界史", "教会の免罪符販売を批判し、ドイツで宗教改革を始めた人物。聖書を重視し、プロテスタント諸派成立のきっかけをつくった。", "1517年"),
+  middleCard("rikyu", "千利休", "せんのりきゅう", "安土桃山", "人物", "織田信長や豊臣秀吉に仕え、質素さと精神性を重んじるわび茶を大成した茶人。"),
+  middleCard("heino-bunri", "兵農分離", "へいのうぶんり", "安土桃山", "社会", "検地や刀狩などによって武士と農民の身分・居住を分けた政策。近世の身分秩序の基礎となった。"),
+  middleCard("bunroku", "文禄の役", "ぶんろくのえき", "安土桃山", "戦争", "豊臣秀吉が明の征服を目指して朝鮮へ行った最初の出兵。朝鮮水軍や明軍の反撃で戦いは長期化した。", "1592年"),
+  middleCard("keicho", "慶長の役", "けいちょうのえき", "安土桃山", "戦争", "講和交渉の決裂後、豊臣秀吉が再び行った朝鮮出兵。秀吉の死後、日本軍は撤退した。", "1597年"),
+  middleCard("nanban-culture", "南蛮文化", "なんばんぶんか", "安土桃山", "文化", "南蛮貿易やキリスト教の布教を通して日本に伝わった、ヨーロッパ風の服装・絵画・活字印刷などの文化。"),
+
+  middleCard("kyoto-shoshidai", "京都所司代", "きょうとしょしだい", "江戸", "政治", "江戸幕府が京都に置き、朝廷・公家の監視や京都周辺の治安維持を担当させた役職。"),
+  middleCard("kinchu-law", "禁中並公家諸法度", "きんちゅうならびにくげしょはっと", "江戸", "政治", "江戸幕府が天皇や公家の行動・役割を定め、朝廷を統制するために出した法令。", "1615年"),
+  middleCard("red-seal-trade", "朱印船貿易", "しゅいんせんぼうえき", "江戸", "外交", "幕府の朱印状を持つ日本船が、東南アジア各地などと行った公認貿易。徳川家康の時代に盛んになった。"),
+  middleCard("nihonmachi", "日本町", "にほんまち", "江戸", "社会", "朱印船貿易などで東南アジアへ渡った日本人が、アユタヤやホイアンなどにつくった居住地。"),
+  middleCard("tsushima-domain", "対馬藩", "つしまはん", "江戸", "外交", "朝鮮との外交・貿易の窓口を務めた藩。宗氏が治め、朝鮮通信使の往来にも関わった。"),
+  middleCard("joseon", "李氏朝鮮", "りしちょうせん", "江戸", "外交", "李成桂が高麗を倒して建てた朝鮮半島の王朝。江戸時代には対馬藩を窓口に日本と国交を結び、通信使を派遣した。"),
+  middleCard("kabunakama", "株仲間", "かぶなかま", "江戸", "経済", "幕府や藩の許可を得て営業を独占した問屋・仲買などの同業者組合。営業税を納める代わりに特権を得た。"),
+  middleCard("money-changer", "両替商", "りょうがえしょう", "江戸", "経済", "金・銀・銭の交換や預金、貸付などを行った商人。三井や鴻池などは大きな経済力を持った。"),
+  middleCard("genroku-culture", "元禄文化", "げんろくぶんか", "江戸", "文化", "17世紀末から18世紀初め、上方の町人を中心に栄えた、現実的で人間味のある文化。"),
+  middleCard("saikaku", "井原西鶴", "いはらさいかく", "江戸", "人物", "町人の生活や考え方を生き生きと描いた浮世草子の作者。『日本永代蔵』などで知られる。"),
+  middleCard("basho", "松尾芭蕉", "まつおばしょう", "江戸", "人物", "俳諧を芸術として高めた俳人。各地を旅し、その体験を『奥の細道』にまとめた。"),
+  middleCard("tsunayoshi", "徳川綱吉", "とくがわつなよし", "江戸", "人物", "江戸幕府第5代将軍。儒学を奨励し、生類憐みの令を出した。"),
+  middleCard("hakuseki", "新井白石", "あらいはくせき", "江戸", "人物", "第6・7代将軍に仕え、正徳の治と呼ばれる政治改革を行った儒学者。長崎貿易を制限して金銀の流出を抑えた。"),
+  middleCard("three-cities", "三都", "さんと", "江戸", "社会", "江戸時代に特に栄えた江戸・大坂・京都の三都市。政治・商業・文化の中心となった。"),
+  middleCard("yoshimune", "徳川吉宗", "とくがわよしむね", "江戸", "人物", "江戸幕府第8代将軍。享保の改革を行い、目安箱の設置や公事方御定書の制定を進めた。"),
+  middleCard("kyoho-reforms", "享保の改革", "きょうほうのかいかく", "江戸", "政治", "徳川吉宗が幕府財政の立て直しを目指して行った改革。上げ米の制、目安箱、新田開発などを実施した。"),
+  middleCard("tanuma", "田沼意次", "たぬまおきつぐ", "江戸", "人物", "老中として株仲間を奨励し、長崎貿易や鉱山開発を重視して商業収入を増やそうとした。"),
+  middleCard("sadanobu", "松平定信", "まつだいらさだのぶ", "江戸", "人物", "老中として寛政の改革を行った人物。倹約を進め、農村の立て直しや幕府財政の再建を目指した。"),
+  middleCard("kansei-reforms", "寛政の改革", "かんせいのかいかく", "江戸", "政治", "松平定信が行った政治改革。倹約令、囲米、棄捐令などで幕府財政と農村の立て直しを図った。"),
+  middleCard("private-school", "私塾", "しじゅく", "江戸", "教育", "学者が個人で開き、身分や地域を越えて学問を教えた学校。緒方洪庵の適塾などが知られる。"),
+  middleCard("domain-school", "藩校", "はんこう", "江戸", "教育", "各藩が主に藩士の子弟へ儒学や武芸などを教え、人材を育てるために設けた学校。"),
+  middleCard("phaeton", "フェートン号事件", "ふぇーとんごうじけん", "江戸", "外交", "イギリス軍艦フェートン号がオランダ船を捕らえるため長崎港へ侵入し、薪や食料を要求した事件。", "1808年"),
+  middleCard("morrison", "モリソン号事件", "もりそんごうじけん", "江戸", "外交", "日本人漂流民を送り届けて通商を求めたアメリカ商船を、異国船打払令にもとづき幕府が砲撃した事件。", "1837年"),
+  middleCard("oshio-rebellion", "大塩の乱", "おおしおのらん", "江戸", "社会", "天保の飢饉の中、元大坂町奉行所役人の大塩平八郎が、貧民救済を訴えて起こした反乱。", "1837年"),
+  middleCard("tadakuni", "水野忠邦", "みずのただくに", "江戸", "人物", "老中として天保の改革を行った人物。株仲間の解散や上知令を進めたが、強い反発を受けた。"),
+  middleCard("tempo-reforms", "天保の改革", "てんぽうのかいかく", "江戸", "政治", "水野忠邦が幕府の立て直しを目指して行った改革。倹約令や株仲間の解散などを実施したが、短期間で失敗した。"),
+  middleCard("peasant-uprising", "百姓一揆", "ひゃくしょういっき", "江戸", "社会", "農民が団結し、年貢の軽減や不正な役人の交代などを領主に求めた行動。"),
+  middleCard("uchikowashi", "打ちこわし", "うちこわし", "江戸", "社会", "都市の貧しい人々が、米の買い占めや値上げをする商人の家や店を襲った行動。"),
+  middleCard("foreign-ship-order", "異国船打払令", "いこくせんうちはらいれい", "江戸", "外交", "接近する外国船を見つけしだい砲撃して追い払うよう幕府が命じた法令。アヘン戦争後に緩和された。", "1825年"),
+  middleCard("locke", "ロック", "ろっく", "江戸", "世界史", "人には生まれながらの権利があり、政府がそれを侵せば人民には抵抗する権利があると説いたイギリスの思想家。"),
+  middleCard("montesquieu", "モンテスキュー", "もんてすきゅー", "江戸", "世界史", "『法の精神』で、権力を立法・行政・司法に分ける三権分立を説いたフランスの思想家。"),
+  middleCard("rousseau", "ルソー", "るそー", "江戸", "世界史", "『社会契約論』で、政治の主権は人民にあるという人民主権を説いたフランスの思想家。"),
+  middleCard("declaration-independence", "独立宣言", "どくりつせんげん", "江戸", "世界史", "北アメリカの13植民地がイギリスからの独立を宣言し、基本的人権や人民主権の考えを示した文書。", "1776年"),
+  middleCard("opium-war", "アヘン戦争", "あへんせんそう", "江戸", "世界史", "清がイギリス商人によるアヘン貿易を取り締まったことをきっかけに、イギリスが清と戦った戦争。", "1840年"),
+  middleCard("nanking-treaty", "南京条約", "なんきんじょうやく", "江戸", "外交", "アヘン戦争後に清とイギリスが結んだ条約。清は香港島を譲り、上海など5港を開いた。", "1842年"),
+  middleCard("taiping", "太平天国の乱", "たいへいてんごくのらん", "江戸", "世界史", "洪秀全を指導者として清で起きた大規模な農民反乱。土地の均等分配などを掲げ、南京を都とした。", "1851年"),
+  middleCard("ii-naosuke", "井伊直弼", "いいなおすけ", "幕末", "人物", "幕府の大老として日米修好通商条約を結び、反対派を安政の大獄で処罰した。桜田門外の変で暗殺された。"),
+  middleCard("ansei-purge", "安政の大獄", "あんせいのたいごく", "幕末", "政治", "大老井伊直弼が、幕府の開国政策や将軍継嗣に反対した大名・公家・志士らを処罰した弾圧。"),
+  middleCard("sakurada", "桜田門外の変", "さくらだもんがいのへん", "幕末", "政治", "安政の大獄に反発した水戸藩浪士らが、江戸城桜田門外で大老井伊直弼を暗殺した事件。", "1860年"),
+  middleCard("satcho-alliance", "薩長同盟", "さっちょうどうめい", "幕末", "政治", "対立していた薩摩藩と長州藩が、坂本龍馬らの仲立ちで結んだ同盟。倒幕の動きを大きく進めた。", "1866年"),
+  middleCard("restoration-decree", "王政復古の大号令", "おうせいふっこのだいごうれい", "幕末", "政治", "新政府が天皇中心の政治に戻すと宣言し、幕府や摂政・関白などの廃止を示したもの。", "1867年"),
+  middleCard("boshin-war", "戊辰戦争", "ぼしんせんそう", "幕末", "戦争", "鳥羽・伏見の戦いから箱館戦争まで続いた、新政府軍と旧幕府側との内戦。新政府軍が勝利した。", "1868年"),
+
+  middleCard("hanbatsu", "藩閥政治", "はんばつせいじ", "明治", "政治", "薩摩・長州など倒幕に功績のあった藩の出身者が、明治政府の要職を占めて行った政治。"),
+  middleCard("school-system", "学制", "がくせい", "明治", "教育", "全国に近代的な学校制度をつくるため明治政府が公布した制度。すべての男女が教育を受けることを目標とした。", "1872年"),
+  middleCard("tondenhei", "屯田兵", "とんでんへい", "明治", "社会", "北海道の開拓と防備を目的に移住した、農業を営みながら軍事訓練も行う人々。"),
+  middleCard("education-rescript", "教育勅語", "きょういくちょくご", "明治", "教育", "忠孝などの徳目と、国家に尽くすことを国民道徳として示した天皇のことば。学校教育の基本とされた。", "1890年"),
+  middleCard("chomin", "中江兆民", "なかえちょうみん", "明治", "人物", "ルソーの思想を日本に紹介し、自由民権運動に理論的な影響を与えた思想家。「東洋のルソー」と呼ばれた。"),
+  middleCard("donghak", "甲午農民戦争", "こうごのうみんせんそう", "明治", "戦争", "朝鮮で東学を信仰する農民らが、政治改革と外国勢力の排除を求めて起こした反乱。日清戦争のきっかけとなった。", "1894年"),
+  middleCard("triple-intervention", "三国干渉", "さんごくかんしょう", "明治", "外交", "日清戦争後、ロシア・ドイツ・フランスが、日本に遼東半島を清へ返すよう要求した出来事。", "1895年"),
+  middleCard("anglo-japanese", "日英同盟", "にちえいどうめい", "明治", "外交", "ロシアの東アジア進出に対抗するため、日本とイギリスが結んだ同盟。日露戦争で日本の外交的な支えとなった。", "1902年"),
+  middleCard("korea-annexation", "韓国併合", "かんこくへいごう", "明治", "外交", "日本が大韓帝国を植民地として支配下に置き、朝鮮総督府を設置したこと。", "1910年"),
+  middleCard("sun-yat-sen", "孫文", "そんぶん", "明治", "人物", "民族・民権・民生からなる三民主義を唱え、辛亥革命を指導して中華民国建国の中心となった人物。"),
+  middleCard("xinhai", "辛亥革命", "しんがいかくめい", "明治", "世界史", "清を倒し、アジア初の共和国である中華民国の成立につながった中国の革命。孫文が臨時大総統となった。", "1911年"),
+
+  middleCard("sarajevo", "サラエボ事件", "さらえぼじけん", "大正", "世界史", "オーストリアの皇位継承者夫妻がセルビア系青年に暗殺され、第一次世界大戦の直接のきっかけとなった事件。", "1914年"),
+  middleCard("wilson", "ウィルソン", "うぃるそん", "大正", "人物", "第一次世界大戦後に民族自決などの十四か条を提唱し、国際連盟の設立を主張したアメリカ大統領。"),
+  middleCard("versailles", "ベルサイユ条約", "べるさいゆじょうやく", "大正", "外交", "第一次世界大戦後、連合国とドイツが結んだ講和条約。ドイツに領土縮小・軍備制限・賠償などを課した。", "1919年"),
+  middleCard("may-fourth", "五・四運動", "ご・しうんどう", "大正", "社会", "パリ講和会議で山東省の旧ドイツ権益が日本へ移されることに反対し、中国の学生から広がった反帝国主義運動。", "1919年"),
+  middleCard("march-first", "三・一独立運動", "さん・いちどくりつうんどう", "大正", "社会", "日本の植民地支配下の朝鮮で、独立宣言をきっかけに各地へ広がった独立運動。", "1919年"),
+  middleCard("minpon", "民本主義", "みんぽんしゅぎ", "大正", "政治", "主権の所在を直接論じず、普通選挙などによって民衆の意向を政治に反映させるべきだとする考え。吉野作造が唱えた。"),
+  middleCard("sakuzo", "吉野作造", "よしのさくぞう", "大正", "人物", "民本主義を唱え、普通選挙と政党政治の発展を主張して大正デモクラシーに影響を与えた政治学者。"),
+  middleCard("emperor-organ", "天皇機関説", "てんのうきかんせつ", "大正", "政治", "主権は国家にあり、天皇は憲法に従って統治権を行使する国家の最高機関だとする美濃部達吉の憲法学説。"),
+  middleCard("liberation-movement", "部落解放運動", "ぶらくかいほううんどう", "大正", "社会", "被差別部落の人々が、差別の撤廃と人間の尊厳・平等を求めて進めた運動。全国水平社の結成へつながった。"),
+  middleCard("hara-cabinet", "原敬内閣", "はらたかしないかく", "大正", "政治", "衆議院で多数を占める立憲政友会を基礎に原敬が組織した、日本初の本格的な政党内閣。", "1918年"),
+  middleCard("taisho-democracy", "大正デモクラシー", "たいしょうでもくらしー", "大正", "政治", "大正時代を中心に広がった、普通選挙・政党政治・社会的平等など民主主義を求める風潮。"),
+  middleCard("washington-conference", "ワシントン会議", "わしんとんかいぎ", "大正", "外交", "アメリカの提唱で開かれた国際会議。海軍軍備の制限や太平洋地域の現状維持、中国の主権尊重などを取り決めた。", "1921～1922年"),
+
+  middleCard("great-depression", "世界恐慌", "せかいきょうこう", "昭和・戦前", "経済", "ニューヨーク株式市場の大暴落をきっかけに、企業倒産や失業が世界へ広がった深刻な不況。", "1929年"),
+  middleCard("new-deal", "ニューディール政策", "にゅーでぃーるせいさく", "昭和・戦前", "世界史", "世界恐慌に対し、アメリカのフランクリン・ローズベルト大統領が公共事業や金融改革などで政府の役割を強めた政策。"),
+  middleCard("bloc-economy", "ブロック経済", "ぶろっくけいざい", "昭和・戦前", "経済", "本国と植民地などの間の貿易を優遇し、域外の商品には高い関税をかける排他的な経済圏。世界恐慌後に広がった。"),
+  middleCard("mobilization-law", "国家総動員法", "こっかそうどういんほう", "昭和・戦前", "政治", "戦争に備え、政府が議会の承認を経ずに物資・労働力・産業などを統制できるようにした法律。", "1938年"),
+  middleCard("tripartite-pact", "日独伊三国同盟", "にちどくいさんごくどうめい", "昭和・戦前", "外交", "日本・ドイツ・イタリアが結んだ軍事同盟。アメリカなどとの対立を深めた。", "1940年"),
+  middleCard("taisei-yokusankai", "大政翼賛会", "たいせいよくさんかい", "昭和・戦前", "政治", "政党を解散させ、国民を戦争へ動員する体制を強めるためにつくられた政治組織。", "1940年"),
+
+  middleCard("ghq", "連合国軍総司令部（GHQ）", "れんごうこくぐんそうしれいぶ（じーえいちきゅー）", "昭和・戦後", "政治", "第二次世界大戦後、日本の占領政策を実施した連合国側の機関。最高司令官はマッカーサーで、日本政府を通じた間接統治を行った。"),
+  middleCard("postwar-reforms", "戦後改革", "せんごかいかく", "昭和・戦後", "政治", "GHQの方針のもとで行われた、民主化と非軍事化を目指す一連の改革。農地改革・財閥解体・教育改革などを含む。"),
+  middleCard("zaibatsu", "財閥解体", "ざいばつかいたい", "昭和・戦後", "経済", "三井・三菱・住友などの持株会社を解体し、少数の財閥への経済力集中を弱めようとした戦後改革。"),
+  middleCard("basic-education-law", "教育基本法", "きょういくきほんほう", "昭和・戦後", "教育", "日本国憲法の理念にもとづき、個人の尊厳や教育の機会均等など、戦後教育の基本原則を定めた法律。", "1947年"),
+  middleCard("labor-standards-law", "労働基準法", "ろうどうきじゅんほう", "昭和・戦後", "社会", "労働時間・休憩・休日・賃金など、労働条件の最低基準を定めた法律。戦後の民主化の中で制定された。", "1947年"),
+  middleCard("nuclear-ban", "原水爆禁止運動", "げんすいばくきんしうんどう", "昭和・戦後", "社会", "第五福竜丸がアメリカの水爆実験で被ばくした事件をきっかけに広がった、原子爆弾・水素爆弾の禁止を求める運動。"),
+  middleCard("bandung", "アジア・アフリカ会議", "あじあ・あふりかかいぎ", "昭和・戦後", "外交", "インドネシアのバンドンで29か国が参加し、反植民地主義や平和共存を確認した国際会議。バンドン会議ともいう。", "1955年"),
+  middleCard("vietnam-war", "ベトナム戦争", "べとなむせんそう", "昭和・戦後", "戦争", "南北に分かれたベトナムをめぐり、アメリカが南を、ソ連・中国などが北を支援した戦争。1975年に北側が勝利した。"),
+  middleCard("cuban-missile", "キューバ危機", "きゅーばきき", "昭和・戦後", "外交", "ソ連がキューバに核ミサイル基地を建設したことをめぐり、アメリカとソ連が核戦争寸前まで対立した事件。", "1962年"),
+  middleCard("ec", "ヨーロッパ共同体（EC）", "よーろっぱきょうどうたい（いーしー）", "昭和・戦後", "世界史", "ヨーロッパ共同市場などを統合して成立した、西ヨーロッパ諸国の経済・政治統合組織。後のEUへ発展した。", "1967年"),
+  middleCard("three-nonnuclear", "非核三原則", "ひかくさんげんそく", "昭和・戦後", "政治", "核兵器を「持たず、つくらず、持ち込ませず」とする日本の基本方針。佐藤栄作首相が国会で表明した。", "1967年"),
+  middleCard("income-doubling", "所得倍増計画", "しょとくばいぞうけいかく", "昭和・戦後", "経済", "池田勇人内閣が掲げた、10年間で国民所得を倍増させることを目標とする経済政策。高度経済成長を後押しした。", "1960年"),
+  middleCard("china-communique", "日中共同声明", "にっちゅうきょうどうせいめい", "昭和・戦後", "外交", "日本と中華人民共和国が国交正常化を実現した共同声明。日本は中華人民共和国政府を中国の唯一の合法政府と認めた。", "1972年"),
+  middleCard("summit", "主要国首脳会議（サミット）", "しゅようこくしゅのうかいぎ（さみっと）", "昭和・戦後", "外交", "主要国の首脳が世界経済や国際問題を話し合う会議。第1回は1975年にフランスで開かれた。"),
+  middleCard("eu", "ヨーロッパ連合（EU）", "よーろっぱれんごう（いーゆー）", "昭和・戦後", "世界史", "ヨーロッパ共同体を基礎に、マーストリヒト条約によって発足した地域統合組織。共通通貨ユーロなどを導入した。", "1993年"),
+  middleCard("bubble", "バブル景気", "ばぶるけいき", "昭和・戦後", "経済", "1980年代後半、低金利などを背景に株価や地価が経済の実力以上に急上昇した好景気。崩壊後は長期不況となった。"),
+  middleCard("heisei-recession", "平成不況", "へいせいふきょう", "昭和・戦後", "経済", "バブル景気の崩壊後、1990年代から長く続いた景気低迷。企業倒産や失業、不良債権問題が深刻化した。"),
+  middleCard("kyoto-protocol", "京都議定書", "きょうとぎていしょ", "昭和・戦後", "外交", "地球温暖化対策として、先進国の温室効果ガス削減目標を定めた国際的な取り決め。京都で採択された。", "1997年"),
+  middleCard("financial-crisis", "世界金融危機", "せかいきんゆうきき", "昭和・戦後", "経済", "アメリカの住宅金融問題とリーマン・ブラザーズ破綻をきっかけに世界へ広がった金融・経済危機。", "2008年"),
+];
+
+globalThis.MIDDLE_HISTORY_CARDS = MIDDLE_HISTORY_CARDS;
+  </script>
+  <script id="embedded-application">
+(() => {
+  "use strict";
+
+  const DAY = 24 * 60 * 60 * 1000;
+  const storageKey = "rekishi-card-records-v1";
+  const favoritesKey = "rekishi-card-favorites-v1";
+  const customCardsKey = "rekishi-card-custom-v1";
+  const elementaryCards = (window.HISTORY_CARDS || []).map((item) => ({ ...item, level: "elementary" }));
+  const middleCards = (window.MIDDLE_HISTORY_CARDS || []).map((item) => ({ ...item, level: "middle" }));
+  const baseCards = [...elementaryCards, ...middleCards];
+  const baseEraOrder = [...(window.ERA_ORDER || [])];
+  let customCards = safeLoad(customCardsKey, []);
+  let cards = [];
+  let eraOrder = [];
+  let testTimerId = null;
+
+  function safeLoad(key, fallback) {
+    try {
+      const value = JSON.parse(localStorage.getItem(key) || "null");
+      return value ?? fallback;
+    } catch (_error) {
+      return fallback;
+    }
+  }
+
+  function safeSave(key, value) {
+    try {
+      localStorage.setItem(key, JSON.stringify(value));
+    } catch (_error) {
+      // 保存できない環境でも現在の学習は続けられます。
+    }
+  }
+
+  function rebuildCards() {
+    customCards = Array.isArray(customCards) ? customCards.filter((item) => item && item.id && item.term && item.clue) : [];
+    cards = [...baseCards, ...customCards];
+    const customEras = customCards.map((item) => item.era).filter(Boolean);
+    eraOrder = [...new Set([...baseEraOrder, ...customEras])];
+  }
+
+  rebuildCards();
+
+  const elements = {
+    filterPanel: document.getElementById("filterPanel"),
+    filterBackdrop: document.getElementById("filterBackdrop"),
+    openFilters: document.getElementById("openFilters"),
+    closeFilters: document.getElementById("closeFilters"),
+    furiganaToggle: document.getElementById("furiganaToggle"),
+    elementaryLevel: document.getElementById("elementaryLevel"),
+    middleLevel: document.getElementById("middleLevel"),
+    allLevels: document.getElementById("allLevels"),
+    toggleAllEras: document.getElementById("toggleAllEras"),
+    eraGrid: document.getElementById("eraGrid"),
+    categorySelect: document.getElementById("categorySelect"),
+    clueDirection: document.getElementById("clueDirection"),
+    termDirection: document.getElementById("termDirection"),
+    choiceDirection: document.getElementById("choiceDirection"),
+    randomToggle: document.getElementById("randomToggle"),
+    reviewToggle: document.getElementById("reviewToggle"),
+    weakTotalCount: document.getElementById("weakTotalCount"),
+    unsureReviewCount: document.getElementById("unsureReviewCount"),
+    wrongReviewCount: document.getElementById("wrongReviewCount"),
+    weakReviewCount: document.getElementById("weakReviewCount"),
+    savedWeakCount: document.getElementById("savedWeakCount"),
+    startLearning: document.getElementById("startLearning"),
+    selectedCount: document.getElementById("selectedCount"),
+    dueCount: document.getElementById("dueCount"),
+    viewTabs: document.getElementById("viewTabs"),
+    studyHeader: document.getElementById("studyHeader"),
+    studyTitle: document.getElementById("studyTitle"),
+    activeFilters: document.getElementById("activeFilters"),
+    againCount: document.getElementById("againCount"),
+    unsureCount: document.getElementById("unsureCount"),
+    masteredCountSession: document.getElementById("masteredCountSession"),
+    studyContent: document.getElementById("studyContent"),
+    overallCard: document.getElementById("overallCard"),
+    overallMessage: document.getElementById("overallMessage"),
+    overallMeter: document.getElementById("overallMeter"),
+    overallPercent: document.getElementById("overallPercent"),
+    totalCards: document.getElementById("totalCards"),
+    studiedCards: document.getElementById("studiedCards"),
+    masteredCards: document.getElementById("masteredCards"),
+    resetProgress: document.getElementById("resetProgress"),
+  };
+
+  const state = {
+    view: "study",
+    selectedEras: new Set(eraOrder),
+    schoolLevel: "elementary",
+    category: "すべて",
+    direction: "clue",
+    randomOrder: true,
+    reviewOnly: false,
+    focusMode: "none",
+    furigana: true,
+    seed: Date.now(),
+    index: 0,
+    revealed: false,
+    selectedChoice: null,
+    filtersOpen: false,
+    records: safeLoad(storageKey, {}),
+    favorites: new Set(safeLoad(favoritesKey, [])),
+    session: { mastered: 0, unsure: 0, again: 0 },
+    listSearch: "",
+    listEra: "すべて",
+    listCategory: "すべて",
+    testSize: "10",
+    testTimed: false,
+    testMinutes: 5,
+    testSession: null,
+    timelineEra: "すべて",
+    timelineQuiz: null,
+    importMessage: "",
+  };
+
+  function escapeHtml(value) {
+    return String(value ?? "")
+      .replaceAll("&", "&amp;")
+      .replaceAll("<", "&lt;")
+      .replaceAll(">", "&gt;")
+      .replaceAll('"', "&quot;")
+      .replaceAll("'", "&#039;");
+  }
+
+  function stableShuffleValue(id, seed) {
+    let value = seed || 1;
+    for (let index = 0; index < id.length; index += 1) {
+      value = Math.imul(value ^ id.charCodeAt(index), 2654435761);
+    }
+    return value >>> 0;
+  }
+
+  function getCard(id) {
+    return cards.find((item) => item.id === id);
+  }
+
+  function getLevelCards() {
+    return cards.filter((item) => state.schoolLevel === "all" || item.level === state.schoolLevel);
+  }
+
+  function levelLabel() {
+    if (state.schoolLevel === "middle") return "中学生";
+    if (state.schoolLevel === "all") return "小中学生";
+    return "小学生";
+  }
+
+  function isDue(item, now = Date.now()) {
+    const record = state.records[item.id];
+    if (!record) return false;
+    if (Number.isFinite(record.dueAt)) return record.dueAt <= now;
+    return ["again", "unsure"].includes(record.rating) || record.lastTestResult === "wrong";
+  }
+
+  function isUnsure(item) {
+    return state.records[item.id]?.rating === "unsure";
+  }
+
+  function isWrong(item) {
+    return state.records[item.id]?.lastTestResult === "wrong";
+  }
+
+  function isWeak(item) {
+    const record = state.records[item.id];
+    return Boolean(record && (["again", "unsure"].includes(record.rating) || record.lastTestResult === "wrong"));
+  }
+
+  function matchesBaseFilters(item) {
+    if (state.schoolLevel !== "all" && item.level !== state.schoolLevel) return false;
+    if (!state.selectedEras.has(item.era)) return false;
+    if (state.category !== "すべて" && item.category !== state.category) return false;
+    return true;
+  }
+
+  function matchesFocusMode(item) {
+    if (state.focusMode === "unsure") return isUnsure(item);
+    if (state.focusMode === "wrong") return isWrong(item);
+    if (state.focusMode === "weak") return isWeak(item);
+    return true;
+  }
+
+  function studyModeTitle() {
+    if (state.focusMode === "unsure") return "あやしい問題を復習";
+    if (state.focusMode === "wrong") return "まちがえた問題を復習";
+    if (state.focusMode === "weak") return "苦手をまとめて復習";
+    if (state.reviewOnly) return "今日の復習";
+    return "歴史の流れをつかもう";
+  }
+
+  function dueText(item) {
+    const record = state.records[item.id];
+    if (!record) return "未学習";
+    if (isDue(item)) return "今日復習";
+    if (!Number.isFinite(record.dueAt)) return "復習日未設定";
+    return `${new Intl.DateTimeFormat("ja-JP", { month: "numeric", day: "numeric" }).format(record.dueAt)}に復習`;
+  }
+
+  function saveRecords() {
+    safeSave(storageKey, state.records);
+  }
+
+  function saveFavorites() {
+    safeSave(favoritesKey, [...state.favorites]);
+  }
+
+  function getDeck() {
+    const filtered = cards.filter((item) => {
+      if (!matchesBaseFilters(item)) return false;
+      if (state.reviewOnly && !isDue(item)) return false;
+      if (!matchesFocusMode(item)) return false;
+      return true;
+    });
+
+    return filtered.sort((a, b) => {
+      if (state.randomOrder) {
+        return stableShuffleValue(a.id, state.seed) - stableShuffleValue(b.id, state.seed);
+      }
+      const eraDifference = eraOrder.indexOf(a.era) - eraOrder.indexOf(b.era);
+      return eraDifference || cards.indexOf(a) - cards.indexOf(b);
+    });
+  }
+
+  function getChoices(current, choiceSeed = state.seed) {
+    const rankedPool = getLevelCards()
+      .filter((item) => item.id !== current.id && item.term !== current.term)
+      .sort((a, b) => {
+        const rank = (item) => (item.era === current.era ? 0 : 2) + (item.category === current.category ? 0 : 1);
+        const difference = rank(a) - rank(b);
+        return difference || stableShuffleValue(`${current.id}:${a.id}`, choiceSeed) - stableShuffleValue(`${current.id}:${b.id}`, choiceSeed);
+      });
+
+    const seenTerms = new Set([current.term]);
+    const distractors = [];
+    for (const item of rankedPool) {
+      if (seenTerms.has(item.term)) continue;
+      seenTerms.add(item.term);
+      distractors.push(item);
+      if (distractors.length === 3) break;
+    }
+
+    return [current, ...distractors].sort(
+      (a, b) => stableShuffleValue(`choice:${current.id}:${a.id}`, choiceSeed) - stableShuffleValue(`choice:${current.id}:${b.id}`, choiceSeed),
+    );
+  }
+
+  function termMarkup(item) {
+    const term = escapeHtml(item.term);
+    if (!item.reading) return term;
+    const readingClass = state.furigana ? "" : ' class="hide-reading"';
+    return `<ruby${readingClass}>${term}<rt>${escapeHtml(item.reading)}</rt></ruby>`;
+  }
+
+  function setFilterOpen(open) {
+    state.filtersOpen = open;
+    elements.filterPanel.classList.toggle("open", open);
+    elements.filterBackdrop.hidden = !open;
+    document.body.classList.toggle("filters-visible", open);
+  }
+
+  function resetCardPosition() {
+    state.index = 0;
+    state.revealed = false;
+    state.selectedChoice = null;
+  }
+
+  function setView(view) {
+    state.view = view;
+    setFilterOpen(false);
+    render();
+  }
+
+  function renderViewTabs() {
+    elements.viewTabs.querySelectorAll("[data-view]").forEach((button) => {
+      const active = button.dataset.view === state.view;
+      button.classList.toggle("active", active);
+      button.setAttribute("aria-current", active ? "page" : "false");
+    });
+  }
+
+  function renderEraButtons() {
+    elements.eraGrid.innerHTML = eraOrder.map((era) => {
+      const active = state.selectedEras.has(era);
+      return `<button class="era-chip${active ? " active" : ""}" type="button" data-era="${escapeHtml(era)}" aria-pressed="${active}"><span class="check">✓</span>${escapeHtml(era)}</button>`;
+    }).join("");
+
+    elements.eraGrid.querySelectorAll("[data-era]").forEach((button) => {
+      button.addEventListener("click", () => {
+        const era = button.dataset.era;
+        if (state.selectedEras.has(era)) state.selectedEras.delete(era);
+        else state.selectedEras.add(era);
+        resetCardPosition();
+        render();
+      });
+    });
+  }
+
+  function renderCategoryOptions() {
+    const categories = ["すべて", ...new Set(getLevelCards().map((item) => item.category))].sort((a, b) => {
+      if (a === "すべて") return -1;
+      if (b === "すべて") return 1;
+      return a.localeCompare(b, "ja");
+    });
+    if (!categories.includes(state.category)) state.category = "すべて";
+    elements.categorySelect.innerHTML = categories.map((item) => `<option value="${escapeHtml(item)}">${escapeHtml(item)}</option>`).join("");
+    elements.categorySelect.value = state.category;
+  }
+
+  function selectChoice(choiceId) {
+    if (state.direction !== "choice" || state.revealed) return;
+    const current = getDeck()[state.index];
+    if (!current) return;
+    state.selectedChoice = choiceId;
+    state.revealed = true;
+    render();
+  }
+
+  function choiceButtonsMarkup(current, choices, selectedId, revealed, dataName = "choice") {
+    return choices.map((item, index) => {
+      const isCorrect = item.id === current.id;
+      const isSelected = item.id === selectedId;
+      const resultClass = revealed ? isCorrect ? " correct" : isSelected ? " wrong" : " dimmed" : isSelected ? " selected" : "";
+      return `<button class="choice-button${resultClass}" type="button" data-${dataName}="${escapeHtml(item.id)}" aria-pressed="${isSelected}" ${revealed ? "disabled" : ""}>
+        <span class="choice-key">${index + 1}</span>
+        <strong>${termMarkup(item)}</strong>
+        ${revealed && isCorrect ? '<span class="choice-mark" aria-label="正解">✓</span>' : ""}
+        ${revealed && isSelected && !isCorrect ? '<span class="choice-mark" aria-label="不正解">×</span>' : ""}
+      </button>`;
+    }).join("");
+  }
+
+  function renderStudy(deck) {
+    if (!deck.length) {
+      const focused = state.focusMode !== "none";
+      elements.studyContent.innerHTML = `
+        <div class="empty-state">
+          <span aria-hidden="true">◎</span>
+          <h2>${focused ? "この種類の苦手問題はありません" : state.reviewOnly ? "今日の復習は完了です" : "カードが見つかりません"}</h2>
+          <p>${focused ? "別の苦手復習を選ぶか、通常学習に戻してください。" : state.reviewOnly ? "復習予定のカードはありません。通常学習に戻すか、別の条件を選んでください。" : "時代または分野の選択を変えてください。"}</p>
+          <button id="showAllCards" type="button">通常学習に戻す</button>
+        </div>`;
+      document.getElementById("showAllCards").addEventListener("click", () => {
+        state.selectedEras = new Set(eraOrder);
+        state.category = "すべて";
+        state.reviewOnly = false;
+        state.focusMode = "none";
+        resetCardPosition();
+        render();
+      });
+      return;
+    }
+
+    if (state.index >= deck.length) state.index = 0;
+    const current = deck[state.index];
+    const isChoiceMode = state.direction === "choice";
+    const choices = isChoiceMode ? getChoices(current) : [];
+    const progress = ((state.index + 1) / deck.length) * 100;
+    const questionBody = state.direction === "clue" || isChoiceMode
+      ? `<p class="clue-text">${escapeHtml(current.clue)}</p>`
+      : `<h2 class="term-front">${termMarkup(current)}</h2>`;
+    const answerBody = state.direction === "clue" || isChoiceMode
+      ? `<h2>${termMarkup(current)}</h2><p class="answer-explanation">${escapeHtml(current.clue)}</p>`
+      : `<p class="answer-clue">${escapeHtml(current.clue)}</p>`;
+    const selectedIsCorrect = state.selectedChoice === current.id;
+    const revealedAnswer = state.revealed
+      ? `<div class="answer-panel">
+          <p class="answer-label">ANSWER</p>
+          ${isChoiceMode ? `<p class="choice-feedback ${selectedIsCorrect ? "correct" : "wrong"}" role="status">${selectedIsCorrect ? "正解！" : "不正解。正解はこちらです"}</p>` : ""}
+          ${answerBody}
+          ${current.note ? `<p class="teacher-note">補足：${escapeHtml(current.note)}</p>` : ""}
+        </div>`
+      : "";
+    const answerArea = isChoiceMode
+      ? `<div class="choice-grid" role="group" aria-label="4つの選択肢">${choiceButtonsMarkup(current, choices, state.selectedChoice, state.revealed)}</div>${revealedAnswer}`
+      : state.revealed ? revealedAnswer : `<button class="reveal-button" id="revealAnswer" type="button">答えを見る <kbd>Space</kbd></button>`;
+    const keyboardHelp = isChoiceMode
+      ? state.revealed ? "← → で移動　・　1〜3で評価" : "← → で移動　・　1〜4で選択"
+      : "← → で移動　・　Spaceで答え　・　1〜3で評価";
+
+    elements.studyContent.innerHTML = `
+      <div class="progress-row">
+        <div class="progress-copy"><span>${state.index + 1}</span> / ${deck.length}</div>
+        <div class="progress-track"><span style="width:${progress}%"></span></div>
+        <button class="icon-button" id="reshuffleCards" type="button" aria-label="カードを並べ替える" title="並べ替える">↻</button>
+      </div>
+      <article class="flashcard${state.revealed ? " revealed" : ""}${isChoiceMode ? " choice-mode" : ""}">
+        <div class="card-meta">
+          <span class="era-tag">${escapeHtml(current.era)}</span>
+          <span>${escapeHtml(current.category)}</span>
+          <span class="schedule-tag">${escapeHtml(dueText(current))}</span>
+          ${current.year ? `<span class="year">${escapeHtml(current.year)}</span>` : ""}
+        </div>
+        <div class="card-question">
+          <p class="question-label">${isChoiceMode ? "説明にあてはまる語句を1つ選ぼう" : state.direction === "clue" ? "この説明にあてはまる語句は？" : "この語句を説明してみよう"}</p>
+          ${questionBody}
+        </div>
+        ${answerArea}
+      </article>
+      <div class="card-navigation">
+        <button class="nav-button" id="previousCard" type="button">← <span>前の問題</span></button>
+        <div class="rating-group" aria-label="自己評価">
+          <button class="rating again" data-rating="again" type="button" ${state.revealed ? "" : "disabled"}><span>1</span> もう一度</button>
+          <button class="rating unsure" data-rating="unsure" type="button" ${state.revealed ? "" : "disabled"}><span>2</span> あやしい</button>
+          <button class="rating mastered" data-rating="mastered" type="button" ${state.revealed ? "" : "disabled"}><span>3</span> 覚えた</button>
+        </div>
+        <button class="nav-button" id="nextCard" type="button"><span>次の問題</span> →</button>
+      </div>
+      <p class="keyboard-help">${keyboardHelp}</p>`;
+
+    document.getElementById("reshuffleCards").addEventListener("click", () => {
+      state.seed = Date.now();
+      resetCardPosition();
+      render();
+    });
+    document.getElementById("previousCard").addEventListener("click", previousCard);
+    document.getElementById("nextCard").addEventListener("click", nextCard);
+    document.getElementById("revealAnswer")?.addEventListener("click", () => {
+      state.revealed = true;
+      render();
+    });
+    elements.studyContent.querySelectorAll("[data-choice]").forEach((button) => {
+      button.addEventListener("click", () => selectChoice(button.dataset.choice));
+    });
+    elements.studyContent.querySelectorAll("[data-rating]").forEach((button) => {
+      button.addEventListener("click", () => rateCard(button.dataset.rating));
+    });
+  }
+
+  function renderOverall() {
+    const levelCards = getLevelCards();
+    const knownIds = new Set(levelCards.map((item) => item.id));
+    const validRecords = Object.entries(state.records).filter(([id]) => knownIds.has(id));
+    const studied = validRecords.length;
+    const mastered = validRecords.filter(([, item]) => item.rating === "mastered").length;
+    const percent = levelCards.length ? Math.round((mastered / levelCards.length) * 100) : 0;
+    elements.totalCards.textContent = levelCards.length;
+    elements.studiedCards.textContent = studied;
+    elements.masteredCards.textContent = mastered;
+    elements.overallPercent.textContent = percent;
+    elements.overallMessage.textContent = `${studied}語に挑戦済み。今日の復習は${levelCards.filter((item) => isDue(item)).length}語です。`;
+    elements.overallMeter.style.setProperty("--progress", `${percent * 3.6}deg`);
+  }
+
+  function previousCard() {
+    const deck = getDeck();
+    if (!deck.length) return;
+    state.index = (state.index - 1 + deck.length) % deck.length;
+    state.revealed = false;
+    state.selectedChoice = null;
+    render();
+  }
+
+  function nextCard() {
+    const deck = getDeck();
+    if (!deck.length) return;
+    state.index = (state.index + 1) % deck.length;
+    state.revealed = false;
+    state.selectedChoice = null;
+    render();
+  }
+
+  function rateCard(rating) {
+    const deckBefore = getDeck();
+    const current = deckBefore[state.index];
+    if (!current || !state.revealed || !["again", "unsure", "mastered"].includes(rating)) return;
+
+    const previous = state.records[current.id] || {};
+    let intervalDays = 0;
+    if (rating === "unsure") intervalDays = 1;
+    if (rating === "mastered") intervalDays = previous.rating === "mastered" ? Math.min(Math.max(previous.intervalDays || 3, 3) * 2, 60) : 3;
+    state.records[current.id] = {
+      rating,
+      attempts: (previous.attempts || 0) + 1,
+      updatedAt: Date.now(),
+      intervalDays,
+      dueAt: Date.now() + intervalDays * DAY,
+      lastTestResult: rating === "mastered" ? "correct" : previous.lastTestResult,
+    };
+    state.session[rating] += 1;
+    saveRecords();
+    state.revealed = false;
+    state.selectedChoice = null;
+
+    const deckAfter = getDeck();
+    if (!deckAfter.length) state.index = 0;
+    else if (state.focusMode !== "none") {
+      const currentIndex = deckAfter.findIndex((item) => item.id === current.id);
+      state.index = currentIndex === -1 ? state.index % deckAfter.length : rating === "again" ? currentIndex : (currentIndex + 1) % deckAfter.length;
+    }
+    else if (state.reviewOnly) state.index %= deckAfter.length;
+    else state.index = (state.index + 1) % deckAfter.length;
+    window.setTimeout(render, 100);
+  }
+
+  function clearTestTimer() {
+    if (testTimerId) window.clearInterval(testTimerId);
+    testTimerId = null;
+  }
+
+  function startTestTimer() {
+    clearTestTimer();
+    if (!state.testSession?.timed || state.testSession.finished) return;
+    testTimerId = window.setInterval(() => {
+      if (!state.testSession || state.testSession.finished) return clearTestTimer();
+      state.testSession.remainingSeconds -= 1;
+      if (state.testSession.remainingSeconds <= 0) finishTest();
+      else {
+        const timer = document.getElementById("testTimer");
+        if (timer) timer.textContent = formatSeconds(state.testSession.remainingSeconds);
+      }
+    }, 1000);
+  }
+
+  function formatSeconds(seconds) {
+    return `${Math.floor(seconds / 60)}:${String(seconds % 60).padStart(2, "0")}`;
+  }
+
+  function startTest() {
+    const seed = Date.now();
+    const pool = [...getDeck()].sort((a, b) => stableShuffleValue(a.id, seed) - stableShuffleValue(b.id, seed));
+    const requested = state.testSize === "all" ? pool.length : Number(state.testSize);
+    const selected = pool.slice(0, Math.min(requested, pool.length));
+    if (!selected.length) {
+      state.testSession = null;
+      renderTestView("この条件ではテスト問題がありません。条件を変更してください。");
+      return;
+    }
+    state.testSession = {
+      questions: selected.map((card, index) => ({
+        cardId: card.id,
+        choiceIds: getChoices(card, seed + index + 1).map((item) => item.id),
+        selectedId: null,
+      })),
+      index: 0,
+      timed: state.testTimed,
+      remainingSeconds: state.testTimed ? state.testMinutes * 60 : 0,
+      finished: false,
+      startedAt: Date.now(),
+    };
+    startTestTimer();
+    render();
+  }
+
+  function chooseTestAnswer(choiceId) {
+    const session = state.testSession;
+    if (!session || session.finished) return;
+    session.questions[session.index].selectedId = choiceId;
+    render();
+  }
+
+  function nextTestQuestion() {
+    const session = state.testSession;
+    if (!session || session.finished || !session.questions[session.index].selectedId) return;
+    if (session.index >= session.questions.length - 1) finishTest();
+    else {
+      session.index += 1;
+      render();
+    }
+  }
+
+  function finishTest() {
+    if (!state.testSession || state.testSession.finished) return;
+    state.testSession.finished = true;
+    state.testSession.finishedAt = Date.now();
+    state.testSession.questions.forEach((question) => {
+      const previous = state.records[question.cardId] || {};
+      const correct = question.selectedId === question.cardId;
+      const nextRecord = {
+        ...previous,
+        testAttempts: (previous.testAttempts || 0) + 1,
+        testCorrect: (previous.testCorrect || 0) + (correct ? 1 : 0),
+        testWrong: (previous.testWrong || 0) + (correct ? 0 : 1),
+        lastTestResult: correct ? "correct" : "wrong",
+        lastTestAt: Date.now(),
+        updatedAt: Date.now(),
+      };
+      if (!correct) nextRecord.dueAt = Date.now();
+      else if (!previous.rating && previous.lastTestResult === "wrong") delete nextRecord.dueAt;
+      state.records[question.cardId] = nextRecord;
+    });
+    saveRecords();
+    clearTestTimer();
+    render();
+  }
+
+  function renderTestView(message = "") {
+    const session = state.testSession;
+    if (!session) {
+      const available = getDeck().length;
+      elements.studyContent.innerHTML = `
+        <section class="tool-view">
+          <div class="view-heading"><div><p class="eyebrow">TEST MODE</p><h1>実力テスト</h1><p>正解は最後にまとめて表示します。現在の学年・時代・分野の条件が使われます。</p></div><span class="count-badge">対象 ${available}問</span></div>
+          ${message ? `<p class="notice error">${escapeHtml(message)}</p>` : ""}
+          <div class="settings-card">
+            <label><span>問題数</span><select id="testSize"><option value="10" ${state.testSize === "10" ? "selected" : ""}>10問</option><option value="20" ${state.testSize === "20" ? "selected" : ""}>20問</option><option value="all" ${state.testSize === "all" ? "selected" : ""}>すべて</option></select></label>
+            <label class="check-setting"><input id="testTimed" type="checkbox" ${state.testTimed ? "checked" : ""}><span>制限時間をつける</span></label>
+            <label><span>制限時間</span><select id="testMinutes" ${state.testTimed ? "" : "disabled"}><option value="5" ${state.testMinutes === 5 ? "selected" : ""}>5分</option><option value="10" ${state.testMinutes === 10 ? "selected" : ""}>10分</option><option value="20" ${state.testMinutes === 20 ? "selected" : ""}>20分</option></select></label>
+            <button class="primary-action" id="startTest" type="button" ${available ? "" : "disabled"}>テストを始める →</button>
+          </div>
+        </section>`;
+      document.getElementById("testSize").addEventListener("change", (event) => { state.testSize = event.target.value; });
+      document.getElementById("testTimed").addEventListener("change", (event) => { state.testTimed = event.target.checked; render(); });
+      document.getElementById("testMinutes").addEventListener("change", (event) => { state.testMinutes = Number(event.target.value); });
+      document.getElementById("startTest")?.addEventListener("click", startTest);
+      return;
+    }
+
+    if (session.finished) {
+      const correct = session.questions.filter((question) => question.selectedId === question.cardId).length;
+      const percent = Math.round((correct / session.questions.length) * 100);
+      const wrong = session.questions.filter((question) => question.selectedId !== question.cardId);
+      elements.studyContent.innerHTML = `
+        <section class="tool-view">
+          <div class="result-summary"><p class="eyebrow">TEST RESULT</p><h1>${percent}点</h1><p>${session.questions.length}問中 ${correct}問正解</p><div class="result-bar"><span style="width:${percent}%"></span></div></div>
+          <div class="result-actions"><button class="secondary-action" id="resetTest" type="button">設定に戻る</button><button class="primary-action" id="retryTest" type="button">もう一度挑戦</button>${wrong.length ? '<button class="weak-action" id="reviewWrongFromTest" type="button">まちがいだけ復習</button>' : ""}</div>
+          <section class="review-results"><h2>間違えた問題・未回答</h2>${wrong.length ? wrong.map((question) => {
+            const card = getCard(question.cardId);
+            const selected = getCard(question.selectedId);
+            return `<article><div><span class="era-tag">${escapeHtml(card.era)}</span><strong>${termMarkup(card)}</strong></div><p>${escapeHtml(card.clue)}</p><small>あなたの回答：${selected ? escapeHtml(selected.term) : "未回答"}</small></article>`;
+          }).join("") : '<p class="perfect-message">全問正解です。すばらしい！</p>'}</section>
+        </section>`;
+      document.getElementById("resetTest").addEventListener("click", () => { state.testSession = null; render(); });
+      document.getElementById("retryTest").addEventListener("click", startTest);
+      document.getElementById("reviewWrongFromTest")?.addEventListener("click", () => {
+        state.focusMode = "wrong";
+        state.reviewOnly = false;
+        state.view = "study";
+        resetCardPosition();
+        render();
+      });
+      return;
+    }
+
+    const question = session.questions[session.index];
+    const current = getCard(question.cardId);
+    const choices = question.choiceIds.map(getCard).filter(Boolean);
+    elements.studyContent.innerHTML = `
+      <section class="tool-view test-running">
+        <div class="test-status"><strong>${session.index + 1} / ${session.questions.length}</strong>${session.timed ? `<span>残り <b id="testTimer">${formatSeconds(session.remainingSeconds)}</b></span>` : ""}<button id="finishTest" type="button">終了して採点</button></div>
+        <div class="progress-track"><span style="width:${((session.index + 1) / session.questions.length) * 100}%"></span></div>
+        <article class="test-question-card"><span class="era-tag">${escapeHtml(current.era)}</span><p>この説明にあてはまる語句は？</p><h2>${escapeHtml(current.clue)}</h2></article>
+        <div class="choice-grid test-choices">${choiceButtonsMarkup(current, choices, question.selectedId, false, "test-choice")}</div>
+        <button class="primary-action next-test" id="nextTest" type="button" ${question.selectedId ? "" : "disabled"}>${session.index === session.questions.length - 1 ? "採点する" : "次の問題へ"} →</button>
+        <p class="test-note">回答は変更できます。正解は採点後に表示します。</p>
+      </section>`;
+    elements.studyContent.querySelectorAll("[data-test-choice]").forEach((button) => button.addEventListener("click", () => chooseTestAnswer(button.dataset.testChoice)));
+    document.getElementById("nextTest").addEventListener("click", nextTestQuestion);
+    document.getElementById("finishTest").addEventListener("click", finishTest);
+  }
+
+  function toggleFavorite(id) {
+    if (state.favorites.has(id)) state.favorites.delete(id);
+    else state.favorites.add(id);
+    saveFavorites();
+    renderListView();
+  }
+
+  function studyCard(id) {
+    const item = getCard(id);
+    if (!item) return;
+    state.selectedEras = new Set([item.era]);
+    state.category = item.category;
+    state.reviewOnly = false;
+    state.focusMode = "none";
+    state.randomOrder = false;
+    state.view = "study";
+    state.revealed = false;
+    state.selectedChoice = null;
+    state.index = Math.max(0, getDeck().findIndex((card) => card.id === id));
+    render();
+  }
+
+  function renderListView(refocus = false) {
+    const levelCards = getLevelCards();
+    const categories = ["すべて", ...new Set(levelCards.map((item) => item.category))].sort((a, b) => a.localeCompare(b, "ja"));
+    const query = state.listSearch.trim().toLocaleLowerCase("ja");
+    const filtered = levelCards.filter((item) => {
+      if (state.listEra !== "すべて" && item.era !== state.listEra) return false;
+      if (state.listCategory !== "すべて" && item.category !== state.listCategory) return false;
+      if (!query) return true;
+      return [item.term, item.reading, item.clue, item.year].some((value) => String(value || "").toLocaleLowerCase("ja").includes(query));
+    });
+
+    elements.studyContent.innerHTML = `
+      <section class="tool-view">
+        <div class="view-heading"><div><p class="eyebrow">CARD LIBRARY</p><h1>語句一覧</h1><p>語句・読み・説明から検索できます。星を付けてお気に入りにもできます。</p></div><span class="count-badge">${filtered.length}語</span></div>
+        <div class="library-tools">
+          <label class="search-box"><span aria-hidden="true">⌕</span><input id="listSearch" type="search" value="${escapeHtml(state.listSearch)}" placeholder="語句や説明を検索"></label>
+          <select id="listEra"><option>すべて</option>${eraOrder.map((era) => `<option ${state.listEra === era ? "selected" : ""}>${escapeHtml(era)}</option>`).join("")}</select>
+          <select id="listCategory">${categories.map((category) => `<option ${state.listCategory === category ? "selected" : ""}>${escapeHtml(category)}</option>`).join("")}</select>
+        </div>
+        <div class="term-list">${filtered.length ? filtered.map((item) => `
+          <article class="term-row">
+            <button class="favorite-button${state.favorites.has(item.id) ? " active" : ""}" data-favorite="${escapeHtml(item.id)}" type="button" aria-label="${state.favorites.has(item.id) ? "お気に入りから外す" : "お気に入りに追加"}">★</button>
+            <div class="term-main"><div><span class="era-tag">${escapeHtml(item.era)}</span><span class="category-label">${escapeHtml(item.category)}</span></div><h2>${termMarkup(item)}</h2><p>${escapeHtml(item.clue)}</p><small>${escapeHtml(dueText(item))}${item.year ? ` ・ ${escapeHtml(item.year)}` : ""}</small></div>
+            <button class="study-this" data-study-card="${escapeHtml(item.id)}" type="button">このカードで学習</button>
+          </article>`).join("") : '<div class="empty-inline">条件に合う語句がありません。</div>'}</div>
+      </section>`;
+
+    const search = document.getElementById("listSearch");
+    search.addEventListener("input", (event) => {
+      state.listSearch = event.target.value;
+      renderListView(true);
+    });
+    if (refocus) {
+      search.focus();
+      search.setSelectionRange(search.value.length, search.value.length);
+    }
+    document.getElementById("listEra").addEventListener("change", (event) => { state.listEra = event.target.value; renderListView(); });
+    document.getElementById("listCategory").addEventListener("change", (event) => { state.listCategory = event.target.value; renderListView(); });
+    elements.studyContent.querySelectorAll("[data-favorite]").forEach((button) => button.addEventListener("click", () => toggleFavorite(button.dataset.favorite)));
+    elements.studyContent.querySelectorAll("[data-study-card]").forEach((button) => button.addEventListener("click", () => studyCard(button.dataset.studyCard)));
+  }
+
+  function groupProgress(items, key) {
+    return [...new Set(items.map((item) => item[key]))].map((name) => {
+      const group = items.filter((item) => item[key] === name);
+      const studied = group.filter((item) => state.records[item.id]).length;
+      const mastered = group.filter((item) => state.records[item.id]?.rating === "mastered").length;
+      const due = group.filter((item) => isDue(item)).length;
+      return { name, total: group.length, studied, mastered, due, percent: group.length ? Math.round((mastered / group.length) * 100) : 0 };
+    });
+  }
+
+  function progressRows(groups, dataName) {
+    return groups.map((group) => `<button class="progress-item" type="button" data-progress-${dataName}="${escapeHtml(group.name)}"><span class="progress-name">${escapeHtml(group.name)}</span><span class="mini-track"><i style="width:${group.percent}%"></i></span><strong>${group.percent}%</strong><small>${group.mastered}/${group.total}習得・復習${group.due}</small></button>`).join("");
+  }
+
+  function renderProgressView() {
+    const items = getLevelCards();
+    const eraGroups = groupProgress(items, "era").sort((a, b) => eraOrder.indexOf(a.name) - eraOrder.indexOf(b.name));
+    const categoryGroups = groupProgress(items, "category").sort((a, b) => a.name.localeCompare(b.name, "ja"));
+    const studied = items.filter((item) => state.records[item.id]).length;
+    const mastered = items.filter((item) => state.records[item.id]?.rating === "mastered").length;
+    const due = items.filter((item) => isDue(item)).length;
+    elements.studyContent.innerHTML = `
+      <section class="tool-view">
+        <div class="view-heading"><div><p class="eyebrow">LEARNING REPORT</p><h1>学習状況</h1><p>苦手な時代や分野を選ぶと、その条件で学習を始められます。</p></div></div>
+        <div class="stat-grid"><article><span>挑戦済み</span><strong>${studied}</strong><small>/ ${items.length}語</small></article><article><span>覚えた</span><strong>${mastered}</strong><small>語</small></article><article><span>今日の復習</span><strong>${due}</strong><small>語</small></article><article><span>お気に入り</span><strong>${[...state.favorites].filter((id) => items.some((item) => item.id === id)).length}</strong><small>語</small></article></div>
+        <div class="progress-columns"><section class="report-card"><h2>時代別</h2>${progressRows(eraGroups, "era")}</section><section class="report-card"><h2>分野別</h2>${progressRows(categoryGroups, "category")}</section></div>
+      </section>`;
+    elements.studyContent.querySelectorAll("[data-progress-era]").forEach((button) => button.addEventListener("click", () => {
+      state.selectedEras = new Set([button.dataset.progressEra]); state.category = "すべて"; state.reviewOnly = false; state.focusMode = "none"; state.view = "study"; resetCardPosition(); render();
+    }));
+    elements.studyContent.querySelectorAll("[data-progress-category]").forEach((button) => button.addEventListener("click", () => {
+      state.selectedEras = new Set(eraOrder); state.category = button.dataset.progressCategory; state.reviewOnly = false; state.focusMode = "none"; state.view = "study"; resetCardPosition(); render();
+    }));
+  }
+
+  function yearNumber(item) {
+    const value = String(item.year || "");
+    const match = value.match(/(\d{3,4})/);
+    if (!match) return null;
+    const year = Number(match[1]);
+    return /紀元前/.test(value) ? -year : year;
+  }
+
+  function timelineCards() {
+    return getLevelCards().filter((item) => yearNumber(item) !== null && (state.timelineEra === "すべて" || item.era === state.timelineEra)).sort((a, b) => yearNumber(a) - yearNumber(b) || a.term.localeCompare(b.term, "ja"));
+  }
+
+  function makeTimelineQuiz() {
+    const seed = Date.now();
+    const source = timelineCards();
+    const chosen = [...source].sort((a, b) => stableShuffleValue(a.id, seed) - stableShuffleValue(b.id, seed)).slice(0, 4);
+    state.timelineQuiz = {
+      ids: chosen.sort((a, b) => stableShuffleValue(`quiz:${a.id}`, seed) - stableShuffleValue(`quiz:${b.id}`, seed)).map((item) => item.id),
+      selected: [],
+      result: null,
+    };
+    renderTimelineView();
+  }
+
+  function selectTimelineItem(id) {
+    const quiz = state.timelineQuiz;
+    if (!quiz || quiz.result !== null || quiz.selected.includes(id)) return;
+    quiz.selected.push(id);
+    if (quiz.selected.length === quiz.ids.length) {
+      const correct = [...quiz.ids].sort((a, b) => yearNumber(getCard(a)) - yearNumber(getCard(b)));
+      quiz.result = quiz.selected.every((idValue, index) => idValue === correct[index]);
+      quiz.correct = correct;
+    }
+    renderTimelineView();
+  }
+
+  function renderTimelineView() {
+    const items = timelineCards();
+    const quiz = state.timelineQuiz;
+    const remaining = quiz ? quiz.ids.filter((id) => !quiz.selected.includes(id)) : [];
+    elements.studyContent.innerHTML = `
+      <section class="tool-view">
+        <div class="view-heading"><div><p class="eyebrow">TIMELINE</p><h1>歴史年表</h1><p>出来事の前後関係を確認し、年代順の並べ替えにも挑戦できます。</p></div><select id="timelineEra"><option>すべて</option>${eraOrder.map((era) => `<option ${state.timelineEra === era ? "selected" : ""}>${escapeHtml(era)}</option>`).join("")}</select></div>
+        <section class="timeline-quiz"><div class="section-heading"><div><h2>年代並べ替えチャレンジ</h2><p>古い出来事から順番に選んでください。</p></div><button class="secondary-action" id="newTimelineQuiz" type="button">${quiz ? "別の問題" : "問題を作る"}</button></div>
+          ${quiz ? `<div class="selected-order">${quiz.selected.length ? quiz.selected.map((id, index) => `<span><b>${index + 1}</b>${escapeHtml(getCard(id).term)}</span>`).join("") : "まだ選ばれていません"}</div>
+          ${quiz.result === null ? `<div class="timeline-options">${remaining.map((id) => `<button type="button" data-timeline-choice="${escapeHtml(id)}">${escapeHtml(getCard(id).term)}</button>`).join("")}</div>` : `<div class="timeline-answer ${quiz.result ? "correct" : "wrong"}"><strong>${quiz.result ? "正解！" : "もう一度確認しよう"}</strong><p>正しい順番：${quiz.correct.map((id) => `${escapeHtml(getCard(id).year)} ${escapeHtml(getCard(id).term)}`).join(" → ")}</p><button id="retryTimelineQuiz" type="button">同じ問題をやり直す</button></div>`}` : '<p class="quiz-placeholder">「問題を作る」を押すと4つの出来事が表示されます。</p>'}
+        </section>
+        <div class="timeline-list">${items.map((item) => `<article><time>${escapeHtml(item.year)}</time><div><span>${escapeHtml(item.era)}・${escapeHtml(item.category)}</span><h2>${termMarkup(item)}</h2><p>${escapeHtml(item.clue)}</p></div></article>`).join("") || '<div class="empty-inline">この条件では年代付きの語句がありません。</div>'}</div>
+      </section>`;
+    document.getElementById("timelineEra").addEventListener("change", (event) => { state.timelineEra = event.target.value; state.timelineQuiz = null; renderTimelineView(); });
+    document.getElementById("newTimelineQuiz").addEventListener("click", makeTimelineQuiz);
+    elements.studyContent.querySelectorAll("[data-timeline-choice]").forEach((button) => button.addEventListener("click", () => selectTimelineItem(button.dataset.timelineChoice)));
+    document.getElementById("retryTimelineQuiz")?.addEventListener("click", () => { state.timelineQuiz.selected = []; state.timelineQuiz.result = null; renderTimelineView(); });
+  }
+
+  function downloadFile(filename, content, type) {
+    const blob = new Blob([content], { type });
+    const url = URL.createObjectURL(blob);
+    const anchor = document.createElement("a");
+    anchor.href = url;
+    anchor.download = filename;
+    document.body.append(anchor);
+    anchor.click();
+    anchor.remove();
+    URL.revokeObjectURL(url);
+  }
+
+  function exportBackup() {
+    const payload = { version: 2, exportedAt: new Date().toISOString(), records: state.records, favorites: [...state.favorites], customCards };
+    downloadFile("rekishi-card-backup.json", JSON.stringify(payload, null, 2), "application/json");
+  }
+
+  function exportQuestionsJson() {
+    downloadFile("rekishi-card-questions.json", JSON.stringify({ version: 1, questions: cards }, null, 2), "application/json");
+  }
+
+  function csvEscape(value) {
+    const text = String(value ?? "");
+    return /[",\n]/.test(text) ? `"${text.replaceAll('"', '""')}"` : text;
+  }
+
+  function exportQuestionsCsv() {
+    const headers = ["id", "term", "reading", "era", "category", "clue", "year", "note", "level"];
+    const lines = [headers.join(","), ...cards.map((item) => headers.map((key) => csvEscape(item[key])).join(","))];
+    downloadFile("rekishi-card-questions.csv", `\ufeff${lines.join("\n")}`, "text/csv;charset=utf-8");
+  }
+
+  function parseCsv(text) {
+    const rows = [];
+    let row = [];
+    let field = "";
+    let quoted = false;
+    for (let index = 0; index < text.length; index += 1) {
+      const character = text[index];
+      if (quoted) {
+        if (character === '"' && text[index + 1] === '"') { field += '"'; index += 1; }
+        else if (character === '"') quoted = false;
+        else field += character;
+      } else if (character === '"') quoted = true;
+      else if (character === ",") { row.push(field); field = ""; }
+      else if (character === "\n") { row.push(field.replace(/\r$/, "")); rows.push(row); row = []; field = ""; }
+      else field += character;
+    }
+    if (field || row.length) { row.push(field.replace(/\r$/, "")); rows.push(row); }
+    if (!rows.length) return [];
+    const headers = rows.shift().map((header) => header.replace(/^\ufeff/, "").trim());
+    return rows.filter((values) => values.some(Boolean)).map((values) => Object.fromEntries(headers.map((header, index) => [header, values[index] || ""])));
+  }
+
+  function normalizeImportedCard(item, index, preserveId = false) {
+    if (!item || !String(item.term || "").trim() || !String(item.clue || "").trim()) return null;
+    const levelText = String(item.level || "elementary").toLowerCase();
+    const level = levelText === "middle" || levelText.includes("中") ? "middle" : "elementary";
+    const safeId = preserveId && /^custom-[a-z0-9-]+$/i.test(String(item.id || "")) ? item.id : `custom-${Date.now().toString(36)}-${index}-${Math.random().toString(36).slice(2, 7)}`;
+    return {
+      id: safeId,
+      term: String(item.term).trim(),
+      reading: String(item.reading || "").trim(),
+      era: String(item.era || "未分類").trim(),
+      category: String(item.category || "その他").trim(),
+      clue: String(item.clue).trim(),
+      year: String(item.year || "").trim() || undefined,
+      note: String(item.note || "").trim() || undefined,
+      level,
+      custom: true,
+    };
+  }
+
+  function addImportedCards(items, preserveIds = false) {
+    const existing = new Set(cards.map((item) => `${item.level}|${item.term}|${item.reading}|${item.era}`));
+    let added = 0;
+    items.forEach((item, index) => {
+      const normalized = normalizeImportedCard(item, index, preserveIds);
+      if (!normalized) return;
+      const key = `${normalized.level}|${normalized.term}|${normalized.reading}|${normalized.era}`;
+      if (existing.has(key)) return;
+      existing.add(key);
+      customCards.push(normalized);
+      added += 1;
+    });
+    safeSave(customCardsKey, customCards);
+    rebuildCards();
+    eraOrder.forEach((era) => state.selectedEras.add(era));
+    return added;
+  }
+
+  async function importData(file) {
+    try {
+      const text = await file.text();
+      let added = 0;
+      if (file.name.toLowerCase().endsWith(".csv")) {
+        added = addImportedCards(parseCsv(text));
+        state.importMessage = `${added}件の新しい問題を追加しました。`;
+      } else {
+        const data = JSON.parse(text);
+        if (Array.isArray(data)) added = addImportedCards(data);
+        else if (Array.isArray(data.questions)) added = addImportedCards(data.questions);
+        if (data && !Array.isArray(data) && (data.records || data.favorites || data.customCards)) {
+          if (Array.isArray(data.customCards)) added += addImportedCards(data.customCards, true);
+          if (data.records && typeof data.records === "object") state.records = { ...state.records, ...data.records };
+          if (Array.isArray(data.favorites)) state.favorites = new Set([...state.favorites, ...data.favorites]);
+          saveRecords();
+          saveFavorites();
+          state.importMessage = `バックアップを復元しました。追加問題は${added}件です。`;
+        } else state.importMessage = `${added}件の新しい問題を追加しました。`;
+      }
+    } catch (_error) {
+      state.importMessage = "読み込みに失敗しました。JSONまたはCSVの形式を確認してください。";
+    }
+    render();
+  }
+
+  function renderDataView() {
+    elements.studyContent.innerHTML = `
+      <section class="tool-view">
+        <div class="view-heading"><div><p class="eyebrow">DATA TOOLS</p><h1>データの保存・読み込み</h1><p>学習記録をバックアップし、JSON・CSVで問題を追加できます。</p></div></div>
+        ${state.importMessage ? `<p class="notice">${escapeHtml(state.importMessage)}</p>` : ""}
+        <div class="data-grid">
+          <section class="data-card"><span class="data-icon" aria-hidden="true">⇩</span><h2>バックアップ</h2><p>学習記録・お気に入り・追加問題を1つのJSONファイルに保存します。</p><button class="primary-action" id="exportBackup" type="button">バックアップJSON</button></section>
+          <section class="data-card"><span class="data-icon" aria-hidden="true">表</span><h2>問題を書き出す</h2><p>全${cards.length}問を編集用ファイルとして保存します。</p><div class="button-row"><button class="secondary-action" id="exportQuestionsJson" type="button">JSON</button><button class="secondary-action" id="exportQuestionsCsv" type="button">CSV</button></div></section>
+          <section class="data-card"><span class="data-icon" aria-hidden="true">⇧</span><h2>読み込む</h2><p>バックアップJSON、問題一覧JSON、CSVを読み込めます。既存語句は重複追加しません。</p><label class="file-button">ファイルを選ぶ<input id="importFile" type="file" accept=".json,.csv,application/json,text/csv"></label></section>
+        </div>
+        <section class="format-help"><h2>問題ファイルの項目</h2><code>term, reading, era, category, clue, year, note, level</code><p><b>term</b>（語句）と<b>clue</b>（説明）は必須です。levelは小学生ならelementary、中学生ならmiddleです。</p><p>追加した問題と学習記録は、この端末のブラウザ内だけに保存されます。</p></section>
+      </section>`;
+    document.getElementById("exportBackup").addEventListener("click", exportBackup);
+    document.getElementById("exportQuestionsJson").addEventListener("click", exportQuestionsJson);
+    document.getElementById("exportQuestionsCsv").addEventListener("click", exportQuestionsCsv);
+    document.getElementById("importFile").addEventListener("change", (event) => { if (event.target.files?.[0]) importData(event.target.files[0]); });
+  }
+
+  function render() {
+    const deck = getDeck();
+    renderViewTabs();
+    renderEraButtons();
+    renderCategoryOptions();
+
+    elements.elementaryLevel.classList.toggle("active", state.schoolLevel === "elementary");
+    elements.middleLevel.classList.toggle("active", state.schoolLevel === "middle");
+    elements.allLevels.classList.toggle("active", state.schoolLevel === "all");
+    elements.elementaryLevel.setAttribute("aria-pressed", String(state.schoolLevel === "elementary"));
+    elements.middleLevel.setAttribute("aria-pressed", String(state.schoolLevel === "middle"));
+    elements.allLevels.setAttribute("aria-pressed", String(state.schoolLevel === "all"));
+    elements.toggleAllEras.textContent = state.selectedEras.size === eraOrder.length ? "すべて外す" : "すべて選ぶ";
+    elements.clueDirection.classList.toggle("active", state.direction === "clue");
+    elements.termDirection.classList.toggle("active", state.direction === "term");
+    elements.choiceDirection.classList.toggle("active", state.direction === "choice");
+    elements.clueDirection.setAttribute("aria-pressed", String(state.direction === "clue"));
+    elements.termDirection.setAttribute("aria-pressed", String(state.direction === "term"));
+    elements.choiceDirection.setAttribute("aria-pressed", String(state.direction === "choice"));
+    elements.randomToggle.checked = state.randomOrder;
+    elements.reviewToggle.checked = state.reviewOnly;
+    const baseFilteredCards = cards.filter(matchesBaseFilters);
+    const unsureCount = baseFilteredCards.filter(isUnsure).length;
+    const wrongCount = baseFilteredCards.filter(isWrong).length;
+    const weakCount = baseFilteredCards.filter(isWeak).length;
+    elements.weakTotalCount.textContent = `${weakCount}問`;
+    elements.unsureReviewCount.textContent = unsureCount;
+    elements.wrongReviewCount.textContent = wrongCount;
+    elements.weakReviewCount.textContent = weakCount;
+    elements.savedWeakCount.textContent = `${getLevelCards().filter(isWeak).length}問`;
+    document.querySelectorAll("[data-focus-mode]").forEach((button) => {
+      const active = button.dataset.focusMode === state.focusMode;
+      button.classList.toggle("active", active);
+      button.setAttribute("aria-pressed", String(active));
+    });
+    elements.furiganaToggle.checked = state.furigana;
+    elements.selectedCount.textContent = `${deck.length}問`;
+    elements.dueCount.textContent = `${getLevelCards().filter((item) => isDue(item)).length}問`;
+    elements.studyTitle.textContent = studyModeTitle();
+    elements.activeFilters.textContent = `${levelLabel()} ／ ${state.selectedEras.size === eraOrder.length ? "すべての時代" : [...state.selectedEras].join("・") || "時代未選択"} ／ ${state.category}`;
+    elements.againCount.textContent = state.session.again;
+    elements.unsureCount.textContent = state.session.unsure;
+    elements.masteredCountSession.textContent = state.session.mastered;
+    elements.studyHeader.hidden = state.view !== "study";
+    elements.overallCard.hidden = state.view !== "study";
+
+    if (state.view === "study") renderStudy(deck);
+    else if (state.view === "test") renderTestView();
+    else if (state.view === "list") renderListView();
+    else if (state.view === "progress") renderProgressView();
+    else if (state.view === "timeline") renderTimelineView();
+    else renderDataView();
+    renderOverall();
+  }
+
+  function initializeControls() {
+    if (!cards.length || !eraOrder.length) {
+      elements.studyContent.innerHTML = '<div class="empty-state"><h2>問題データを読み込めませんでした</h2><p>HTMLファイル、questions.js、middle-questions.jsを同じフォルダに置いてください。</p></div>';
+      return;
+    }
+
+    elements.viewTabs.querySelectorAll("[data-view]").forEach((button) => button.addEventListener("click", () => setView(button.dataset.view)));
+    elements.openFilters.addEventListener("click", () => setFilterOpen(true));
+    elements.closeFilters.addEventListener("click", () => setFilterOpen(false));
+    elements.filterBackdrop.addEventListener("click", () => setFilterOpen(false));
+    elements.furiganaToggle.addEventListener("change", (event) => { state.furigana = event.target.checked; render(); });
+    const setSchoolLevel = (level) => {
+      state.schoolLevel = level;
+      state.category = "すべて";
+      state.listEra = "すべて";
+      state.listCategory = "すべて";
+      state.timelineEra = "すべて";
+      state.timelineQuiz = null;
+      state.testSession = null;
+      clearTestTimer();
+      resetCardPosition();
+      render();
+    };
+    elements.elementaryLevel.addEventListener("click", () => setSchoolLevel("elementary"));
+    elements.middleLevel.addEventListener("click", () => setSchoolLevel("middle"));
+    elements.allLevels.addEventListener("click", () => setSchoolLevel("all"));
+    elements.toggleAllEras.addEventListener("click", () => {
+      state.selectedEras = state.selectedEras.size === eraOrder.length ? new Set() : new Set(eraOrder);
+      resetCardPosition();
+      render();
+    });
+    elements.categorySelect.addEventListener("change", (event) => { state.category = event.target.value; resetCardPosition(); render(); });
+    elements.clueDirection.addEventListener("click", () => { state.direction = "clue"; resetCardPosition(); render(); });
+    elements.termDirection.addEventListener("click", () => { state.direction = "term"; resetCardPosition(); render(); });
+    elements.choiceDirection.addEventListener("click", () => { state.direction = "choice"; resetCardPosition(); render(); });
+    elements.randomToggle.addEventListener("change", (event) => { state.randomOrder = event.target.checked; resetCardPosition(); render(); });
+    elements.reviewToggle.addEventListener("change", (event) => {
+      state.reviewOnly = event.target.checked;
+      if (state.reviewOnly) state.focusMode = "none";
+      resetCardPosition();
+      render();
+    });
+    document.querySelectorAll("[data-focus-mode]").forEach((button) => button.addEventListener("click", () => {
+      state.focusMode = state.focusMode === button.dataset.focusMode ? "none" : button.dataset.focusMode;
+      state.reviewOnly = false;
+      state.view = "study";
+      state.seed = Date.now();
+      resetCardPosition();
+      setFilterOpen(false);
+      render();
+    }));
+    elements.startLearning.addEventListener("click", () => {
+      state.seed = Date.now();
+      state.view = "study";
+      resetCardPosition();
+      setFilterOpen(false);
+      render();
+      document.getElementById("top").scrollIntoView({ behavior: "smooth" });
+    });
+    elements.resetProgress.addEventListener("click", () => {
+      if (!window.confirm("この端末に保存した学習記録をすべて消去しますか？")) return;
+      state.records = {};
+      state.session = { mastered: 0, unsure: 0, again: 0 };
+      state.focusMode = "none";
+      saveRecords();
+      resetCardPosition();
+      render();
+    });
+
+    window.addEventListener("keydown", (event) => {
+      if (state.view !== "study" || ["INPUT", "SELECT", "BUTTON", "TEXTAREA"].includes(event.target.tagName)) return;
+      if (state.direction === "choice" && !state.revealed && ["1", "2", "3", "4"].includes(event.key)) {
+        const current = getDeck()[state.index];
+        const choice = current ? getChoices(current)[Number(event.key) - 1] : null;
+        if (choice) selectChoice(choice.id);
+      } else if (event.code === "Space" && state.direction !== "choice") {
+        event.preventDefault();
+        state.revealed = !state.revealed;
+        render();
+      } else if (event.key === "ArrowLeft") previousCard();
+      else if (event.key === "ArrowRight") nextCard();
+      else if (event.key === "1") rateCard("again");
+      else if (event.key === "2") rateCard("unsure");
+      else if (event.key === "3") rateCard("mastered");
+      else if (event.key === "Escape" && state.filtersOpen) setFilterOpen(false);
+    });
+
+    render();
+  }
+
+  initializeControls();
+})();
+  </script>
+</body>
+</html>

@@ -1,0 +1,636 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="小学1年生から3年生までの計算を練習できる、算数フラッシュカードです。">
+  <title>かずトレ｜算数フラッシュカード</title>
+  <style>
+    :root {
+      --ink:#19324a; --muted:#647789; --paper:#fffdf8; --cream:#fff6df;
+      --blue:#287cb5; --blue-dark:#175b8a; --sky:#e8f5fc; --yellow:#ffd45c;
+      --orange:#f1784b; --green:#2a9d73; --red:#d95656; --line:#dbe5ea;
+      --shadow:0 18px 55px rgba(31,67,91,.13);
+    }
+    * { box-sizing:border-box; }
+    html { scroll-behavior:smooth; }
+    body {
+      margin:0; min-width:320px; min-height:100svh; color:var(--ink);
+      background:
+        radial-gradient(circle at 8% 8%,rgba(255,212,92,.35) 0 5rem,transparent 5.1rem),
+        radial-gradient(circle at 92% 84%,rgba(40,124,181,.13) 0 8rem,transparent 8.1rem),
+        #f5f9fb;
+      font-family:ui-rounded,"Hiragino Maru Gothic ProN","Hiragino Kaku Gothic ProN","Yu Gothic",sans-serif;
+    }
+    button,input { font:inherit; }
+    button { color:inherit; }
+    button:focus-visible,input:focus-visible { outline:3px solid #f0a42c; outline-offset:3px; }
+    [hidden] { display:none !important; }
+    .app { width:min(1180px,calc(100% - 28px)); margin:0 auto; padding:24px 0 42px; }
+    .topbar { display:flex; align-items:center; justify-content:space-between; gap:18px; margin-bottom:18px; }
+    .brand { display:flex; align-items:center; gap:12px; }
+    .brand-mark { width:48px; height:48px; display:grid; place-items:center; border-radius:15px; background:var(--yellow); box-shadow:inset 0 -4px 0 rgba(139,92,12,.12); font-size:1.35rem; font-weight:1000; transform:rotate(-3deg); }
+    .brand p { margin:0; color:var(--muted); font-size:.72rem; font-weight:800; letter-spacing:.08em; }
+    .brand h1 { margin:1px 0 0; font-size:clamp(1.35rem,3vw,1.8rem); letter-spacing:-.05em; }
+    .saved-pill { padding:8px 12px; border:1px solid #c9e0eb; border-radius:999px; background:rgba(255,255,255,.72); color:#477086; font-size:.78rem; font-weight:800; white-space:nowrap; }
+    .hero { position:relative; overflow:hidden; margin-bottom:18px; padding:clamp(24px,5vw,44px); border-radius:28px; background:linear-gradient(120deg,#1f6fa6,#318fc2); color:#fff; box-shadow:var(--shadow); }
+    .hero::after { content:"7+8"; position:absolute; right:4%; top:50%; color:rgba(255,255,255,.12); font-size:clamp(5rem,15vw,11rem); font-weight:1000; line-height:1; transform:translateY(-50%) rotate(-6deg); }
+    .hero > * { position:relative; z-index:1; }
+    .eyebrow { margin:0 0 8px; color:#d8f3ff; font-size:.78rem; font-weight:900; letter-spacing:.13em; }
+    .hero h2 { max-width:670px; margin:0; font-size:clamp(1.9rem,5vw,3.5rem); line-height:1.12; letter-spacing:-.055em; }
+    .hero p:last-child { max-width:610px; margin:13px 0 0; color:#e9f8ff; font-size:clamp(.9rem,2vw,1.05rem); line-height:1.8; }
+    .setup-grid { display:grid; grid-template-columns:minmax(0,1.55fr) minmax(280px,.8fr); gap:18px; align-items:start; }
+    .panel { border:1px solid rgba(25,50,74,.1); border-radius:24px; background:rgba(255,253,248,.97); box-shadow:0 10px 32px rgba(35,67,88,.08); }
+    .main-panel { padding:clamp(20px,4vw,34px); }
+    .heading-row { display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:16px; }
+    .heading-row .section-heading { margin:0; }
+    .section-heading { display:flex; align-items:center; gap:10px; margin:0 0 16px; font-size:1.08rem; }
+    .language-level { flex:0 0 auto; padding:6px 10px; border:1px solid #bcd9e7; border-radius:999px; color:var(--blue-dark); background:#eef8fd; font-size:.67rem; font-weight:900; }
+    .step { width:28px; height:28px; display:grid; place-items:center; border-radius:50%; color:#fff; background:var(--blue); font-size:.8rem; font-weight:1000; }
+    .mode-tabs { display:grid; grid-template-columns:1fr 1fr; gap:7px; padding:5px; border-radius:15px; background:#edf3f5; }
+    .mode-tab { min-height:47px; border:0; border-radius:11px; background:transparent; color:#607482; font-weight:900; cursor:pointer; }
+    .mode-tab[aria-selected="true"] { background:#fff; color:var(--blue-dark); box-shadow:0 3px 12px rgba(27,62,82,.1); }
+    .filter-row { display:flex; flex-wrap:wrap; gap:8px; margin:16px 0; }
+    .filter-chip { min-height:42px; padding:8px 15px; border:1px solid #ccdbe2; border-radius:999px; background:#fff; color:#4b687a; font-weight:850; cursor:pointer; }
+    .filter-chip[aria-pressed="true"] { border-color:var(--blue); color:#fff; background:var(--blue); }
+    .unit-list { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:10px; max-height:390px; padding:3px; overflow:auto; }
+    .unit-card { position:relative; min-height:94px; padding:14px 14px 13px; border:1.5px solid var(--line); border-radius:15px; background:#fff; text-align:left; cursor:pointer; }
+    .unit-card:hover { border-color:#91bed7; background:#f8fcfe; }
+    .unit-card[aria-pressed="true"] { border-color:var(--blue); background:var(--sky); box-shadow:inset 4px 0 0 var(--blue); }
+    .unit-card small { display:block; margin-bottom:4px; color:var(--orange); font-size:.68rem; font-weight:950; }
+    .unit-card strong { display:block; font-size:.9rem; line-height:1.35; }
+    .unit-card span { display:block; margin-top:4px; color:var(--muted); font-size:.7rem; line-height:1.35; }
+    .settings-section { margin-top:26px; padding-top:24px; border-top:1px solid var(--line); }
+    .settings-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:18px 22px; }
+    .setting { min-width:0; }
+    .setting--wide { grid-column:1/-1; }
+    .setting-title { display:block; margin:0 0 9px; color:#526b7b; font-size:.76rem; font-weight:950; }
+    .choice-row { display:flex; flex-wrap:wrap; gap:7px; }
+    .choice { position:relative; }
+    .choice input { position:absolute; opacity:0; pointer-events:none; }
+    .choice span { min-height:39px; display:flex; align-items:center; justify-content:center; padding:8px 13px; border:1px solid #ccdbe2; border-radius:11px; background:#fff; color:#456276; font-size:.8rem; font-weight:850; cursor:pointer; }
+    .choice input:checked + span { border-color:#64a4ca; color:var(--blue-dark); background:#eaf6fd; box-shadow:inset 0 0 0 1px #64a4ca; }
+    .choice input:focus-visible + span { outline:3px solid #f0a42c; outline-offset:2px; }
+    .tables { display:grid; grid-template-columns:repeat(8,minmax(42px,1fr)); gap:7px; }
+    .table-preset-row { display:flex; flex-wrap:wrap; gap:6px; margin-bottom:9px; }
+    .mini-button { padding:6px 10px; border:1px solid #cad9df; border-radius:999px; background:#fff; color:#526e7e; font-size:.7rem; font-weight:850; cursor:pointer; }
+    .actions { display:flex; gap:10px; margin-top:26px; }
+    .primary,.secondary { min-height:52px; border-radius:14px; font-weight:950; cursor:pointer; }
+    .primary { flex:1; border:0; color:#fff; background:var(--orange); box-shadow:0 4px 0 #c95631; font-size:1rem; }
+    .primary:hover { background:#df683d; }
+    .secondary { padding:10px 17px; border:1px solid #b9d0dc; background:#fff; color:var(--blue-dark); }
+    .secondary:disabled { opacity:.45; cursor:not-allowed; }
+    .side-stack { display:grid; gap:18px; }
+    .info-panel,.history-panel { padding:22px; }
+    .unit-kicker { margin:0 0 7px; color:var(--orange); font-size:.7rem; font-weight:950; letter-spacing:.08em; }
+    .info-panel h3 { margin:0; font-size:1.18rem; line-height:1.35; }
+    .info-panel > p:not(.unit-kicker) { margin:10px 0 0; color:var(--muted); font-size:.82rem; line-height:1.7; }
+    .example-card { margin-top:16px; padding:17px; border-radius:16px; background:#fff5d9; }
+    .example-card small { color:#8a6a1a; font-weight:900; }
+    .example-math { display:block; margin-top:7px; color:#5e4610; font-size:1.55rem; font-weight:1000; letter-spacing:.03em; }
+    .method-note { margin-top:16px; padding:18px; border:1px solid #b9ddec; border-radius:17px; background:#edf8fd; }
+    .method-note h4 { margin:0 0 10px; color:var(--blue-dark); }
+    .method-note h5 { margin:16px 0 7px; padding-top:14px; border-top:1px solid #c6e1ed; color:var(--blue-dark); font-size:.82rem; line-height:1.5; }
+    .method-note ol { margin:0; padding-left:20px; color:#416377; font-size:.77rem; line-height:1.75; }
+    .method-note .memo-step { margin:9px 0 0; color:#416377; font-size:.77rem; line-height:1.7; }
+    .method-note .memo-step strong { font-weight:900; }
+    .method-note .memo-tip { margin:10px 0 0; padding-top:10px; border-top:1px solid #c6e1ed; color:#466979; font-size:.72rem; font-weight:800; }
+    .history-head { display:flex; align-items:center; justify-content:space-between; gap:10px; }
+    .history-head h3 { margin:0; font-size:1rem; }
+    .text-button { padding:4px; border:0; background:transparent; color:var(--blue-dark); font-size:.72rem; font-weight:850; cursor:pointer; }
+    .history-empty { margin:16px 0 0; color:var(--muted); font-size:.78rem; line-height:1.6; }
+    .history-list { display:grid; gap:9px; margin-top:14px; }
+    .history-item { display:grid; grid-template-columns:1fr auto; gap:5px 10px; padding-bottom:9px; border-bottom:1px dashed #d5e0e5; font-size:.73rem; }
+    .history-item strong { overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+    .history-item span { color:var(--green); font-weight:950; }
+    .history-item small { grid-column:1/-1; color:var(--muted); }
+    .weakness-list { display:grid; gap:12px; margin-top:14px; }
+    .weakness-item { display:grid; grid-template-columns:1fr auto; gap:6px 10px; align-items:center; }
+    .weakness-item strong { min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; font-size:.76rem; }
+    .weakness-item span { color:#a24d3c; font-size:.72rem; font-weight:950; }
+    .weakness-track { grid-column:1/-1; overflow:hidden; height:7px; border-radius:999px; background:#e5ecef; }
+    .weakness-bar { height:100%; border-radius:inherit; background:linear-gradient(90deg,var(--orange),var(--yellow)); }
+    .practice-shell { width:min(900px,100%); margin:0 auto; }
+    .practice-nav { display:flex; align-items:center; justify-content:space-between; gap:14px; margin-bottom:14px; }
+    .back-button { padding:9px 13px; border:1px solid #c6d7df; border-radius:999px; background:#fff; color:#526d7d; font-size:.8rem; font-weight:850; cursor:pointer; }
+    .practice-unit { margin:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; color:#476679; font-size:.84rem; font-weight:900; }
+    .progress-card { overflow:hidden; border:2px solid transparent; border-radius:26px; background:var(--paper); box-shadow:var(--shadow); transition:border-color .18s ease,box-shadow .18s ease; }
+    .progress-card.answer-correct { border-color:var(--green); box-shadow:0 18px 55px rgba(42,157,115,.22); }
+    .progress-card.answer-wrong { border-color:var(--red); box-shadow:0 18px 55px rgba(217,86,86,.2); }
+    .progress-top { display:grid; grid-template-columns:repeat(4,1fr); background:#eef7fb; border-bottom:1px solid #d8e7ee; }
+    .stat { padding:14px; border-left:1px solid #d6e5ec; text-align:center; }
+    .stat:first-child { border-left:0; }
+    .stat small { display:block; margin-bottom:3px; color:#69808e; font-size:.66rem; font-weight:850; }
+    .stat strong { font-size:1.08rem; }
+    .progress-track { height:7px; background:#e0eaee; }
+    .progress-bar { width:0; height:100%; background:linear-gradient(90deg,var(--yellow),var(--orange)); transition:width .25s ease; }
+    .question-zone { position:relative; min-height:270px; display:grid; place-items:center; padding:38px 20px 28px; text-align:center; }
+    .question-number { margin:0 0 15px; color:var(--blue-dark); font-size:.76rem; font-weight:950; letter-spacing:.1em; }
+    .question { margin:0; font-size:clamp(3rem,10vw,6.2rem); line-height:1.05; letter-spacing:.01em; font-weight:1000; font-variant-numeric:tabular-nums; }
+    .question-sub { min-height:24px; margin:14px 0 0; color:var(--muted); font-size:.88rem; font-weight:750; }
+    .feedback-splash { position:absolute; z-index:3; inset:0; display:grid; place-items:center; padding:18px; background:rgba(255,253,248,.9); backdrop-filter:blur(3px); }
+    .splash-panel { min-width:min(330px,90%); padding:22px 28px; border:4px solid currentColor; border-radius:22px; background:#fff; box-shadow:0 14px 36px rgba(28,55,73,.18); }
+    .feedback-splash strong { display:block; font-size:clamp(2.3rem,8vw,4.6rem); line-height:1; letter-spacing:-.05em; }
+    .feedback-splash span { display:block; margin-top:10px; font-size:.9rem; font-weight:900; }
+    .feedback-splash.is-correct { color:#167453; background:rgba(230,248,239,.92); }
+    .feedback-splash.is-wrong { color:#b63f3f; background:rgba(255,236,232,.93); }
+    .answer-zone { padding:24px clamp(18px,5vw,48px) 30px; border-top:1px solid #eadfc9; background:#fff9eb; }
+    .input-row { display:flex; align-items:end; justify-content:center; gap:10px; min-height:70px; }
+    .answer-group { display:grid; gap:5px; }
+    .answer-group label { color:#617685; font-size:.68rem; font-weight:900; text-align:center; }
+    .answer-input { width:min(240px,55vw); height:62px; border:2px solid #cbdce4; border-radius:14px; background:#fff; color:var(--ink); font-size:2rem; font-weight:1000; text-align:center; }
+    .answer-input.is-target { border-color:var(--blue); background:#f2faff; box-shadow:0 0 0 3px rgba(40,124,181,.14); }
+    .answer-input.small { width:110px; }
+    .remainder-word { padding-bottom:18px; font-size:1rem; font-weight:900; }
+    .keypad { max-width:470px; display:grid; grid-template-columns:repeat(6,1fr); gap:8px; margin:17px auto 0; }
+    .key { min-height:48px; border:1px solid #ccdae0; border-radius:11px; background:#fff; font-size:1.05rem; font-weight:950; cursor:pointer; }
+    .key:hover { border-color:#6caaca; background:#f0f9fd; }
+    .key--wide { grid-column:span 2; color:#6a7881; font-size:.8rem; }
+    .submit { grid-column:span 2; border:0; color:#fff; background:var(--blue); font-size:.86rem; }
+    .self-grade { max-width:620px; margin:0 auto; text-align:center; }
+    .reveal-answer { width:min(360px,100%); min-height:66px; border:0; border-radius:16px; color:#fff; background:var(--blue); box-shadow:0 4px 0 var(--blue-dark); font-size:1.08rem; font-weight:1000; cursor:pointer; }
+    .revealed-answer { margin:0 auto 18px; padding:20px; border:2px dashed #e0ba4f; border-radius:17px; background:#fff; }
+    .revealed-answer small { display:block; margin-bottom:5px; color:#806a31; font-size:.72rem; font-weight:900; }
+    .revealed-answer strong { display:block; color:var(--ink); font-size:clamp(2.2rem,7vw,3.8rem); line-height:1.1; }
+    .grade-prompt { margin:0 0 11px; color:#526b7a; font-size:.78rem; font-weight:900; }
+    .grade-buttons { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+    .grade-button { min-height:64px; border:2px solid currentColor; border-radius:15px; background:#fff; font-size:1rem; font-weight:1000; cursor:pointer; }
+    .grade-button small { display:block; margin-top:2px; font-size:.6rem; opacity:.7; }
+    .grade-button--wrong { color:#b94747; background:#fff4f1; }
+    .grade-button--correct { color:#197756; background:#eef9f4; }
+    .grade-button:hover { transform:translateY(-2px); }
+    .card-key-hint { margin:12px 0 0; color:#758792; font-size:.68rem; font-weight:750; }
+    .feedback { min-height:72px; display:flex; align-items:center; justify-content:space-between; gap:15px; max-width:660px; margin:18px auto 0; padding:13px 16px; border-radius:14px; background:#fff; }
+    .feedback p { margin:0; color:#5c7180; font-size:.84rem; line-height:1.55; }
+    .feedback strong { display:block; margin-bottom:2px; color:var(--ink); font-size:.94rem; }
+    .feedback.is-correct { border:1px solid #a9d7c5; background:#edf9f4; }
+    .feedback.is-wrong { border:1px solid #efc1b8; background:#fff2ef; }
+    .next { flex:0 0 auto; padding:11px 15px; border:0; border-radius:11px; color:#fff; background:var(--orange); font-size:.82rem; font-weight:950; cursor:pointer; }
+    .hint-wrap { max-width:660px; margin:14px auto 0; text-align:center; }
+    .hint-button { padding:8px 13px; border:1px solid #bcd6e2; border-radius:999px; background:#fff; color:var(--blue-dark); font-size:.75rem; font-weight:900; cursor:pointer; }
+    .hint-card { margin-top:10px; padding:16px; border:1px solid #badbe9; border-radius:14px; background:#edf8fd; color:#3d6175; font-size:.8rem; line-height:1.7; text-align:left; }
+    .hint-steps { margin:8px 0 0; padding-left:20px; }
+    .result { padding:clamp(25px,5vw,48px); text-align:center; }
+    .result-badge { width:72px; height:72px; display:grid; place-items:center; margin:0 auto 14px; border-radius:50%; background:var(--yellow); color:#745514; font-size:1.8rem; font-weight:1000; }
+    .result h2 { margin:0; font-size:clamp(1.7rem,4vw,2.4rem); }
+    .result-message { margin:8px 0 22px; color:var(--muted); }
+    .result-grid { display:grid; grid-template-columns:repeat(4,1fr); overflow:hidden; max-width:620px; margin:0 auto 24px; border:1px solid #d5e2e8; border-radius:16px; background:#f5fafc; }
+    .result-stat { padding:17px 8px; border-left:1px solid #d5e2e8; }
+    .result-stat:first-child { border-left:0; }
+    .result-stat small { display:block; color:var(--muted); font-size:.68rem; font-weight:800; }
+    .result-stat strong { display:block; margin-top:5px; font-size:1.2rem; }
+    .mistake-summary { max-width:620px; margin:0 auto 23px; padding:16px; border-radius:15px; background:#fff7e4; text-align:left; }
+    .mistake-summary h3 { margin:0 0 9px; font-size:.9rem; }
+    .mistake-list { display:flex; flex-wrap:wrap; gap:7px; }
+    .mistake-chip { padding:7px 10px; border:1px solid #eed69e; border-radius:999px; background:#fff; color:#735e31; font-size:.76rem; font-weight:850; }
+    .result-actions { display:flex; flex-wrap:wrap; justify-content:center; gap:9px; }
+    .result-actions button { min-height:47px; padding:10px 16px; border-radius:12px; font-weight:900; cursor:pointer; }
+    .result-actions .primary { flex:0 1 230px; }
+    .toast { position:fixed; z-index:10; left:50%; bottom:24px; max-width:calc(100% - 30px); padding:11px 16px; border-radius:999px; color:#fff; background:#243f52; box-shadow:0 10px 30px rgba(0,0,0,.2); font-size:.78rem; font-weight:850; transform:translateX(-50%); }
+    @media (max-width:820px) { .setup-grid { grid-template-columns:1fr; }.side-stack { grid-template-columns:1fr 1fr; }.unit-list { max-height:none; } }
+    @media (max-width:620px) {
+      .app { width:min(100% - 18px,1180px); padding-top:13px; }
+      .saved-pill { display:none; }.hero { padding:26px 22px; border-radius:21px; }.hero::after { right:-12%; }
+      .main-panel { padding:18px 14px; }.panel { border-radius:19px; }.heading-row { align-items:flex-start; flex-direction:column; }.unit-list { grid-template-columns:1fr; }.settings-grid { grid-template-columns:1fr; }.setting--wide { grid-column:auto; }
+      .tables { grid-template-columns:repeat(4,1fr); }.side-stack { grid-template-columns:1fr; }.actions { flex-direction:column; }.secondary { width:100%; }
+      .practice-nav { padding-inline:4px; }.progress-card { border-radius:20px; }.progress-top { grid-template-columns:repeat(4,minmax(0,1fr)); }.stat { padding:11px 3px; }.stat small { font-size:.58rem; }.stat strong { font-size:.9rem; }
+      .question-zone { min-height:230px; padding-top:30px; }.answer-zone { padding-inline:12px; }.keypad { gap:6px; }.key { min-height:46px; }.grade-buttons { grid-template-columns:1fr; }.splash-panel { padding:19px; }
+      .feedback { align-items:flex-start; flex-direction:column; }.next { align-self:flex-end; }.result { padding-inline:16px; }.result-grid { grid-template-columns:repeat(2,1fr); }.result-stat:nth-child(3) { border-left:0; border-top:1px solid #d5e2e8; }.result-stat:nth-child(4) { border-top:1px solid #d5e2e8; }
+      .answer-input { width:160px; }.answer-input.small { width:92px; }
+    }
+    @media (prefers-reduced-motion:reduce) { *,*::before,*::after { scroll-behavior:auto !important; transition:none !important; animation:none !important; } }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <header class="topbar">
+      <div class="brand"><div class="brand-mark" aria-hidden="true">＋</div><div><p>まいにち すこしずつ</p><h1>かずトレ</h1></div></div>
+      <div class="saved-pill" id="saved-pill">この たんまつに きろくを のこします</div>
+    </header>
+
+    <main>
+      <section id="setup-screen">
+        <div class="hero"><p class="eyebrow" id="hero-eyebrow">さんすう フラッシュカード</p><h2 id="hero-title">できた！を、<br>ひとつずつ ふやそう。</h2><p id="hero-description">1年生から3年生までの けいさんを、じぶんに あう ところから れんしゅうできるよ。</p></div>
+        <div class="setup-grid">
+          <section class="panel main-panel" aria-labelledby="select-heading">
+            <div class="heading-row"><h2 class="section-heading" id="select-heading"><span class="step">1</span><span id="select-heading-text">れんしゅうする ところを えらぶ</span></h2><span class="language-level" id="language-level" aria-live="polite">ことば：1年生むけ</span></div>
+            <div class="mode-tabs" role="tablist" aria-label="単元の探し方">
+              <button class="mode-tab" id="grade-tab" type="button" role="tab" aria-selected="true">がくねんから えらぶ</button>
+              <button class="mode-tab" id="method-tab" type="button" role="tab" aria-selected="false">けいさんから えらぶ</button>
+            </div>
+            <div class="filter-row" id="filter-row" aria-label="絞り込み"></div>
+            <div class="unit-list" id="unit-list" aria-label="れんしゅうする ところを えらぶ"></div>
+
+            <div class="settings-section">
+              <h2 class="section-heading"><span class="step">2</span><span id="settings-heading-text">れんしゅうの しかた</span></h2>
+              <div class="settings-grid">
+                <div class="setting"><span class="setting-title" id="count-title">もんだいの かず</span><div class="choice-row" id="count-choices"></div></div>
+                <div class="setting"><span class="setting-title" id="answer-mode-title">こたえかた</span><div class="choice-row" id="answer-mode-choices"></div></div>
+                <div class="setting setting--wide" id="stage-setting" hidden><span class="setting-title" id="stage-title">きめる かず（それぞれの だん）</span><div class="choice-row" id="stage-choices"></div></div>
+                <div class="setting" id="order-setting"><span class="setting-title" id="order-title">だす じゅんばん</span><div class="choice-row" id="order-choices"></div></div>
+                <div class="setting" id="target-setting" hidden><span class="setting-title">「いくつといくつ」の合わせた数</span><div class="choice-row" id="target-choices"></div></div>
+                <div class="setting setting--wide" id="pair-mode-setting" hidden><span class="setting-title">「いくつといくつ」で求める場所</span><div class="choice-row" id="pair-mode-choices"></div></div>
+                <div class="setting setting--wide" id="multiply-pattern-setting" hidden><span class="setting-title">2けた×2けたの問題タイプ</span><div class="choice-row" id="multiply-pattern-choices"></div></div>
+                <div class="setting setting--wide" id="table-setting" hidden><span class="setting-title">九九の だん（いくつでも えらべます）</span><div class="table-preset-row"><button class="mini-button" type="button" data-table-preset="2,3,4,5">2〜5の だん</button><button class="mini-button" type="button" data-table-preset="6,7,8,9">6〜9の だん</button><button class="mini-button" type="button" data-table-preset="2,3,4,5,6,7,8,9">すべて</button></div><div class="tables" id="table-choices"></div></div>
+              </div>
+              <div class="actions"><button class="primary" id="start-button" type="button">れんしゅう スタート</button><button class="secondary" id="review-button" type="button" disabled><span id="review-button-label">まちがいを やりなおす</span> <span id="review-count">0</span><span id="review-count-unit">もん</span></button></div>
+            </div>
+          </section>
+
+          <aside class="side-stack">
+            <section class="panel info-panel" aria-live="polite">
+              <p class="unit-kicker" id="info-kicker">1年生</p><h3 id="info-title"></h3><p id="info-description"></p>
+              <div class="example-card"><small id="example-label">こんな もんだいが でます</small><span class="example-math" id="info-example"></span></div>
+              <div class="method-note" id="method-note" hidden><h4>おみやげ算メモ</h4><p class="memo-step"><strong>①16×13の右の「13の一の位の3」をおみやげとして、左の16に渡します。</strong></p><p class="memo-step"><strong>②16×13が、（16＋3）×（13－3）＝19×10になります。</strong></p><p class="memo-step"><strong>②その190に、「16の一の位の6」と「おみやげの3」をかけた18をたした208が答えです。</strong></p><p class="memo-tip"><strong>まとめると、16×13＝（16＋3）×（13－3）＋6×3＝190＋18＝208です。</strong></p><h5>① 11から19までの数どうし【インド式計算】</h5><p class="memo-step"><strong>使えるかチェック：18と19は、どちらも11から19までの数です。</strong></p><p class="memo-step">一の位どうしをかけると、8×9＝72です。「2」を答えの一の位とし、「7」は繰り上がりとして覚えます。</p><p class="memo-step">18＋9＝27に、繰り上がりの7を足すと、27＋7＝34です。</p><p class="memo-tip"><strong>「34」と「2」をつなげると、18×19＝342です。</strong></p></div>
+              <div class="method-note" id="indian-two-note" hidden><h4>2けた×2けたのインド式計算メモ</h4><h5>すべての2けた×2けた</h5><p class="memo-step"><strong>使えるかチェック：特別な条件はなく、すべての2けた×2けたに使えます。例として34×67を計算します。</strong></p><p class="memo-step">① 一の位どうしをかけます。4×7＝28なので、「8」を答えの一の位に書き、「2」を繰り上げます。</p><p class="memo-step">② 斜めに交差する数字をかけ、繰り上がりも足します。3×7＋4×6＋2＝21＋24＋2＝47なので、「7」を答えの十の位に書き、「4」を繰り上げます。</p><p class="memo-step">③ 十の位どうしをかけ、繰り上がりを足します。3×6＋4＝18＋4＝22です。</p><p class="memo-tip"><strong>「22」の後ろに「78」を並べると、34×67＝2278です。</strong></p><h5>② 十の位が同じで、一の位の和が10</h5><p class="memo-step"><strong>使えるかチェック：77と73は十の位がどちらも7で、7＋3＝10です。</strong></p><p class="memo-step">一の位どうしは、7×3＝21です。次に、十の位の7と、その次の数8をかけると、7×8＝56です。</p><p class="memo-tip"><strong>「56」と「21」をつなげると、77×73＝5621です。</strong></p><h5>③ 一の位が同じで、十の位の和が10</h5><p class="memo-step"><strong>使えるかチェック：46と66は一の位がどちらも6で、4＋6＝10です。</strong></p><p class="memo-step">一の位どうしは、6×6＝36です。十の位どうしの積に共通する一の位を足すと、4×6＋6＝30です。</p><p class="memo-tip"><strong>「30」と「36」をつなげると、46×66＝3036です。</strong></p><p class="memo-tip">下の計算の けっかが1けたの場合は、前に0を付けて2けたで表します。</p></div>
+            </section>
+            <section class="panel history-panel"><div class="history-head"><h3 id="history-heading">これまでの きろく</h3><button class="text-button" id="clear-history" type="button">きろくを けす</button></div><p class="history-empty" id="history-empty">まだ きろくは ありません。まずは 10もん やってみよう。</p><div class="history-list" id="history-list"></div></section>
+            <section class="panel history-panel" aria-labelledby="weakness-heading"><div class="history-head"><h3 id="weakness-heading">にがてな ところ</h3></div><p class="history-empty" id="weakness-empty">まだ わかりません。れんしゅうすると ここに でます。</p><div class="weakness-list" id="weakness-list"></div></section>
+          </aside>
+        </div>
+      </section>
+
+      <section class="practice-shell" id="practice-screen" hidden>
+        <nav class="practice-nav"><button class="back-button" id="quit-button" type="button">← せっていに もどる</button><p class="practice-unit" id="practice-unit"></p><span aria-hidden="true"></span></nav>
+        <section class="progress-card" id="question-card">
+          <div class="progress-top"><div class="stat"><small id="problem-label">もんだい</small><strong id="progress-text">1 / 10</strong></div><div class="stat"><small id="correct-label">せいかい</small><strong id="correct-text">0</strong></div><div class="stat"><small id="streak-label">れんぞく</small><strong id="streak-text">0</strong></div><div class="stat"><small id="time-label">じかん</small><strong id="time-text">0:00</strong></div></div>
+          <div class="progress-track"><div class="progress-bar" id="progress-bar"></div></div>
+          <div class="question-zone"><div><p class="question-number" id="question-number-label">もんだい</p><p class="question" id="question-text"></p><p class="question-sub" id="question-sub"></p></div><div class="feedback-splash" id="feedback-splash" role="status" aria-live="assertive" hidden></div></div>
+          <div class="answer-zone">
+            <div class="input-row" id="input-row"></div>
+            <div class="keypad" id="keypad" aria-label="数字キーボード"></div>
+            <div class="self-grade" id="self-grade" hidden>
+              <button class="reveal-answer" id="reveal-answer" type="button">こたえを みる</button>
+              <p class="card-key-hint" id="reveal-key-hint">Enter または Space でも こたえを めくれます</p>
+              <div class="revealed-answer" id="revealed-answer" hidden><small id="revealed-label">こたえ</small><strong id="revealed-answer-text"></strong></div>
+              <div id="grade-area" hidden><p class="grade-prompt" id="grade-prompt">じぶんの こたえは あっていた？</p><div class="grade-buttons"><button class="grade-button grade-button--wrong" id="grade-wrong" type="button"><span id="grade-wrong-label">× ちがった</span><small>キー 1 ／ ←</small></button><button class="grade-button grade-button--correct" id="grade-correct" type="button"><span id="grade-correct-label">○ あっていた</span><small>キー 2 ／ →</small></button></div></div>
+            </div>
+            <div class="hint-wrap" id="hint-wrap" hidden><button class="hint-button" id="hint-button" type="button" aria-expanded="false">考え方メモを見る</button><div class="hint-card" id="hint-card" hidden></div></div>
+            <div class="feedback" id="feedback" aria-live="polite"><p><strong>答えを入れてね</strong>数字ボタンやキーボードでも入力できます。</p></div>
+          </div>
+        </section>
+        <section class="progress-card result" id="result-card" hidden>
+          <div class="result-badge" id="result-badge">○</div><h2 id="result-title">よくできました！</h2><p class="result-message" id="result-message"></p>
+          <div class="result-grid"><div class="result-stat"><small id="result-correct-label">せいかい</small><strong id="result-correct"></strong></div><div class="result-stat"><small id="result-rate-label">せいかいりつ</small><strong id="result-rate"></strong></div><div class="result-stat"><small id="result-time-label">かかった じかん</small><strong id="result-time"></strong></div><div class="result-stat"><small id="result-average-label">1もん あたり</small><strong id="result-average"></strong></div></div>
+          <div class="mistake-summary" id="mistake-summary"><h3 id="mistake-summary-heading">こんかい まちがえた もんだい</h3><div class="mistake-list" id="mistake-list"></div></div>
+          <div class="result-actions"><button class="primary" id="retry-wrong" type="button">まちがいを やりなおす</button><button class="secondary" id="retry-same" type="button">おなじ せっていで もういちど</button><button class="secondary" id="back-setup" type="button">せっていに もどる</button></div>
+        </section>
+      </section>
+    </main>
+  </div>
+  <div class="toast" id="toast" role="status" hidden></div>
+
+  <script>
+    "use strict";
+
+    const STORAGE_KEY = "kazutore-data-v1";
+    const UNITS = [
+      {id:"g1-pairs",grade:1,category:"かず",title:"いくつといくつ",subtitle:"2〜10の かずの わけかた",description:"あわせた かず、ひだりの かず、みぎの かずの どこを こたえるか えらんで れんしゅうします。",example:"□ は 2 と 8 ／ 10 は □ と 8 ／ 10 は 2 と □"},
+      {id:"g1-add-no-1",grade:1,category:"たし算",title:"10までのたしざん",subtitle:"1けた＋1けた",description:"こたえが 10までになる、1けたどうしの たしざんです。",example:"4＋6＝□",ordered:true,staged:true,exhaustive:true,stageType:"add"},
+      {id:"g1-add-no-2",grade:1,category:"たし算",title:"くり上がりのないたしざん",subtitle:"十いくつ＋1けた",description:"10から19までの かずに 1けたを たす、くり上がりのない たしざんです。",example:"13＋4＝□"},
+      {id:"g1-add-carry",grade:1,category:"たし算",title:"くり上がりのあるたしざん",subtitle:"1けた＋1けた",description:"こたえが 11いじょうになる、1けたどうしの たしざんです。",example:"8＋7＝□",ordered:true,staged:true,exhaustive:true,stageType:"add"},
+      {id:"g1-add-all",grade:1,category:"たし算",title:"たしざん（1けたどうし）",subtitle:"ぜんぶ",description:"1から9までの たされる かずを きめて、1けたどうしの たしざんを れんしゅうします。",example:"6＋8＝□",ordered:true,staged:true,exhaustive:true,stageType:"add"},
+      {id:"g1-sub-no-1",grade:1,category:"ひき算",title:"10までのひきざん",subtitle:"10までの かず－0〜10",description:"1から10までの かずから、こたえが 0いじょうになるように ひきます。",example:"10－7＝□",ordered:true,staged:true,exhaustive:true,stageType:"sub"},
+      {id:"g1-sub-no-2",grade:1,category:"ひき算",title:"くり下がりのないひきざん",subtitle:"十いくつ－1けた",description:"10から19までの かずから 1けたを ひく、くり下がりのない ひきざんです。",example:"18－5＝□"},
+      {id:"g1-sub-borrow",grade:1,category:"ひき算",title:"くり下がりのあるひきざん",subtitle:"19までの かず－1けた",description:"11から19までの かずから、くり下がりを つかって ひきます。",example:"13－8＝□",ordered:true,staged:true,exhaustive:true,stageType:"sub"},
+      {id:"g1-sub-all",grade:1,category:"ひき算",title:"ひきざん（1けたどうし）",subtitle:"ぜんぶ",description:"1から9までの ひかれる かずを きめて、1けたどうしの ひきざんを れんしゅうします。",example:"8－5＝□",ordered:true,staged:true,exhaustive:true,stageType:"sub"},
+      {id:"g2-add-to20",grade:2,category:"たし算",title:"20になるたし算",subtitle:"2けた＋1けた",description:"答えがちょうど20になるたし算です。",example:"16＋4＝□"},
+      {id:"g2-add-to-tens",grade:2,category:"たし算",title:"何十になるたし算",subtitle:"2けた＋1けた",description:"答えが30、40など、ちょうど何十になるたし算です。",example:"47＋3＝□"},
+      {id:"g2-add-teens",grade:2,category:"たし算",title:"十いくつと1けた",subtitle:"くり上がりあり",description:"11から19までの数に1けたを足し、くり上がる もんだいです。",example:"17＋6＝□"},
+      {id:"g2-add-one",grade:2,category:"たし算",title:"2けた＋1けた",subtitle:"くり上がりあり",description:"いろいろな2けたの数に1けたを足す もんだいです。",example:"58＋7＝□"},
+      {id:"g2-add-two-under",grade:2,category:"たし算",title:"2けたどうしのたし算",subtitle:"答えが100まで",description:"答えが100をこえない、2けたどうしのたし算です。",example:"36＋48＝□"},
+      {id:"g2-add-two-over",grade:2,category:"たし算",title:"2けたどうしのたし算",subtitle:"答えが100をこえる",description:"答えが100をこえる、2けたどうしのたし算です。",example:"68＋47＝□"},
+      {id:"g2-sub-20",grade:2,category:"ひき算",title:"20からひく",subtitle:"20－1けた",description:"20から1けたの数をひく もんだいです。",example:"20－7＝□"},
+      {id:"g2-sub-tens",grade:2,category:"ひき算",title:"何十からひく",subtitle:"何十－1けた",description:"30、40などの数から1けたをひく もんだいです。",example:"50－8＝□"},
+      {id:"g2-sub-twenties",grade:2,category:"ひき算",title:"二十いくつからひく",subtitle:"くり下がりあり",description:"21から29までの数から、1けたをくり下がってひきます。",example:"23－7＝□"},
+      {id:"g2-sub-one",grade:2,category:"ひき算",title:"2けた－1けた",subtitle:"くり下がりあり",description:"いろいろな2けたの数から1けたをくり下がってひきます。",example:"52－8＝□"},
+      {id:"g2-sub-two",grade:2,category:"ひき算",title:"2けた－2けた",subtitle:"答えは0より小さくない",description:"2けたどうしのひき算です。",example:"74－38＝□"},
+      {id:"g2-sub-three-two",grade:2,category:"ひき算",title:"3けた－2けた",subtitle:"答えは0より小さくない",description:"3けたの数から2けたの数をひきます。",example:"125－47＝□"},
+      {id:"g2-tables",grade:2,category:"かけ算",title:"九九",subtitle:"だんを えらべます",description:"2の だんから9の だんまで、いくつか くみあわせて れんしゅうします。",example:"6×7＝□",ordered:true,exhaustive:true},
+      {id:"g3-divide-exact",grade:3,category:"わり算",title:"あまりのないわり算",subtitle:"九九の はんい",description:"九九を使って、ぴったり分けられるわり算です。",example:"42÷6＝□"},
+      {id:"g3-divide-rem",grade:3,category:"わり算",title:"あまりのあるわり算",subtitle:"商とあまり",description:"商とあまりを、それぞれ答えるわり算です。",example:"29÷4＝□ あまり □"},
+      {id:"g3-multiply-teens",grade:3,category:"かけ算",title:"11〜19のかけ算",subtitle:"おみやげ算が つかえます",description:"11から19までの数どうしをかけます。考え方メモも使えます。",example:"16×14＝□",omiyage:true},
+      {id:"g3-multiply-two",grade:3,category:"かけ算",title:"2けたどうしのかけ算",subtitle:"筆算・インド式計算",description:"すべての2けたどうし、インド式計算②の形、③の形から えらべます。",example:"77×73＝□ ／ 46×66＝□",omiyage:true}
+    ];
+
+    const state = {
+      mode:"grade", filter:"1", unitId:"g1-pairs", count:10, answerMode:"input", order:"random", stage:"all", target:"random", pairMode:"mixed", multiplyPattern:"all", tables:[2],
+      problems:[], index:0, correct:0, streak:0, answered:false, revealed:false, currentWrong:[], startedAt:0, timerId:null, reviewMode:false, lastProblems:[], sessionGrade:1, originalTotal:0, retryScheduled:new Set()
+    };
+    const GRADE_UI = {
+      1:{level:"ことば：1年生むけ",eyebrow:"さんすう フラッシュカード",hero:"できた！を、ひとつずつ ふやそう。",heroDescription:"1年生から3年生までの けいさんを、じぶんに あう ところから れんしゅうできるよ。",select:"れんしゅうする ところを えらぶ",gradeTab:"がくねんから えらぶ",methodTab:"けいさんから えらぶ",settings:"れんしゅうの しかた",count:"もんだいの かず",answerMode:"こたえかた",order:"だす じゅんばん",start:"れんしゅう スタート",review:"まちがいを やりなおす",countUnit:"もん",example:"こんな もんだいが でます",history:"これまでの きろく",clearHistory:"きろくを けす",emptyHistory:"まだ きろくは ありません。まずは 10もん やってみよう。",saved:"この たんまつに きろくを のこします",back:"← せっていに もどる",problem:"もんだい",correct:"せいかい",streak:"れんぞく",time:"じかん",question:"もんだい",inputMode:"すうじを いれる",cardMode:"カードを めくる",reveal:"こたえを みる",revealHint:"Enter または Space でも こたえを めくれます",revealed:"こたえ",gradePrompt:"じぶんの こたえは あっていた？",wrong:"× ちがった",right:"○ あっていた",hintShow:"かんがえかた メモを みる",hintHide:"かんがえかた メモを とじる",resultCorrect:"せいかい",resultRate:"せいかいりつ",elapsed:"かかった じかん",average:"1もん あたり",mistakes:"こんかい まちがえた もんだい",retryWrong:"まちがいを やりなおす",retrySame:"おなじ せっていで もういちど",backSetup:"せっていに もどる",flashQuestion:"あたまの なかで かんがえて、こたえを めくろう",inputQuestion:"＝ に はいる かずは？",emptyAnswer:"こたえを いれてね",next:"つぎの もんだい →",result:"けっかを みる"},
+      2:{level:"ことば：2年生むけ",eyebrow:"算数フラッシュカード",hero:"できた！を、ひとつずつふやそう。",heroDescription:"自分に合うところから、1年生から3年生までの計算ができます。",select:"計算するところをえらぶ",gradeTab:"学年からえらぶ",methodTab:"計算からえらぶ",settings:"計算のしかた",count:"もんだいの数",answerMode:"答え方",order:"出すじゅん番",start:"計算スタート",review:"まちがいをもう一度",countUnit:"もん",example:"こんな計算が出ます",history:"これまでの きろく",clearHistory:"きろくを けす",emptyHistory:"まだ きろくはありません。まずは10もんやってみよう。",saved:"このたんまつに きろくを のこします",back:"← はじめにもどる",problem:"計算",correct:"正しい",streak:"つづけて",time:"時間",question:"計算しよう",inputMode:"数字を入れる",cardMode:"カードをめくる",reveal:"答えを見る",revealHint:"EnterまたはSpaceでも答えをめくれます",revealed:"答え",gradePrompt:"自分の答えは正しかった？",wrong:"× まちがい",right:"○ 正しい",hintShow:"考え方メモを見る",hintHide:"考え方メモをとじる",resultCorrect:"正しくできた数",resultRate:"正しくできた",elapsed:"かかった時間",average:"1もんあたり",mistakes:"今回まちがえた計算",retryWrong:"まちがいをもう一度",retrySame:"同じ計算をもう一度",backSetup:"はじめにもどる",flashQuestion:"頭の中で計算して、答えをめくろう",inputQuestion:"＝ に入る数は？",emptyAnswer:"答えを入れてね",next:"つぎの計算 →",result:"けっかを見る"},
+      3:{level:"ことば：3年生むけ",eyebrow:"算数フラッシュカード",hero:"できた！を、ひとつずつ ふやそう。",heroDescription:"1年生から3年生までの計算を、自分に合う はんいから練習できます。",select:"練習する問題をえらぶ",gradeTab:"学年からえらぶ",methodTab:"計算からえらぶ",settings:"練習のしかた",count:"問題数",answerMode:"答え方",order:"問題を出すじゅん番",start:"練習スタート",review:"まちがいを もう一度",countUnit:"問",example:"このような問題が出ます",history:"これまでの きろく",clearHistory:"きろくを消す",emptyHistory:"まだ きろくはありません。はじめの10問から始めましょう。",saved:"このブラウザーに学習の きろくを のこします",back:"← はじめの画面にもどる",problem:"問題",correct:"せいかい",streak:"つづけて",time:"時間",question:"問題",inputMode:"数字を入力",cardMode:"カードをめくる",reveal:"答えを見る",revealHint:"EnterまたはSpaceでも答えをめくれます",revealed:"答え",gradePrompt:"自分の答えは合っていましたか？",wrong:"× まちがい",right:"○ せいかい",hintShow:"考え方メモを見る",hintHide:"考え方メモをとじる",resultCorrect:"せいかい",resultRate:"せいかいりつ",elapsed:"かかった時間",average:"1問あたり",mistakes:"今回まちがえた問題",retryWrong:"まちがいを もう一度",retrySame:"同じものを もう一度",backSetup:"はじめの画面にもどる",flashQuestion:"頭の中で考えて、答えをめくろう",inputQuestion:"＝ に入る数は？",emptyAnswer:"答えを入力してください",next:"次の問題 →",result:"けっかを見る"}
+    };
+    let stored = loadStored();
+
+    const $ = (selector) => document.querySelector(selector);
+    const setupScreen = $("#setup-screen"), practiceScreen = $("#practice-screen");
+    const unitList = $("#unit-list"), filterRow = $("#filter-row");
+    const inputRow = $("#input-row"), keypad = $("#keypad"), feedback = $("#feedback");
+    let selectedAnswerInput=null;
+
+    function loadStored() {
+      try {
+        const data = JSON.parse(localStorage.getItem(STORAGE_KEY) || "null");
+        if(data && Array.isArray(data.wrong) && Array.isArray(data.history)){data.stats=data.stats&&data.stats.units&&data.stats.focuses?data.stats:{units:{},focuses:{}};return data;}
+        return {wrong:[],history:[],stats:{units:{},focuses:{}}};
+      } catch { return {wrong:[],history:[],stats:{units:{},focuses:{}}}; }
+    }
+    function saveStored() { try { localStorage.setItem(STORAGE_KEY,JSON.stringify(stored)); } catch { showToast("きろくを のこせませんでした"); } }
+    function selectedUnit() { return UNITS.find((unit) => unit.id === state.unitId) || UNITS[0]; }
+    function rand(min,max) { return Math.floor(Math.random()*(max-min+1))+min; }
+    function shuffle(items) { const copy=[...items]; for(let i=copy.length-1;i>0;i--){const j=rand(0,i);[copy[i],copy[j]]=[copy[j],copy[i]];} return copy; }
+    function formatTime(seconds) { const value=Math.max(0,Math.floor(seconds)); return `${Math.floor(value/60)}:${String(value%60).padStart(2,"0")}`; }
+    function showToast(message) { const toast=$("#toast"); toast.textContent=message; toast.hidden=false; clearTimeout(showToast.timer); showToast.timer=setTimeout(()=>{toast.hidden=true;},2200); }
+    function copyForGrade(grade) { return GRADE_UI[grade] || GRADE_UI[3]; }
+    function activeCopy() { return copyForGrade(state.sessionGrade || selectedUnit().grade); }
+    function displayCategory(unit) { if(unit.grade===1&&unit.category==="たし算")return "たしざん";if(unit.grade===1&&unit.category==="ひき算")return "ひきざん";return unit.category; }
+    function setText(selector,value) { const element=$(selector); if(element)element.textContent=value; }
+    function applyGradeUi(grade) {
+      const copy=copyForGrade(grade);if(document.body)document.body.dataset.grade=String(grade);
+      setText("#hero-eyebrow",copy.eyebrow);setText("#hero-title",copy.hero);setText("#hero-description",copy.heroDescription);
+      setText("#language-level",copy.level);setText("#select-heading-text",copy.select);setText("#grade-tab",copy.gradeTab);setText("#method-tab",copy.methodTab);setText("#settings-heading-text",copy.settings);
+      setText("#count-title",copy.count);setText("#answer-mode-title",copy.answerMode);setText("#order-title",copy.order);setText("#start-button",copy.start);setText("#review-button-label",copy.review);setText("#review-count-unit",copy.countUnit);
+      setText("#example-label",copy.example);setText("#history-heading",copy.history);setText("#clear-history",copy.clearHistory);setText("#history-empty",copy.emptyHistory);setText("#saved-pill",copy.saved);setText("#quit-button",copy.back);
+      setText("#problem-label",copy.problem);setText("#correct-label",copy.correct);setText("#streak-label",copy.streak);setText("#time-label",copy.time);setText("#question-number-label",copy.question);
+      setText("#reveal-answer",copy.reveal);setText("#reveal-key-hint",copy.revealHint);setText("#revealed-label",copy.revealed);setText("#grade-prompt",copy.gradePrompt);setText("#grade-wrong-label",copy.wrong);setText("#grade-correct-label",copy.right);
+      setText("#result-correct-label",copy.resultCorrect);setText("#result-rate-label",copy.resultRate);setText("#result-time-label",copy.elapsed);setText("#result-average-label",copy.average);setText("#mistake-summary-heading",copy.mistakes);setText("#retry-wrong",copy.retryWrong);setText("#retry-same",copy.retrySame);setText("#back-setup",copy.backSetup);
+    }
+
+    function makeChoice(container,name,values,current,onChange) {
+      container.replaceChildren();
+      values.forEach(([value,label])=>{
+        const wrapper=document.createElement("label"); wrapper.className="choice";
+        const input=document.createElement("input"); input.type="radio"; input.name=name; input.value=value; input.checked=String(current)===String(value);
+        const span=document.createElement("span"); span.textContent=label;
+        input.addEventListener("change",()=>onChange(value)); wrapper.append(input,span); container.append(wrapper);
+      });
+    }
+
+    function renderFilters() {
+      const options=state.mode==="grade" ? [["1","1年生"],["2","2年生"],["3","3年生"]] : [["かず","かず"],["たし算","たしざん"],["ひき算","ひきざん"],["かけ算","かけ算"],["わり算","わり算"]];
+      filterRow.replaceChildren();
+      options.forEach(([value,label])=>{ const button=document.createElement("button"); button.type="button"; button.className="filter-chip"; button.textContent=label; button.setAttribute("aria-pressed",String(state.filter===value)); button.addEventListener("click",()=>{state.filter=value; const first=filteredUnits()[0]; if(first) state.unitId=first.id; state.stage="all";renderSetup();}); filterRow.append(button); });
+    }
+    function filteredUnits() { return UNITS.filter((unit)=>state.mode==="grade" ? String(unit.grade)===state.filter : unit.category===state.filter); }
+    function renderUnits() {
+      unitList.replaceChildren();
+      filteredUnits().forEach((unit)=>{ const button=document.createElement("button"); button.type="button"; button.className="unit-card"; button.setAttribute("aria-pressed",String(unit.id===state.unitId)); button.innerHTML=`<small>${unit.grade}年生・${displayCategory(unit)}</small><strong>${unit.title}</strong><span>${unit.subtitle}</span>`; button.addEventListener("click",()=>{state.unitId=unit.id;state.stage="all";renderSetup();}); unitList.append(button); });
+    }
+    function renderTables() {
+      const box=$("#table-choices"); box.replaceChildren();
+      for(let table=2;table<=9;table++){ const label=document.createElement("label"); label.className="choice"; const input=document.createElement("input"); input.type="checkbox"; input.checked=state.tables.includes(table); const span=document.createElement("span"); span.textContent=`${table}の だん`; input.addEventListener("change",()=>{ if(input.checked){state.tables=[...new Set([...state.tables,table])].sort();}else if(state.tables.length>1){state.tables=state.tables.filter((n)=>n!==table);}else{input.checked=true;showToast("1つは だんを えらんでね");} }); label.append(input,span); box.append(label); }
+    }
+    function stageNumbers(unit){
+      if(unit.id==="g1-add-carry")return [2,3,4,5,6,7,8,9];
+      if(unit.id==="g1-add-all"||unit.id==="g1-add-no-1"||unit.id==="g1-sub-all")return [1,2,3,4,5,6,7,8,9];
+      if(unit.id==="g1-sub-no-1")return [1,2,3,4,5,6,7,8,9,10];
+      if(unit.id==="g1-sub-borrow")return [11,12,13,14,15,16,17,18];
+      return [];
+    }
+    function renderStageChoices(unit){
+      const numbers=stageNumbers(unit);if(state.stage!=="all"&&!numbers.includes(Number(state.stage)))state.stage="all";const label=unit.stageType==="add"?"たされる かず":"ひかれる かず";$("#stage-title").textContent=`${label}を きめる（それぞれの だん）`;makeChoice($("#stage-choices"),"stage",[["all","ぜんぶ"],...numbers.map((number)=>[String(number),`${number}の だん`])],state.stage,(value)=>{state.stage=value;});
+    }
+    function renderSetup() {
+      $("#grade-tab").setAttribute("aria-selected",String(state.mode==="grade")); $("#method-tab").setAttribute("aria-selected",String(state.mode==="method"));
+      renderFilters(); renderUnits();
+      const unit=selectedUnit(),copy=copyForGrade(unit.grade);applyGradeUi(unit.grade); $("#info-kicker").textContent=`${unit.grade}年生・${displayCategory(unit)}`; $("#info-title").textContent=unit.title; $("#info-description").textContent=unit.description; $("#info-example").textContent=unit.example;
+      $("#method-note").hidden=unit.id!=="g3-multiply-teens"; $("#indian-two-note").hidden=unit.id!=="g3-multiply-two"; $("#order-setting").hidden=!unit.ordered; $("#stage-setting").hidden=!unit.staged; $("#target-setting").hidden=unit.id!=="g1-pairs"; $("#pair-mode-setting").hidden=unit.id!=="g1-pairs"; $("#multiply-pattern-setting").hidden=unit.id!=="g3-multiply-two"; $("#table-setting").hidden=unit.id!=="g2-tables";
+      if(!unit.exhaustive&&state.count==="all")state.count=10;const countOptions=[["10",`10${copy.countUnit}`],["20",`20${copy.countUnit}`],["30",`30${copy.countUnit}`]];if(unit.exhaustive)countOptions.push(["all",unit.grade<=2?"ぜんぶ":"全部"]);makeChoice($("#count-choices"),"count",countOptions,state.count,(value)=>{state.count=value==="all"?"all":Number(value);});
+      makeChoice($("#answer-mode-choices"),"answer-mode",[["input",copy.inputMode],["flashcard",copy.cardMode]],state.answerMode,(value)=>{state.answerMode=value;});
+      makeChoice($("#order-choices"),"order",[["asc","上がり"],["desc","下がり"],["random","ランダム"]],state.order,(value)=>{state.order=value;});
+      makeChoice($("#target-choices"),"target",[["random","2〜10 ランダム"],["2","2"],["3","3"],["4","4"],["5","5"],["6","6"],["7","7"],["8","8"],["9","9"],["10","10"]],state.target,(value)=>{state.target=value;});
+      makeChoice($("#pair-mode-choices"),"pair-mode",[["mixed","3しゅるい まぜこぜ"],["total","あわせた かず"],["left","ひだりの かず"],["right","みぎの かず"]],state.pairMode,(value)=>{state.pairMode=value;});
+      makeChoice($("#multiply-pattern-choices"),"multiply-pattern",[["all","すべての2けた×2けた"],["pattern2","②の形だけ"],["pattern3","③の形だけ"]],state.multiplyPattern,(value)=>{state.multiplyPattern=value;});
+      if(unit.staged)renderStageChoices(unit);renderTables(); renderReviewCount();renderWeakness();
+    }
+    function renderReviewCount() { $("#review-count").textContent=stored.wrong.length; $("#review-button").disabled=stored.wrong.length===0; }
+    function renderHistory() {
+      const list=$("#history-list"); list.replaceChildren(); $("#history-empty").hidden=stored.history.length>0;
+      stored.history.slice(0,5).forEach((entry)=>{ const row=document.createElement("div"); row.className="history-item"; const name=document.createElement("strong"); name.textContent=entry.title; const score=document.createElement("span"),unit=entry.grade===1||entry.grade===2?"もん":"問"; score.textContent=entry.correct===null?`${entry.total}${unit}`:`${entry.correct}/${entry.total}`; const date=document.createElement("small"); date.textContent=new Date(entry.date).toLocaleString("ja-JP",{month:"numeric",day:"numeric",hour:"2-digit",minute:"2-digit"}); row.append(name,score,date); list.append(row); });
+    }
+    function focusForProblem(item){
+      const unit=UNITS.find((candidate)=>candidate.id===item.unitId)||selectedUnit();let id=`unit:${unit.id}`,label=unit.title;
+      if(unit.id==="g2-tables"){id=`table:${item.a}`;label=`${item.a}の だん`;}
+      else if(unit.stageType==="add"){id=`${unit.id}:add:${item.a}`;label=unit.grade===1?`${item.a}に たす もんだい`:`${item.a}に足す計算`;}
+      else if(unit.stageType==="sub"){id=`${unit.id}:sub:${item.a}`;label=unit.grade===1?`${item.a}から ひく もんだい`:`${item.a}から引く計算`;}
+      else if(unit.category==="わり算"){id=`${unit.id}:divide:${item.b}`;label=`${item.b}で わる問題`;}
+      return {id,label,grade:unit.grade,unitId:unit.id};
+    }
+    function updateStat(bucket,key,details,correct){const current=bucket[key]||{attempts:0,correct:0,...details};current.attempts++;if(correct)current.correct++;current.lastAnswered=Date.now();bucket[key]=current;}
+    function recordLearningStat(item,correct){
+      if(item.practiceRetry)return;const unit=UNITS.find((candidate)=>candidate.id===item.unitId)||selectedUnit(),focus=focusForProblem(item);stored.stats=stored.stats||{units:{},focuses:{}};
+      updateStat(stored.stats.units,unit.id,{label:unit.title,grade:unit.grade},correct);updateStat(stored.stats.focuses,focus.id,focus,correct);saveStored();
+    }
+    function renderWeakness(){
+      const grade=selectedUnit().grade,list=$("#weakness-list"),empty=$("#weakness-empty"),all=Object.values(stored.stats?.focuses||{}).filter((item)=>item.grade===grade&&item.attempts>0),enough=all.filter((item)=>item.attempts>=2),items=(enough.length?enough:all).sort((a,b)=>(a.correct/a.attempts)-(b.correct/b.attempts)||b.attempts-a.attempts).slice(0,5);
+      list.replaceChildren();empty.hidden=items.length>0;items.forEach((item)=>{const accuracy=Math.round(item.correct/item.attempts*100),row=document.createElement("div"),name=document.createElement("strong"),score=document.createElement("span"),track=document.createElement("div"),bar=document.createElement("div");row.className="weakness-item";name.textContent=item.label;score.textContent=`${accuracy}% できた`;track.className="weakness-track";bar.className="weakness-bar";bar.style.width=`${accuracy}%`;track.append(bar);row.append(name,score,track);list.append(row);});
+    }
+
+    function problem(unit,a,b,answer,extra={}) { return {unitId:unit.id,display:`${a}${extra.op || ""}${b}`,answer,remainder:null,a,b,key:`${unit.id}:${a}:${b}:${extra.op||""}`,sub:extra.sub||"",...extra}; }
+    function makePairsProblem(unit,total,left,mode=state.pairMode){
+      const right=total-left,unknown=mode==="mixed"?["total","left","right"][rand(0,2)]:mode;
+      if(unknown==="total")return {unitId:unit.id,display:`□ は ${left} と ${right}`,answer:total,remainder:null,a:total,b:left,key:`${unit.id}:${total}:${left}:total`,sub:"□に はいる、あわせた かずは？",pairUnknown:"total"};
+      if(unknown==="left")return {unitId:unit.id,display:`${total} は □ と ${right}`,answer:left,remainder:null,a:total,b:left,key:`${unit.id}:${total}:${left}:left`,sub:"ひだりの □に はいる かずは？",pairUnknown:"left"};
+      return {unitId:unit.id,display:`${total} は ${left} と □`,answer:right,remainder:null,a:total,b:left,key:`${unit.id}:${total}:${left}:right`,sub:"みぎの □に はいる かずは？",pairUnknown:"right"};
+    }
+    function makeIndianPattern2(unit){const tens=rand(1,9),leftOnes=rand(1,9),rightOnes=10-leftOnes,a=tens*10+leftOnes,b=tens*10+rightOnes;return problem(unit,a,b,a*b,{op:"×",strategy:"pattern2"});}
+    function makeIndianPattern3(unit){const leftTens=rand(1,9),rightTens=10-leftTens,ones=rand(1,9),a=leftTens*10+ones,b=rightTens*10+ones;return problem(unit,a,b,a*b,{op:"×",strategy:"pattern3"});}
+    function multiplyStrategy(a,b){if(Math.floor(a/10)===Math.floor(b/10)&&a%10+b%10===10)return "pattern2";if(a%10===b%10&&Math.floor(a/10)+Math.floor(b/10)===10)return "pattern3";if(Math.floor(a/10)===Math.floor(b/10))return "omiyage";return "written";}
+    function makeRandomProblem(unit) {
+      let a,b,q,r;
+      switch(unit.id){
+        case "g1-pairs": { const total=state.target==="random"?rand(2,10):Number(state.target); a=rand(0,total); return makePairsProblem(unit,total,a); }
+        case "g1-add-all": a=rand(1,9);b=rand(0,9);return problem(unit,a,b,a+b,{op:"＋"});
+        case "g1-add-no-1": do{a=rand(1,9);b=rand(0,9);}while(a+b>10); return problem(unit,a,b,a+b,{op:"＋"});
+        case "g1-add-no-2": do{a=rand(10,19);b=rand(1,9);}while(a%10+b>=10); return problem(unit,a,b,a+b,{op:"＋"});
+        case "g1-add-carry": do{a=rand(1,9);b=rand(1,9);}while(a+b<=10); return problem(unit,a,b,a+b,{op:"＋"});
+        case "g1-sub-all": a=rand(1,9);b=rand(0,a);return problem(unit,a,b,a-b,{op:"－"});
+        case "g1-sub-no-1": a=rand(1,10);b=rand(0,a);return problem(unit,a,b,a-b,{op:"－"});
+        case "g1-sub-no-2": do{a=rand(10,19);b=rand(1,9);}while(a%10<b);return problem(unit,a,b,a-b,{op:"－"});
+        case "g1-sub-borrow": do{a=rand(11,19);b=rand(2,9);}while(a%10>=b);return problem(unit,a,b,a-b,{op:"－"});
+        case "g2-add-to20": a=rand(11,19);b=20-a;return problem(unit,a,b,20,{op:"＋"});
+        case "g2-add-to-tens": {const target=rand(3,10)*10;b=rand(1,9);a=target-b;return problem(unit,a,b,target,{op:"＋"});}
+        case "g2-add-teens": do{a=rand(11,19);b=rand(1,9);}while(a%10+b<10);return problem(unit,a,b,a+b,{op:"＋"});
+        case "g2-add-one": do{a=rand(20,98);b=rand(1,9);}while(a%10+b<10);return problem(unit,a,b,a+b,{op:"＋"});
+        case "g2-add-two-under": do{a=rand(10,89);b=rand(10,89);}while(a+b>100);return problem(unit,a,b,a+b,{op:"＋"});
+        case "g2-add-two-over": do{a=rand(20,99);b=rand(20,99);}while(a+b<=100);return problem(unit,a,b,a+b,{op:"＋"});
+        case "g2-sub-20": b=rand(1,9);return problem(unit,20,b,20-b,{op:"－"});
+        case "g2-sub-tens": a=rand(3,10)*10;b=rand(1,9);return problem(unit,a,b,a-b,{op:"－"});
+        case "g2-sub-twenties": do{a=rand(21,29);b=rand(2,9);}while(a%10>=b);return problem(unit,a,b,a-b,{op:"－"});
+        case "g2-sub-one": do{a=rand(30,99);b=rand(2,9);}while(a%10>=b);return problem(unit,a,b,a-b,{op:"－"});
+        case "g2-sub-two": a=rand(20,99);b=rand(10,a);return problem(unit,a,b,a-b,{op:"－"});
+        case "g2-sub-three-two": a=rand(100,999);b=rand(10,99);return problem(unit,a,b,a-b,{op:"－"});
+        case "g2-tables": a=state.tables[rand(0,state.tables.length-1)];b=rand(1,9);return problem(unit,a,b,a*b,{op:"×"});
+        case "g3-divide-exact": b=rand(2,9);q=rand(1,9);a=b*q;return problem(unit,a,b,q,{op:"÷"});
+        case "g3-divide-rem": b=rand(2,9);q=rand(1,9);r=rand(1,b-1);a=b*q+r;return {...problem(unit,a,b,q,{op:"÷"}),remainder:r,key:`${unit.id}:${a}:${b}:${r}`,sub:"商とあまりを答えよう"};
+        case "g3-multiply-teens": a=rand(11,19);b=rand(11,19);return problem(unit,a,b,a*b,{op:"×",omiyage:true,strategy:"teens"});
+        case "g3-multiply-two": if(state.multiplyPattern==="pattern2")return makeIndianPattern2(unit);if(state.multiplyPattern==="pattern3")return makeIndianPattern3(unit);a=rand(10,99);b=rand(10,99);return problem(unit,a,b,a*b,{op:"×",strategy:"general"});
+        default:return problem(unit,1,1,2,{op:"＋"});
+      }
+    }
+    function orderedPool(unit) {
+      const pool=[],includeStage=(number)=>state.stage==="all"||Number(state.stage)===number;
+      if(unit.id==="g1-add-all") for(let a=1;a<=9;a++)for(let b=0;b<=9;b++)if(includeStage(a))pool.push(problem(unit,a,b,a+b,{op:"＋"}));
+      if(unit.id==="g1-add-no-1") for(let a=1;a<=9;a++)for(let b=0;b<=9;b++)if(includeStage(a)&&a+b<=10)pool.push(problem(unit,a,b,a+b,{op:"＋"}));
+      if(unit.id==="g1-add-carry") for(let a=1;a<=9;a++)for(let b=1;b<=9;b++)if(includeStage(a)&&a+b>10)pool.push(problem(unit,a,b,a+b,{op:"＋"}));
+      if(unit.id==="g1-sub-all") for(let a=1;a<=9;a++)for(let b=0;b<=a;b++)if(includeStage(a))pool.push(problem(unit,a,b,a-b,{op:"－"}));
+      if(unit.id==="g1-sub-no-1") for(let a=1;a<=10;a++)for(let b=0;b<=a;b++)if(includeStage(a))pool.push(problem(unit,a,b,a-b,{op:"－"}));
+      if(unit.id==="g1-sub-borrow") for(let a=11;a<=19;a++)for(let b=2;b<=9;b++)if(includeStage(a)&&a%10<b)pool.push(problem(unit,a,b,a-b,{op:"－"}));
+      if(unit.id==="g2-tables") state.tables.forEach((table)=>{for(let n=1;n<=9;n++)pool.push(problem(unit,table,n,table*n,{op:"×"}));});
+      const sorted=pool.sort((x,y)=>x.a-y.a || x.b-y.b);
+      return state.order==="random"?shuffle(sorted):state.order==="desc"?sorted.reverse():sorted;
+    }
+    function uniqueCapacity(unit){
+      switch(unit.id){
+        case "g1-pairs":{const totals=state.target==="random"?[2,3,4,5,6,7,8,9,10]:[Number(state.target)],modes=state.pairMode==="mixed"?3:1;return totals.reduce((sum,total)=>sum+total+1,0)*modes;}
+        case "g1-add-no-2":case "g1-sub-no-2":case "g2-add-teens":return 45;
+        case "g2-add-to20":case "g2-sub-20":return 9;
+        case "g2-add-to-tens":case "g2-sub-tens":case "g3-divide-exact":return 72;
+        case "g2-add-one":return 351;
+        case "g2-sub-twenties":return 36;
+        case "g2-sub-one":return 308;
+        case "g2-sub-three-two":return 81000;
+        case "g3-divide-rem":return 324;
+        case "g3-multiply-teens":return 81;
+        case "g3-multiply-two":return state.multiplyPattern==="all"?8100:81;
+        case "g2-add-two-under":{let count=0;for(let a=10;a<=89;a++)for(let b=10;b<=89;b++)if(a+b<=100)count++;return count;}
+        case "g2-add-two-over":{let count=0;for(let a=20;a<=99;a++)for(let b=20;b<=99;b++)if(a+b>100)count++;return count;}
+        case "g2-sub-two":{let count=0;for(let a=20;a<=99;a++)count+=a-9;return count;}
+        default:return 1000;
+      }
+    }
+    function randomCycle(unit,size){const result=[],keys=new Set();while(result.length<size){const item=makeRandomProblem(unit);if(!keys.has(item.key)){keys.add(item.key);result.push(item);}}return result;}
+    function buildProblems() {
+      const unit=selectedUnit(); if(unit.ordered){ const pool=orderedPool(unit);if(state.count==="all")return pool;const result=[]; while(result.length<state.count){result.push(...(state.order==="random"?shuffle(pool):pool));} return result.slice(0,state.count); }
+      const result=[],capacity=uniqueCapacity(unit);while(result.length<state.count){result.push(...randomCycle(unit,Math.min(capacity,state.count-result.length)));}return result;
+    }
+
+    function startSession(problems,{review=false}={}) {
+      if(!problems.length){showToast(selectedUnit().grade<=2?"やりなおす もんだいは ありません":"やりなおす問題はありません");return;}
+      state.problems=problems.map((item)=>({...item})); state.lastProblems=problems.map((item)=>({...item})); state.index=0; state.correct=0; state.streak=0; state.answered=false; state.revealed=false; state.currentWrong=[]; state.startedAt=Date.now(); state.reviewMode=review;state.sessionGrade=(UNITS.find((unit)=>unit.id===problems[0].unitId)||selectedUnit()).grade;state.originalTotal=problems.length;state.retryScheduled=new Set();
+      applyGradeUi(state.sessionGrade);
+      setupScreen.hidden=true; practiceScreen.hidden=false; $("#question-card").hidden=false; $("#result-card").hidden=true; $("#practice-unit").textContent=review?"まちがいを もう一度":`${selectedUnit().grade}年生｜${selectedUnit().title}`;
+      clearInterval(state.timerId); state.timerId=setInterval(renderTimer,1000); renderQuestion(); window.scrollTo({top:0});
+    }
+    function renderTimer(){ if(!state.startedAt)return; $("#time-text").textContent=formatTime((Date.now()-state.startedAt)/1000); }
+    function currentProblem(){return state.problems[state.index];}
+    function renderQuestion() {
+      state.answered=false; state.revealed=false; const item=currentProblem(); const unit=UNITS.find((u)=>u.id===item.unitId) || selectedUnit(),copy=activeCopy();
+      $("#progress-text").textContent=`${state.index+1} / ${state.problems.length}`; $("#correct-text").textContent=state.correct; $("#streak-text").textContent=state.streak; $("#progress-bar").style.width=`${state.index/state.problems.length*100}%`;$("#question-number-label").textContent=item.practiceRetry?(state.sessionGrade===1?"もういちど":"もう一度"):copy.question;
+      $("#question-card").classList.remove("answer-correct","answer-wrong"); $("#feedback-splash").hidden=true; $("#feedback-splash").className="feedback-splash";
+      $("#question-text").textContent=item.display; $("#question-sub").textContent=state.answerMode==="flashcard"?copy.flashQuestion:item.sub||copy.inputQuestion;
+      if(state.answerMode==="flashcard"){renderFlashcardControls();}else{renderInputs(item);renderKeypad();}
+      feedback.className="feedback"; feedback.innerHTML=state.answerMode==="flashcard"?(state.sessionGrade===1?"<p><strong>ほんものの カードのように つかえるよ</strong>かんがえたら「こたえを みる」を おしてね。</p>":"<p><strong>カードのように使えます</strong>考えたら「答えを見る」を押してください。</p>"):`<p><strong>${copy.emptyAnswer}</strong>${state.sessionGrade===1?"Enterでも こたえられるよ。もういちど Enterを おすと つぎへ すすみます。":"Enterでも答えられます。判定後にもう一度Enterで次へ進みます。"}</p>`;
+      const showHint=true; $("#hint-wrap").hidden=false; $("#hint-card").hidden=true; $("#hint-button").setAttribute("aria-expanded","false"); $("#hint-button").textContent=copy.hintShow; renderHint(item);
+      setTimeout(()=>state.answerMode==="flashcard"?$("#reveal-answer").focus():$(".answer-input")?.focus(),20);
+    }
+    function renderFlashcardControls(){
+      inputRow.hidden=true;keypad.hidden=true;$("#self-grade").hidden=false;$("#reveal-answer").hidden=false;$("#reveal-key-hint").hidden=false;$("#revealed-answer").hidden=true;$("#grade-area").hidden=true;$("#grade-wrong").disabled=false;$("#grade-correct").disabled=false;
+    }
+    function renderInputs(item) {
+      inputRow.hidden=false;keypad.hidden=false;$("#self-grade").hidden=true;inputRow.replaceChildren();
+      const first=makeAnswerInput(item.remainder===null?activeCopy().revealed:"商","answer-input"); inputRow.append(first);
+      if(item.remainder!==null){ const word=document.createElement("span");word.className="remainder-word";word.textContent="あまり";const second=makeAnswerInput("あまり","answer-input small");inputRow.append(word,second); }
+    }
+    function selectAnswerInput(input){selectedAnswerInput=input;inputRow.querySelectorAll(".answer-input").forEach((field)=>field.classList.toggle("is-target",field===input));}
+    function makeAnswerInput(labelText,className){const group=document.createElement("div");group.className="answer-group";const label=document.createElement("label");const id=`answer-${inputRow.children.length}`;label.htmlFor=id;label.textContent=labelText;const input=document.createElement("input");input.id=id;input.className=className;input.inputMode="numeric";input.pattern="[0-9]*";input.maxLength=4;input.autocomplete="off";if(id==="answer-0"){selectedAnswerInput=input;input.classList.add("is-target");}input.addEventListener("focus",()=>selectAnswerInput(input));input.addEventListener("input",()=>{input.value=input.value.replace(/\D/g,"").slice(0,4);});input.addEventListener("keydown",(event)=>{if(event.key==="Enter"){event.preventDefault();event.stopPropagation();submitAnswer();}});group.append(label,input);return group;}
+    function renderKeypad(){keypad.replaceChildren();[1,2,3,4,5,6,7,8,9,0].forEach((number)=>{const button=document.createElement("button");button.type="button";button.className="key";button.textContent=number;button.addEventListener("click",()=>typeNumber(number));keypad.append(button);});const erase=document.createElement("button");erase.type="button";erase.className="key key--wide";erase.textContent=state.sessionGrade===1?"1もじ けす":"1字消す";erase.addEventListener("click",eraseNumber);const submit=document.createElement("button");submit.type="button";submit.className="key submit";submit.textContent=state.sessionGrade===1?"こたえる":"答える";submit.addEventListener("click",submitAnswer);keypad.append(erase,submit);}
+    function activeAnswerInput(){const active=document.activeElement;if(active?.classList?.contains("answer-input"))selectAnswerInput(active);return selectedAnswerInput&&!selectedAnswerInput.disabled?selectedAnswerInput:$(".answer-input");}
+    function typeNumber(number){if(state.answered)return;const input=activeAnswerInput();if(input&&input.value.length<input.maxLength){input.value+=number;input.focus();}}
+    function eraseNumber(){if(state.answered)return;const input=activeAnswerInput();if(input){input.value=input.value.slice(0,-1);input.focus();}}
+    function answerText(item){return item.remainder===null?String(item.answer):`${item.answer} あまり ${item.remainder}`;}
+    function revealFlashcard(){
+      if(state.answerMode!=="flashcard"||state.revealed||state.answered)return;state.revealed=true;const item=currentProblem();$("#revealed-answer-text").textContent=answerText(item);$("#reveal-answer").hidden=true;$("#reveal-key-hint").hidden=true;$("#revealed-answer").hidden=false;$("#grade-area").hidden=false;feedback.innerHTML=state.sessionGrade===1?"<p><strong>こたえを みたよ</strong>「あっていた」か「ちがった」を おすと、つぎへ すすみます。</p>":state.sessionGrade===2?"<p><strong>答えを見ました</strong>「正しい」か「まちがい」を押すと、つぎへ進みます。</p>":"<p><strong>答えをたしかめました</strong>「せいかい」か「まちがい」を押すと、すぐ次の問題へ進みます。</p>";$("#grade-correct").focus();
+    }
+    function gradeFlashcard(correct){if(state.answerMode!=="flashcard"||!state.revealed||state.answered)return;$("#grade-wrong").disabled=true;$("#grade-correct").disabled=true;recordOutcome(correct,currentProblem(),true);}
+    function showOutcomeSplash(correct){
+      const splash=$("#feedback-splash"),titles=state.sessionGrade===1?["○ せいかい！","× ざんねん"]:state.sessionGrade===2?["○ 正しい！","× まちがい"]:["○ せいかい！","× まちがい"],messages=state.sessionGrade===1?["その ちょうし！","こたえを みて、つぎも やってみよう"]:state.sessionGrade===2?["その調子！","正しい答えを見て、つぎもやってみよう"]:["その調子！","正しい答えを見て、次もやってみよう"];
+      splash.className=`feedback-splash ${correct?"is-correct":"is-wrong"}`;splash.innerHTML=`<div class="splash-panel"><strong>${correct?titles[0]:titles[1]}</strong><span>${correct?messages[0]:messages[1]}</span></div>`;splash.hidden=false;$("#question-card").classList.add(correct?"answer-correct":"answer-wrong");
+    }
+    function recordOutcome(correct,item,advanceImmediately=false){
+      state.answered=true;const isRetry=Boolean(item.practiceRetry);if(isRetry){if(correct){state.streak++;state.currentWrong=state.currentWrong.filter((entry)=>entry.key!==item.key);removeWrong(item.key);}else{state.streak=0;}}
+      else{recordLearningStat(item,correct);if(correct){state.correct++;state.streak++;if(state.reviewMode)removeWrong(item.key);}else{state.streak=0;state.currentWrong.push({...item});addWrong(item);schedulePracticeRetry(item);}}
+      $("#correct-text").textContent=state.correct;$("#streak-text").textContent=state.streak;if(advanceImmediately){nextQuestion();return;}showOutcomeSplash(correct);renderFeedback(correct,item);
+    }
+    function schedulePracticeRetry(item){if(state.reviewMode||item.practiceRetry||state.retryScheduled.has(item.key))return;state.retryScheduled.add(item.key);const retry={...item,practiceRetry:true};state.problems.splice(Math.min(state.index+4,state.problems.length),0,retry);}
+    function submitAnswer(){
+      if(state.answered)return; const inputs=[...document.querySelectorAll(".answer-input")]; if(inputs.some((input)=>input.value==="")){showToast(activeCopy().emptyAnswer);inputs.find((input)=>input.value==="")?.focus();return;}
+      const item=currentProblem(),answer=Number(inputs[0].value),remainder=inputs[1]?Number(inputs[1].value):null; const correct=answer===item.answer && remainder===item.remainder;inputs.forEach((input)=>input.disabled=true);keypad.querySelectorAll("button").forEach((button)=>button.disabled=true);recordOutcome(correct,item);
+    }
+    function renderFeedback(correct,item){feedback.className=`feedback ${correct?"is-correct":"is-wrong"}`;const paragraph=document.createElement("p"),title=document.createElement("strong"),copy=activeCopy();title.textContent=state.sessionGrade===1?(correct?"○ せいかい！":"× ちがったよ"):state.sessionGrade===2?(correct?"○ 正しいです":"× まちがいです"):(correct?"○ せいかいです":"× まちがいです");const body=correct?(state.sessionGrade===1?"こたえは あっています。":"入力した答えは合っています。"):(state.sessionGrade===1?`こたえは ${answerText(item)} です。あとで やりなおせます。`:`正しい答えは ${answerText(item)} です。あとで もう一度できます。`);paragraph.append(title,document.createTextNode(body));const next=document.createElement("button");next.type="button";next.className="next";next.textContent=state.index===state.problems.length-1?copy.result:copy.next;next.addEventListener("click",nextQuestion);feedback.replaceChildren(paragraph,next);next.focus();}
+    function nextQuestion(){if(!state.answered)return;if(state.index>=state.problems.length-1){finishSession();}else{state.index++;renderQuestion();}}
+    function addWrong(item){const existing=stored.wrong.find((entry)=>entry.key===item.key);if(existing){existing.mistakes=(existing.mistakes||1)+1;existing.lastWrong=Date.now();Object.assign(existing,item);}else{stored.wrong.push({...item,mistakes:1,lastWrong:Date.now()});}saveStored();renderReviewCount();}
+    function removeWrong(key){stored.wrong=stored.wrong.filter((entry)=>entry.key!==key);saveStored();renderReviewCount();}
+    function renderHint(item){
+      const box=$("#hint-card");box.replaceChildren();const a=item.a,b=item.b,unit=UNITS.find((candidate)=>candidate.id===item.unitId)||selectedUnit(),strategy=item.strategy||(item.unitId==="g3-multiply-teens"?"teens":multiplyStrategy(a,b));
+      if(unit.id==="g1-pairs"){
+        const total=a,left=b,right=a-b;if(item.pairUnknown==="total")box.innerHTML=`<strong>2つの かずを あわせよう</strong><p>${left}と${right}を あわせると、${left}＋${right}＝${total}です。</p>`;else if(item.pairUnknown==="left")box.innerHTML=`<strong>${total}を 2つに わけよう</strong><p>${total}から${right}を ひくと、ひだりの かずは ${total}－${right}＝${left}です。</p>`;else box.innerHTML=`<strong>${total}を 2つに わけよう</strong><p>${total}から${left}を ひくと、みぎの かずは ${total}－${left}＝${right}です。</p>`;
+      }else if(unit.category==="たし算"){
+        const answer=a+b,tens=Math.floor(b/10)*10,ones=b%10,nextTen=Math.ceil((a+1)/10)*10,need=nextTen-a;
+        if(b>=10)box.innerHTML=`<strong>${b}を 十の まとまりと、一の まとまりに分けよう</strong><p>まず ${a}＋${tens}＝${a+tens}、つぎに ${a+tens}＋${ones}＝${answer}です。</p>`;
+        else if(need>0&&need<b)box.innerHTML=unit.grade===1?`<strong>10の まとまりを つくろう</strong><p>${b}を ${need}と${b-need}に わけます。${a}＋${need}＝${nextTen}、${nextTen}＋${b-need}＝${answer}です。</p>`:`<strong>先に、ちょうど何十になる数を足そう</strong><p>${b}を ${need}と${b-need}に分けます。${a}＋${need}＝${nextTen}、${nextTen}＋${b-need}＝${answer}です。</p>`;
+        else box.innerHTML=unit.grade===1?`<strong>${a}から ${b}こ すすもう</strong><p>${a}の つぎから ${b}こ かぞえると、こたえは ${answer}です。</p>`:`<strong>一の位を足そう</strong><p>${a}に${b}を足すと、答えは${answer}です。</p>`;
+      }else if(unit.category==="ひき算"){
+        const answer=a-b,tens=Math.floor(b/10)*10,ones=b%10,toTen=a%10||10;
+        if(b>=10)box.innerHTML=`<strong>${b}を 十の まとまりと、一の まとまりに分けよう</strong><p>まず ${a}－${tens}＝${a-tens}、つぎに ${a-tens}－${ones}＝${answer}です。</p>`;
+        else if(b>toTen)box.innerHTML=unit.grade===1?`<strong>まず 10まで もどろう</strong><p>${b}を ${toTen}と${b-toTen}に わけます。${a}－${toTen}＝${a-toTen}、${a-toTen}－${b-toTen}＝${answer}です。</p>`:`<strong>先に、ちょうど何十まで引こう</strong><p>${b}を ${toTen}と${b-toTen}に分けます。${a}－${toTen}＝${a-toTen}、${a-toTen}－${b-toTen}＝${answer}です。</p>`;
+        else box.innerHTML=unit.grade===1?`<strong>${a}から ${b}こ もどろう</strong><p>${a}から ${b}こ もどると、こたえは ${answer}です。</p>`:`<strong>一の位を引こう</strong><p>${a}から${b}を引くと、答えは${answer}です。</p>`;
+      }else if(unit.id==="g2-tables"){
+        box.innerHTML=`<strong>${a}を ${b}こ あつめよう</strong><p>${Array.from({length:b},()=>a).join("＋")}＝${a*b}です。九九では ${a}×${b}＝${a*b} と書きます。</p>`;
+      }else if(unit.category==="わり算"){
+        if(item.remainder===null)box.innerHTML=`<strong>九九を使って考えよう</strong><p>${b}×□＝${a}になる数をさがします。${b}×${item.answer}＝${a}なので、商は${item.answer}です。</p>`;
+        else box.innerHTML=`<strong>わる数の九九で、${a}をこえない数をさがそう</strong><p>${b}×${item.answer}＝${b*item.answer}で、${a}－${b*item.answer}＝${item.remainder}です。商は${item.answer}、あまりは${item.remainder}です。</p>`;
+      }else if(strategy==="teens"){
+        const gift=b%10,roundA=a+gift,baseB=b-gift,firstProduct=roundA*baseB,ones=(a%10)*gift,onesDigit=ones%10,carry=Math.floor(ones/10),upper=a+gift+carry;
+        box.innerHTML=`<strong>${a}×${b} のおみやげ算</strong><p>右の${b}の一の位の${gift}を左の${a}に渡します。（${a}＋${gift}）×（${b}－${gift}）＝${roundA}×${baseB}＝${firstProduct}です。</p><p>${a%10}×${gift}＝${ones}を足すと、${firstProduct}＋${ones}＝${a*b}です。</p><h4>① 11から19までの数どうし【インド式計算】</h4><p><strong>使えるかチェック：</strong>${a}と${b}は、どちらも11から19までの数です。</p><p>一の位どうしは、${a%10}×${gift}＝${ones}です。「${onesDigit}」を答えの一の位とし、「${carry}」は繰り上がりとして覚えます。</p><p>${a}＋${gift}＝${a+gift}に、繰り上がりの${carry}を足すと${upper}です。「${upper}」と「${onesDigit}」をつなげると、答えは${a*b}です。</p>`;
+      }else if(strategy==="general"){
+        const leftTens=Math.floor(a/10),leftOnes=a%10,rightTens=Math.floor(b/10),rightOnes=b%10,firstProduct=leftOnes*rightOnes,onesDigit=firstProduct%10,firstCarry=Math.floor(firstProduct/10),crossLeft=leftTens*rightOnes,crossRight=leftOnes*rightTens,middleTotal=crossLeft+crossRight+firstCarry,tensDigit=middleTotal%10,secondCarry=Math.floor(middleTotal/10),topProduct=leftTens*rightTens,upper=topProduct+secondCarry;
+        box.innerHTML=`<strong>すべての2けた×2けた【インド式計算】</strong><p><strong>使えるかチェック：</strong>特別な条件はなく、すべての2けた×2けたに使えます。</p><p>① 一の位どうしをかけます。${leftOnes}×${rightOnes}＝${firstProduct}なので、「${onesDigit}」を答えの一の位に書き、「${firstCarry}」を繰り上げます。</p><p>② 斜めに交差する数字をかけ、繰り上がりも足します。${leftTens}×${rightOnes}＋${leftOnes}×${rightTens}＋${firstCarry}＝${crossLeft}＋${crossRight}＋${firstCarry}＝${middleTotal}です。「${tensDigit}」を答えの十の位に書き、「${secondCarry}」を繰り上げます。</p><p>③ 十の位どうしをかけ、繰り上がりを足します。${leftTens}×${rightTens}＋${secondCarry}＝${topProduct}＋${secondCarry}＝${upper}です。</p><p>「${upper}」の後ろに「${tensDigit}${onesDigit}」を並べると、${a}×${b}＝${a*b}です。</p>`;
+      }else if(strategy==="pattern2"){
+        const tens=Math.floor(a/10),leftOnes=a%10,rightOnes=b%10,upper=tens*(tens+1),lower=leftOnes*rightOnes,lowerText=String(lower).padStart(2,"0");
+        box.innerHTML=`<strong>② 十の位が同じで、一の位の和が10【インド式計算】</strong><p><strong>使えるかチェック：</strong>${a}と${b}は十の位がどちらも${tens}で、${leftOnes}＋${rightOnes}＝10です。</p><p>一の位どうしをかけると、${leftOnes}×${rightOnes}＝${lowerText}です。</p><p>共通する十の位の${tens}と、その次の数${tens+1}をかけると、${tens}×${tens+1}＝${upper}です。</p><p>「${upper}」と「${lowerText}」をつなげると、${a}×${b}＝${a*b}です。</p>`;
+      }else if(strategy==="pattern3"){
+        const leftTens=Math.floor(a/10),rightTens=Math.floor(b/10),ones=a%10,upper=leftTens*rightTens+ones,lower=ones*ones,lowerText=String(lower).padStart(2,"0");
+        box.innerHTML=`<strong>③ 一の位が同じで、十の位の和が10【インド式計算】</strong><p><strong>使えるかチェック：</strong>${a}と${b}は一の位がどちらも${ones}で、${leftTens}＋${rightTens}＝10です。</p><p>一の位どうしをかけると、${ones}×${ones}＝${lowerText}です。</p><p>十の位どうしの積に共通する一の位を足すと、${leftTens}×${rightTens}＋${ones}＝${upper}です。</p><p>「${upper}」と「${lowerText}」をつなげると、${a}×${b}＝${a*b}です。</p>`;
+      }else if(strategy==="omiyage"){
+        const gift=b%10,roundA=a+gift,baseB=b-gift,firstProduct=roundA*baseB,ones=(a%10)*gift;box.innerHTML=`<strong>${a}×${b} のおみやげ算</strong><p>${b}の一の位の${gift}を${a}に渡します。（${a}＋${gift}）×（${b}－${gift}）＝${roundA}×${baseB}＝${firstProduct}です。</p><p>${a%10}×${gift}＝${ones}を足すと、${firstProduct}＋${ones}＝${a*b}です。</p>`;
+      }else{box.innerHTML=`<strong>この問題は筆算がおすすめ</strong><p>${a}×${b}は、位をそろえて筆算しよう。まず${a}×${b%10}、次に${a}×${Math.floor(b/10)}0を計算して足します。</p>`;}
+    }
+    function finishSession(){
+      clearInterval(state.timerId);const seconds=Math.max(1,Math.round((Date.now()-state.startedAt)/1000)),total=state.originalTotal,rate=Math.round(state.correct/total*100),unit=state.reviewMode?{title:"まちがいを もう一度"}:selectedUnit();stored.history.unshift({title:unit.title,correct:state.correct,total,date:Date.now(),seconds,grade:state.sessionGrade});stored.history=stored.history.slice(0,30);saveStored();
+      const titles=state.sessionGrade===1?["ぜんぶ せいかい！","よく できました！","さいごまで がんばったね！"]:state.sessionGrade===2?["ぜんぶ正しくできた！","よくできました！","さいごまでがんばったね！"]:["ぜんぶ せいかい！","よくできました！","さいごまで がんばりました！"],messages=state.sessionGrade===1?["すごい！ つぎの れんしゅうも やってみよう。","まちがえた もんだいは、あとで なんどでも やりなおせるよ。"]:state.sessionGrade===2?["すばらしい！ つぎの計算にも進んでみよう。","まちがえた計算は、あとで何度でもやり直せます。"]:["すばらしい！ 次の練習もやってみましょう。","まちがえた問題は、あとから何度でも もう一度できます。"];
+      $("#question-card").hidden=true;$("#result-card").hidden=false;$("#result-badge").textContent=rate===100?"◎":rate>=80?"○":"✓";$("#result-title").textContent=rate===100?titles[0]:rate>=80?titles[1]:titles[2];$("#result-message").textContent=rate===100?messages[0]:messages[1];$("#result-correct").textContent=`${state.correct} / ${total}`;$("#result-rate").textContent=`${rate}%`;$("#result-time").textContent=formatTime(seconds);$("#result-average").textContent=`${Math.round(seconds/total)}${state.sessionGrade===1?"びょう":"秒"}`;
+      const unique=[...new Map(state.currentWrong.map((item)=>[item.key,item])).values()];const summary=$("#mistake-summary"),list=$("#mistake-list");summary.hidden=unique.length===0;list.replaceChildren();unique.forEach((item)=>{const chip=document.createElement("span");chip.className="mistake-chip";chip.textContent=`${item.display}＝${item.remainder===null?item.answer:`${item.answer} あまり ${item.remainder}`}`;list.append(chip);});$("#retry-wrong").hidden=unique.length===0;renderHistory();renderReviewCount();window.scrollTo({top:0,behavior:"smooth"});
+    }
+    function returnToSetup(){clearInterval(state.timerId);practiceScreen.hidden=true;setupScreen.hidden=false;renderSetup();renderHistory();window.scrollTo({top:0});}
+    function startWrongReview(items=stored.wrong){const problems=shuffle(items.map((item)=>({...item})));startSession(problems,{review:true});}
+
+    $("#grade-tab").addEventListener("click",()=>{state.mode="grade";state.filter="1";state.unitId="g1-pairs";state.stage="all";renderSetup();});
+    $("#method-tab").addEventListener("click",()=>{state.mode="method";state.filter="たし算";state.unitId=filteredUnits()[0].id;state.stage="all";renderSetup();});
+    document.querySelectorAll("[data-table-preset]").forEach((button)=>button.addEventListener("click",()=>{state.tables=button.dataset.tablePreset.split(",").map(Number);renderTables();}));
+    $("#start-button").addEventListener("click",()=>startSession(buildProblems()));
+    $("#review-button").addEventListener("click",()=>startWrongReview());
+    $("#hint-button").addEventListener("click",()=>{const card=$("#hint-card"),copy=activeCopy();card.hidden=!card.hidden;$("#hint-button").setAttribute("aria-expanded",String(!card.hidden));$("#hint-button").textContent=card.hidden?copy.hintShow:copy.hintHide;});
+    $("#reveal-answer").addEventListener("click",revealFlashcard);
+    $("#grade-wrong").addEventListener("click",()=>gradeFlashcard(false));
+    $("#grade-correct").addEventListener("click",()=>gradeFlashcard(true));
+    $("#quit-button").addEventListener("click",()=>{const message=state.sessionGrade===1?"まだ とちゅうです。はじめに もどる？":state.sessionGrade===2?"まだとちゅうです。はじめにもどりますか？":"練習の途中です。はじめの画面にもどりますか？";if(state.answered||state.index===0||confirm(message))returnToSetup();});
+    $("#back-setup").addEventListener("click",returnToSetup);
+    $("#retry-same").addEventListener("click",()=>startSession(state.lastProblems.map((item)=>({...item})),{review:state.reviewMode}));
+    $("#retry-wrong").addEventListener("click",()=>startWrongReview(state.currentWrong));
+    $("#clear-history").addEventListener("click",()=>{const grade=selectedUnit().grade,message=grade===1?"きろくと まちがえた もんだいを、ぜんぶ けす？":grade===2?"きろくと まちがえた計算を、ぜんぶ けしますか？":"学習の きろくと、まちがえた問題をすべて消しますか？";if(confirm(message)){stored={wrong:[],history:[],stats:{units:{},focuses:{}}};saveStored();renderHistory();renderReviewCount();renderWeakness();showToast(grade===1?"きろくを けしました":"きろくを消しました");}});
+    document.addEventListener("keydown",(event)=>{
+      if(practiceScreen.hidden||$("#question-card").hidden)return;
+      if(event.key==="Enter"&&state.answered){event.preventDefault();nextQuestion();return;}
+      if(state.answerMode!=="flashcard"||state.answered)return;
+      if(!state.revealed&&(event.key==="Enter"||event.key===" ")){event.preventDefault();revealFlashcard();return;}
+      if(state.revealed&&(event.key==="1"||event.key==="ArrowLeft")){event.preventDefault();gradeFlashcard(false);return;}
+      if(state.revealed&&(event.key==="2"||event.key==="ArrowRight")){event.preventDefault();gradeFlashcard(true);}
+    });
+
+    renderSetup(); renderHistory();
+  </script>
+</body>
+</html>

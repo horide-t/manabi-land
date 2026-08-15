@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="小学生が一人でも使える、無料の学習ミニアプリ集です。" />
+    <meta property="og:title" content="まなびランド" />
+    <meta property="og:description" content="できた！が ふえる 学習アプリ" />
+    <meta property="og:image" content="assets/og.png" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="theme-color" content="#173b57" />
+    <title>まなびランド｜小学生の学習アプリ集</title>
+    <link rel="stylesheet" href="assets/style.css" />
+    <script defer src="assets/apps.js"></script>
+    <script defer src="assets/home.js"></script>
+  </head>
+  <body>
+    <a class="skip-link" href="#apps">アプリいちらんへ</a>
+    <header class="site-header">
+      <a class="brand" href="index.html" aria-label="まなびランド ホーム">
+        <span class="brand-mark" aria-hidden="true">✎</span>
+        <span>まなびランド</span>
+      </a>
+      <div class="header-progress" aria-label="公開中のアプリ数">
+        <span aria-hidden="true">✦</span>
+        <strong id="app-count">0</strong><span>このアプリ</span>
+      </div>
+    </header>
+
+    <main>
+      <section class="hero" aria-labelledby="hero-title">
+        <div class="hero-copy">
+          <p class="eyebrow">きょうは なにを まなぶ？</p>
+          <h1 id="hero-title">「できた！」を<br /><em>ひとつずつ。</em></h1>
+          <p class="hero-lead">すきな学習アプリをえらんで、じぶんのペースではじめよう。</p>
+          <a class="primary-button" href="#apps">アプリをえらぶ <span aria-hidden="true">↓</span></a>
+        </div>
+        <div class="hero-visual" aria-hidden="true">
+          <span class="shape shape-sun">あ</span>
+          <span class="shape shape-book">BOOK</span>
+          <span class="shape shape-pencil">2 × 3</span>
+          <span class="shape shape-clock">3:00</span>
+          <span class="spark spark-one">✦</span>
+          <span class="spark spark-two">●</span>
+        </div>
+      </section>
+
+      <section class="apps-section" id="apps" aria-labelledby="apps-title">
+        <div class="section-heading">
+          <div>
+            <p class="eyebrow">LEARNING APPS</p>
+            <h2 id="apps-title">学習アプリ</h2>
+          </div>
+          <p>カードをおして すぐスタート</p>
+        </div>
+
+        <div class="filter-bar" id="filter-bar" role="group" aria-label="教科でしぼりこむ"></div>
+        <div class="app-grid" id="app-grid"></div>
+        <div class="empty-state" id="empty-state">
+          <span aria-hidden="true">✎</span>
+          <h3>学習アプリを じゅんび中です</h3>
+          <p>もうすこし まっていてね！</p>
+        </div>
+      </section>
+
+      <section class="promise" aria-labelledby="promise-title">
+        <p class="eyebrow">HOW TO USE</p>
+        <h2 id="promise-title">つかいかたは かんたん</h2>
+        <div class="promise-list">
+          <div><span aria-hidden="true">1</span><h3>えらぶ</h3><p>やってみたい<br />アプリをさがそう</p></div>
+          <div><span aria-hidden="true">2</span><h3>はじめる</h3><p>カードをおして<br />スタートしよう</p></div>
+          <div><span aria-hidden="true">3</span><h3>またえらぶ</h3><p>おわったら<br />ここにもどろう</p></div>
+        </div>
+      </section>
+    </main>
+
+    <footer>
+      <a class="brand footer-brand" href="index.html"><span class="brand-mark" aria-hidden="true">✎</span><span>まなびランド</span></a>
+      <p>たのしく、じぶんのペースで。</p>
+    </footer>
+  </body>
+</html>

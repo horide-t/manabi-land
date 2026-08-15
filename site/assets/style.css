@@ -1,0 +1,156 @@
+:root {
+  --ink: #173b57;
+  --paper: #fffdf7;
+  --cream: #f7f1e5;
+  --yellow: #f4c94e;
+  --blue: #77b8df;
+  --coral: #ee8b72;
+  --green: #8fc59c;
+  --purple: #b8a5d7;
+  --white: #ffffff;
+  --line: #d9d8d0;
+  --shadow: 6px 7px 0 var(--ink);
+}
+
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body {
+  margin: 0;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: "Hiragino Maru Gothic ProN", "BIZ UDPGothic", "Yu Gothic", system-ui, sans-serif;
+  line-height: 1.7;
+}
+a { color: inherit; }
+button { font: inherit; }
+.skip-link { position: fixed; left: 1rem; top: -6rem; z-index: 100; background: var(--ink); color: white; padding: .8rem 1rem; border-radius: .5rem; }
+.skip-link:focus { top: 1rem; }
+.site-header {
+  min-height: 82px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 clamp(1.25rem, 5vw, 5rem);
+  border-bottom: 1px solid var(--line);
+  background: rgba(255, 253, 247, .94);
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  backdrop-filter: blur(10px);
+}
+.brand { display: inline-flex; align-items: center; gap: .65rem; font-family: "Hiragino Maru Gothic ProN", "Yu Gothic", sans-serif; font-weight: 900; font-size: 1.3rem; text-decoration: none; letter-spacing: .02em; }
+.brand-mark { display: grid; place-items: center; width: 38px; height: 38px; border: 2px solid var(--ink); background: var(--yellow); border-radius: 50%; transform: rotate(-7deg); }
+.header-progress { display: flex; align-items: center; gap: .3rem; background: var(--cream); border: 1.5px solid var(--ink); border-radius: 999px; padding: .4rem .9rem; font-size: .88rem; }
+.header-progress > span:first-child { color: #e8af17; font-size: 1.1rem; }
+.header-progress strong { font-size: 1.05rem; }
+
+.hero {
+  max-width: 1360px;
+  min-height: 620px;
+  margin: 0 auto;
+  padding: clamp(4rem, 8vw, 8rem) clamp(1.25rem, 6vw, 6.5rem);
+  display: grid;
+  grid-template-columns: 1.05fr .95fr;
+  align-items: center;
+  gap: 3rem;
+  overflow: hidden;
+}
+.eyebrow { margin: 0 0 1rem; font-size: .78rem; font-weight: 800; letter-spacing: .2em; text-transform: uppercase; }
+.hero h1 { margin: 0; font-family: "Hiragino Maru Gothic ProN", "Yu Gothic", sans-serif; font-size: clamp(3rem, 6vw, 5.8rem); line-height: 1.25; letter-spacing: .02em; }
+.hero h1 em { color: #e77158; font-style: normal; position: relative; white-space: nowrap; }
+.hero h1 em::after { content: ""; position: absolute; left: 0; right: 0; bottom: -.1em; height: 8px; background: var(--yellow); border-radius: 50%; transform: rotate(-1deg); z-index: -1; }
+.hero-lead { max-width: 34rem; margin: 2rem 0; font-size: clamp(1rem, 1.5vw, 1.2rem); font-weight: 500; }
+.primary-button { display: inline-flex; align-items: center; gap: 2rem; min-height: 56px; padding: .75rem 1rem .75rem 1.4rem; border: 2px solid var(--ink); border-radius: 999px; background: var(--ink); color: white; text-decoration: none; font-weight: 800; box-shadow: 4px 5px 0 var(--yellow); transition: transform .2s, box-shadow .2s; }
+.primary-button span { display: grid; place-items: center; width: 32px; height: 32px; border-radius: 50%; background: white; color: var(--ink); }
+.primary-button:hover { transform: translateY(-3px); box-shadow: 4px 8px 0 var(--yellow); }
+.hero-visual { position: relative; min-height: 420px; }
+.shape { position: absolute; display: grid; place-items: center; border: 3px solid var(--ink); box-shadow: var(--shadow); font-family: "Hiragino Maru Gothic ProN", "Yu Gothic", sans-serif; font-weight: 900; }
+.shape-sun { width: 190px; height: 190px; right: 8%; top: 0; border-radius: 50%; background: var(--yellow); font-size: 6rem; transform: rotate(8deg); }
+.shape-book { width: 250px; height: 160px; left: 2%; bottom: 22px; background: var(--blue); border-radius: 50% 50% 12px 12px; font-size: 1.5rem; transform: rotate(-7deg); }
+.shape-book::after { content: ""; position: absolute; width: 2px; height: 125px; background: var(--ink); left: 50%; top: 15px; }
+.shape-pencil { width: 240px; height: 64px; right: -4%; bottom: 75px; background: var(--coral); transform: rotate(-12deg); border-radius: 8px; font-size: 1.5rem; }
+.shape-pencil::after { content: ""; position: absolute; right: -44px; border-left: 43px solid var(--yellow); border-top: 29px solid transparent; border-bottom: 29px solid transparent; }
+.shape-clock { width: 125px; height: 125px; left: 2%; top: 20px; border-radius: 50%; background: var(--green); transform: rotate(-8deg); font-size: 1.15rem; }
+.spark { position: absolute; font-size: 2rem; }
+.spark-one { right: 4%; top: 210px; color: #e77158; }
+.spark-two { left: 44%; top: 195px; color: var(--purple); }
+
+.apps-section { padding: clamp(4rem, 7vw, 7rem) clamp(1.25rem, 5vw, 5rem); background: var(--cream); border-block: 1px solid var(--line); }
+.section-heading { max-width: 1200px; margin: 0 auto 2rem; display: flex; justify-content: space-between; align-items: end; gap: 2rem; }
+.section-heading h2, .promise h2 { margin: 0; font-family: "Hiragino Maru Gothic ProN", "Yu Gothic", sans-serif; font-size: clamp(2.1rem, 4vw, 3.5rem); line-height: 1.25; }
+.section-heading > p { margin: 0; font-weight: 700; font-size: .9rem; }
+.filter-bar { max-width: 1200px; margin: 0 auto 2rem; display: flex; flex-wrap: wrap; gap: .6rem; }
+.filter-button { min-height: 44px; padding: .45rem 1.2rem; background: white; color: var(--ink); border: 1.5px solid var(--ink); border-radius: 999px; cursor: pointer; font-weight: 700; transition: background .2s, color .2s, transform .2s; }
+.filter-button:hover { transform: translateY(-2px); }
+.filter-button.active { background: var(--ink); color: white; }
+.app-grid { max-width: 1200px; margin: 0 auto; display: grid; grid-template-columns: repeat(6, 1fr); gap: 1.2rem; }
+.app-card { position: relative; min-height: 400px; grid-column: span 2; display: flex; flex-direction: column; padding: 1.5rem; border: 2px solid var(--ink); border-radius: 18px; text-decoration: none; overflow: hidden; transition: transform .2s, box-shadow .2s; }
+.app-card:nth-child(4), .app-card:nth-child(5) { grid-column: span 3; }
+.app-card:hover, .app-card:focus-visible { transform: translateY(-6px) rotate(-.4deg); box-shadow: var(--shadow); outline: none; }
+.app-card[hidden] { display: none; }
+.card-yellow { background: var(--yellow); }
+.card-blue { background: var(--blue); }
+.card-coral { background: var(--coral); }
+.card-green { background: var(--green); }
+.card-purple { background: var(--purple); }
+.card-number { position: absolute; left: 1.5rem; top: 1.25rem; font-weight: 800; font-size: .8rem; letter-spacing: .1em; }
+.completion-badge { position: absolute; right: 1.2rem; top: 1rem; display: grid; place-items: center; width: 40px; height: 40px; border: 2px solid var(--ink); border-radius: 50%; background: rgba(255,255,255,.65); font-size: 1.45rem; line-height: 1; }
+.completion-badge.done { background: var(--ink); color: var(--yellow); }
+.card-icon { align-self: center; display: grid; place-items: center; width: 112px; height: 112px; margin: 2rem 0 1rem; background: rgba(255,255,255,.82); border: 2px solid var(--ink); border-radius: 50%; font-size: 4.5rem; line-height: 1; font-weight: 500; transform: rotate(-4deg); }
+.card-icon-kanji { font-family: serif; }
+.card-icon-clock { font-size: 5.5rem; }
+.card-icon-abc { font-size: 2.8rem; font-family: Georgia, serif; }
+.card-grade { align-self: start; padding: .2rem .65rem; border: 1.5px solid var(--ink); border-radius: 999px; background: rgba(255,255,255,.6); font-size: .72rem; font-weight: 800; }
+.app-card h3 { margin: .75rem 0 .3rem; font-family: "Hiragino Maru Gothic ProN", "Yu Gothic", sans-serif; font-size: clamp(1.65rem, 2.6vw, 2.25rem); line-height: 1.25; }
+.app-card p { margin: 0 0 1rem; font-size: .9rem; font-weight: 500; }
+.card-go { margin-top: auto; display: flex; align-items: center; justify-content: space-between; padding-top: 1rem; border-top: 1.5px solid rgba(23,59,87,.4); font-weight: 800; }
+.card-go b { display: grid; place-items: center; width: 36px; height: 36px; background: var(--ink); color: white; border-radius: 50%; font-size: 1.15rem; }
+.empty-message { max-width: 1200px; margin: 2rem auto 0; text-align: center; font-weight: 700; }
+.empty-state { max-width: 1200px; margin: 0 auto; padding: clamp(3rem, 7vw, 5rem) 1.5rem; border: 2px dashed var(--ink); border-radius: 18px; background: rgba(255,255,255,.5); text-align: center; }
+.empty-state[hidden] { display: none; }
+.empty-state > span { display: grid; place-items: center; width: 72px; height: 72px; margin: 0 auto 1rem; border: 2px solid var(--ink); border-radius: 50%; background: var(--yellow); font-size: 2rem; transform: rotate(-6deg); }
+.empty-state h3 { margin: 0; font-family: "Hiragino Maru Gothic ProN", "Yu Gothic", sans-serif; font-size: clamp(1.4rem, 3vw, 2rem); }
+.empty-state p { margin: .5rem 0 0; }
+
+.promise { max-width: 1100px; margin: 0 auto; padding: clamp(5rem, 8vw, 8rem) clamp(1.25rem, 5vw, 4rem); text-align: center; }
+.promise-list { margin-top: 3rem; display: grid; grid-template-columns: repeat(3, 1fr); }
+.promise-list > div { padding: 1rem 2rem; border-right: 1px solid var(--line); }
+.promise-list > div:last-child { border: 0; }
+.promise-list span { display: grid; place-items: center; width: 46px; height: 46px; margin: 0 auto 1rem; border-radius: 50%; background: var(--yellow); border: 2px solid var(--ink); font-size: 1.4rem; font-weight: 900; }
+.promise-list h3 { margin: 0; font-family: "Hiragino Maru Gothic ProN", "Yu Gothic", sans-serif; font-size: 1.3rem; }
+.promise-list p { margin: .4rem 0 0; font-size: .9rem; }
+footer { min-height: 160px; display: flex; justify-content: space-between; align-items: center; padding: 2rem clamp(1.25rem, 5vw, 5rem); background: var(--ink); color: white; }
+.footer-brand .brand-mark { color: var(--ink); }
+footer p { font-size: .85rem; }
+
+@media (max-width: 860px) {
+  .hero { min-height: auto; grid-template-columns: 1fr; padding-top: 4rem; }
+  .hero-visual { min-height: 340px; max-width: 540px; width: 100%; margin: 0 auto; }
+  .shape-sun { width: 150px; height: 150px; font-size: 4.7rem; }
+  .shape-book { width: 210px; height: 135px; }
+  .app-card { grid-column: span 3; }
+}
+
+@media (max-width: 580px) {
+  .site-header { min-height: 70px; padding-inline: 1rem; }
+  .brand { font-size: 1rem; }
+  .brand-mark { width: 34px; height: 34px; }
+  .header-progress span:last-child { display: none; }
+  .hero h1 { font-size: clamp(2.8rem, 14vw, 4rem); }
+  .hero-visual { min-height: 290px; }
+  .shape-book { width: 180px; height: 115px; bottom: 15px; }
+  .shape-pencil { width: 175px; right: 2%; bottom: 55px; }
+  .shape-clock { width: 95px; height: 95px; }
+  .shape-sun { width: 120px; height: 120px; font-size: 3.8rem; }
+  .section-heading { align-items: start; flex-direction: column; gap: .5rem; }
+  .app-grid { display: block; }
+  .app-card { min-height: 370px; margin-bottom: 1rem; }
+  .promise-list { grid-template-columns: 1fr; gap: 2rem; }
+  .promise-list > div { border-right: 0; border-bottom: 1px solid var(--line); padding-bottom: 2rem; }
+  footer { flex-direction: column; justify-content: center; gap: .8rem; text-align: center; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after { transition: none !important; }
+}

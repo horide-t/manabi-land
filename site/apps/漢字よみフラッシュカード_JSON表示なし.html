@@ -167,4 +167,4 @@ $('resetHistory').addEventListener('click',()=>{if(confirm('このブラウザ�
 document.addEventListener('keydown',e=>{if(!$('quiz').classList.contains('active')||e.altKey||e.ctrlKey||e.metaKey)return;if(e.key.toLowerCase()==='z'&&undoState){e.preventDefault();undoLast()}else if(e.code==='Space'){e.preventDefault();reveal()}else if(revealed&&e.key==='ArrowRight'){e.preventDefault();score('correct')}else if(revealed&&e.key==='ArrowLeft'){e.preventDefault();score('wrong')}else if(revealed&&e.key==='ArrowDown'){e.preventDefault();score('unsure')}});
 $('speakBtn').hidden=!speechAvailable;renderLibraryPeriodOptions();const embeddedData=JSON.parse($('embeddedCards').textContent);setData(embeddedData);$('savedHint').textContent='カードはアプリに入っています。';
 })();
-</script></body></html>
+</script><script src="../assets/land-return.js"></script></body></html>
